@@ -25,4 +25,12 @@ const APPROVE_DOCUMENT = async (id) => {
   );
   return res.data;
 };
-export { GET_CASH_ORDER_DOCUMENT_BY_ID,APPROVE_DOCUMENT,CANCEL_DOCUMENT,REJECT_DOCUMENT };
+
+const GET_OPERATION_HISTORY_BY_DOC_ID = async (id) => {
+  const res = await instance.get(
+    `DocumentManagement/GetOperationHistoryByDocId?docId=${id}`
+  );
+  return res.data;
+}
+
+export { GET_CASH_ORDER_DOCUMENT_BY_ID,APPROVE_DOCUMENT,CANCEL_DOCUMENT,REJECT_DOCUMENT, GET_OPERATION_HISTORY_BY_DOC_ID };

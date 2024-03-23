@@ -18,6 +18,7 @@ import {
 import ApproveModalContent from "../../features/esd/components/ApproveModalContent";
 import RejectModalContent from "../../features/esd/components/RejectModalContent";
 import CancelModalContent from "../../features/esd/components/CancelModalContent";
+import OperationHistory from "./OperationHistory";
 
 export default function PreviewDoc() {
   const navigate = useNavigate();
@@ -28,7 +29,8 @@ export default function PreviewDoc() {
   const { id } = useParams();
 
   const [data, setData] = useState(false);
-  const [refresh,setRefresh] =useState(false)
+  const [refresh, setRefresh] = useState(false);
+  const [activeTab, setActiveTab] = useState("first");
 
   const fetchData = async () => {
     try {
@@ -67,98 +69,125 @@ export default function PreviewDoc() {
   const showApprovemodal = () => {
     dispatch(showModal(true));
     dispatch(setHeader("Təsdiq et"));
-    dispatch(setContent(<ApproveModalContent docId={data.id}  setRefresh={setRefresh} />));
+    dispatch(
+      setContent(<ApproveModalContent docId={data.id} setRefresh={setRefresh} />)
+    );
   };
 
   const showRejectemodal = () => {
     dispatch(showModal(true));
     dispatch(setHeader("İmtina et"));
-    dispatch(setContent(<RejectModalContent docId={data.id} setRefresh={setRefresh} />));
+    dispatch(
+      setContent(<RejectModalContent docId={data.id} setRefresh={setRefresh} />)
+    );
   };
   const showCancelemodal = () => {
     dispatch(showModal(true));
     dispatch(setHeader("Ləğv et"));
-    dispatch(setContent(<CancelModalContent docId={data.id} setRefresh={setRefresh} /> ));
+    dispatch(
+      setContent(<CancelModalContent docId={data.id} setRefresh={setRefresh} />)
+    );
   };
 
   return (
     <Wrapper>
       <Toast ref={toast} />
-      {data && !error && !isLoading ? (
+      <TabButtons>
+        <Button
+          label="Sənəd Təfərrüatları"
+          onClick={() => setActiveTab("first")}
+          className={activeTab === "first" ? "active" : ""}
+        />
+        <Button
+          label="Əməliyyat Tarixçəsi"
+          onClick={() => setActiveTab("second")}
+          className={activeTab === "second" ? "active" : ""}
+        />
+      </TabButtons>
+      {activeTab === "first" && (
         <Fragment>
-          <HeaderWrapper>
-            <Button
-              onClick={() => navigate(-1)}
-              label="Geri qayıt"
-              icon="pi pi-angle-left"
-              text
-              style={{ width: "130px" }}
-            />
-          </HeaderWrapper>
+          {data && !error && !isLoading ? (
+            <Fragment>
+              <HeaderWrapper>
+                <Button
+                  onClick={() => navigate(-1)}
+                  label="Geri qayıt"
+                  icon="pi pi-angle-left"
+                  text
+                  style={{ width: "130px" }}
+                />
+              </HeaderWrapper>
 
-          <Information>
-            <InfoGroup>
-              <TitleInfo>Sənəd nömrəsi:</TitleInfo>
-              <Desc>{data.docNo}</Desc>
-            </InfoGroup>
+              <Information>
+                <InfoGroup>
+                  <TitleInfo>Sənəd nömrəsi:</TitleInfo>
+                  <Desc>{data.docNo}</Desc>
+                </InfoGroup>
 
-            <InfoGroup>
-              <TitleInfo>Sənəd tarixi:</TitleInfo>
-              <Desc>{new Date(data.docDate).toLocaleDateString()}</Desc>
-            </InfoGroup>
+                <InfoGroup>
+                  <TitleInfo>Sənəd tarixi:</TitleInfo>
+                  <Desc>
+                    {new Date(data.docDate).toLocaleDateString()}
+                  </Desc>
+                </InfoGroup>
 
-            <InfoGroup>
-              <TitleInfo>Sənəd tipi:</TitleInfo>
-              <Desc>{data.docTypeName}</Desc>
-            </InfoGroup>
+                <InfoGroup>
+                  <TitleInfo>Sənəd tipi:</TitleInfo>
+                  <Desc>{data.docTypeName}</Desc>
+                </InfoGroup>
 
-            <InfoGroup>
-              <TitleInfo>Status:</TitleInfo>
-              <Desc>{statusBodyTemplate(data.status)}</Desc>
-            </InfoGroup>
+                <InfoGroup>
+                  <TitleInfo>Status:</TitleInfo>
+                  <Desc>{statusBodyTemplate(data.status)}</Desc>
+                </InfoGroup>
 
-            <InfoGroup>
-              <TitleInfo>Məbləğ:</TitleInfo>
-              <Desc>{data.amount}</Desc>
-            </InfoGroup>
-            <InfoGroup>
-              <TitleInfo>Açıqlama:</TitleInfo>
-              <Desc>{data.description}</Desc>
-            </InfoGroup>
+                <InfoGroup>
+                  <TitleInfo>Məbləğ:</TitleInfo>
+                  <Desc>{data.amount}</Desc>
+                </InfoGroup>
+                <InfoGroup>
+                  <TitleInfo>Açıqlama:</TitleInfo>
+                  <Desc>{data.description}</Desc>
+                </InfoGroup>
 
-            <InfoGroup>
-              <TitleInfo>Səbəb:</TitleInfo>
-              <Desc>{data.reason}</Desc>
-            </InfoGroup>
-          </Information>
-          <Buttons>
-            {data.showApproveButton && (
-              <Button
-                label="Təsdiq et"
-                severity="success"
-                onClick={showApprovemodal}
-              />
-            )}
-            {data.showCancelButton && (
-              <Button
-                label="Ləğv et"
-                severity="danger"
-                onClick={showCancelemodal}
-              />
-            )}
-            {data.showApproveButton && (
-              <Button
-                label="İmtina et"
-                severity="danger"
-                onClick={showRejectemodal}
-              />
-            )}
-          </Buttons>
+                <InfoGroup>
+                  <TitleInfo>Səbəb:</TitleInfo>
+                  <Desc>{data.reason}</Desc>
+                </InfoGroup>
+              </Information>
+              <Buttons>
+                {data.showApproveButton && (
+                  <Button
+                    label="Təsdiq et"
+                    severity="success"
+                    onClick={showApprovemodal}
+                  />
+                )}
+                {data.showCancelButton && (
+                  <Button
+                    label="Ləğv et"
+                    severity="danger"
+                    onClick={showCancelemodal}
+                  />
+                )}
+                {data.showApproveButton && (
+                  <Button
+                    label="İmtina et"
+                    severity="danger"
+                    onClick={showRejectemodal}
+                  />
+                )}
+              </Buttons>
+            </Fragment>
+          ) : !data && !error && isLoading ? (
+            <Loading />
+          ) : (
+            <Error />
+          )}
         </Fragment>
-      ) : !data && !error && isLoading ? (
-        <Loading />
-      ) : (
-        <Error />
+      )}
+      {activeTab === "second" && (
+        <OperationHistory />
       )}
     </Wrapper>
   );
@@ -220,4 +249,15 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const TabButtons = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .active {
+    background-color: #007ad9 !important;
+    color: #ffffff !important;
+  }
 `;
