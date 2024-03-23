@@ -61,7 +61,7 @@ const navigate = useNavigate()
         raised
         label="Yeni sənəd əlavə et"
         severity="success"
-        onClick={()=>navigate("/dashboard/doc/new")}
+        onClick={()=>navigate("/doc/new")}
       />
     </div>
   );
