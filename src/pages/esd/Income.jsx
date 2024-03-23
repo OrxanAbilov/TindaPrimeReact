@@ -86,7 +86,7 @@ const navigate = useNavigate()
           value={data}
           selectionMode="single"
           header={header}
-          onSelectionChange={(e) => navigate(`/dashboard/doc/${e.value.id}`)}
+          onSelectionChange={(e) => navigate(`/doc/${e.value.id}`)}
           dataKey="id"
           metaKeySelection={true}
           tableStyle={{ width: "calc(100vW - 370px)" }}

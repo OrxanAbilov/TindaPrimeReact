@@ -86,7 +86,7 @@ export default function History() {
           value={data}
           selectionMode="single"
           header={header}
-          onSelectionChange={(e) => navigate(`/dashboard/doc/${e.value.id}`)}
+          onSelectionChange={(e) => navigate(`/doc/${e.value.id}`)}
           
           dataKey="id"
           metaKeySelection={true}

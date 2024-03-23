@@ -14,8 +14,10 @@ export const getStatusLabel = (statusId) => {
         return "Tamamlandı";
       case 7:
         return "Ləğv edildi";
+      case 8:
+        return "İmtina edildi";
       default:
-        return "Imtina edildi";
+        return "";
     }
   };
 

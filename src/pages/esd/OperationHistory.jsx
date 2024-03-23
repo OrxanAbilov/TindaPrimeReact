@@ -64,7 +64,7 @@ const OperationHistory = () => {
           <Column field="fullName" header="Ad Soyad" sortable></Column>
           <Column field="operationDate" header="Sənəd Tarixi" sortable></Column>
           <Column field="reasonNote" header="Səbəb" sortable></Column>
-          <Column field="status" header="Status" body={statusBodyTemplate} sortable></Column>
+          <Column field="status" header="Status" body={(rowData) => statusBodyTemplate(rowData.status)} sortable></Column>
         </DataTable>
       )}
     </Wrapper>

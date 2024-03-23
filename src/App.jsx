@@ -11,9 +11,9 @@ export default function App() {
     <ToastProvider>
       <Modal />
       <Routes>
-        <Route exact path="/" element={<Login />} />
+        <Route exact path="/login" element={<Login />} />
         <Route
-          path="/dashboard/*"
+          path="/*"
           element={
             <PrivateRoute>
               <Main />

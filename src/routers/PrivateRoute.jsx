@@ -9,7 +9,7 @@ export default function PrivateRoute({ children }) {
 
   useEffect(()=>{
     if (!isLoggedIn) {
-      navigate('/', { replace: true });
+      navigate('/login', { replace: true });
     }
   },[isLoggedIn,navigate])
   return children;

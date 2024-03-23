@@ -5,6 +5,7 @@ import NewDoc from '../pages/esd/NewDoc'
 import PreviewDoc from '../pages/esd/PreviewDoc'
 import OutGoing from '../pages/esd/OutGoing'
 import EditDoc from '../pages/esd/EditDoc'
+import Login from '../features/login/components/Login'
 
 export default function useRoutes() {
 
@@ -17,6 +18,7 @@ const routes =[
     {path:"outgoing",element: <OutGoing />},
     {path:"history",element: <History />},
     {path:"admin/esd/doctype",element: <DocumentType />},
+    {path:"login",element: <Login />},
 
 ]
 

@@ -8,12 +8,12 @@ import { useEffect } from "react";
 
 export default function Main() {
   const location = useLocation();
-  const dashboardPath = location.pathname==="/dashboard"
+  const dashboardPath = location.pathname==="/"
   const navigate = useNavigate()
 
   useEffect(()=>{
     if(dashboardPath){
-      navigate("/dashboard/income")
+      navigate("/dashboard")
     }
   },[])
 
