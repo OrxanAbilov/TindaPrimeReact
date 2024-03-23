@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 export default function PrivateRoute({ children }) {
   const isLoggedIn = useSelector((state) => state.loginSlice.isLoggedIn);
   const navigate = useNavigate();
-
   useEffect(()=>{
     if (!isLoggedIn) {
       navigate('/login', { replace: true });
