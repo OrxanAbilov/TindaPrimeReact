@@ -20,9 +20,9 @@ export default function HeadlessDemo() {
           <div className="flex flex-column h-full">
             <div className="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
               <span className="inline-flex align-items-center gap-2">
-              <img src={Logo} alt="Logo" width={30} />
+              <img src={Logo} alt="Logo" width={40} />
 
-                <span className="font-semibold text-2xl text-primary">Tinda App</span>
+                <span className="font-bold text-3xl text-primary">Tinda</span>
               </span>
 
             </div>

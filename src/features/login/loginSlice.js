@@ -6,7 +6,7 @@ export const loginSlice = createSlice({
   name: "login",
   initialState: {
     isLoggedIn: localStorage.getItem('token')?true:false,
-    userData: null,
+    userData: JSON.parse(localStorage.getItem('data')),
   },
   reducers: {
     singOutSuccess: (state) => {

@@ -1,12 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { Password } from "primereact/password";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../loginSlice";
 import { AUTH_LOGIN } from "../services/api";
 import { useToast } from "../../../context/ToastContext";
@@ -27,7 +27,12 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const isLoggedIn = useSelector((state) => state.loginSlice.isLoggedIn);
+  useEffect(()=>{
+    if (isLoggedIn) {
+      navigate('/dashboard', { replace: true });
+    }
+  },[isLoggedIn,navigate])
   const handleLogin = async (e) => {
     e.preventDefault()
 
@@ -37,6 +42,7 @@ const Login = () => {
     const res = await AUTH_LOGIN({password,username})
     const { data, exception } = res.data
     localStorage.setItem('token',data.token)
+    localStorage.setItem('data',JSON.stringify(data));
     if(!exception){
         localStorage.setItem("token",data.token)
     dispatch(setUserData(res.data))
