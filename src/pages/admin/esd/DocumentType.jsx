@@ -62,7 +62,7 @@ export default function DocumentType() {
 
 
   const editTemplate = (rowData) => {
-    return <Button type="button"  icon="pi pi-file-edit" onClick={()=>navigate(`/doc/edit/${rowData.id}`)}  />;
+    return <Button type="button"  icon="pi pi-file-edit" onClick={()=>navigate(`/admin/esd/doctype/edit/${rowData.id}`)}  />;
 };
 
   return (

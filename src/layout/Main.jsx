@@ -2,29 +2,32 @@ import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import styled from "styled-components";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import PrivateRoute from "../routers/PrivateRoute";
 
 
 export default function Main() {
   const location = useLocation();
-  const dashboardPath = location.pathname==="/"
+  const dashboardPath = location.pathname === "/"
   const navigate = useNavigate()
 
-  useEffect(()=>{
-    if(dashboardPath){
+  useEffect(() => {
+    if (dashboardPath) {
       navigate("/dashboard")
     }
-  },[])
+  }, [])
 
   return (
-    <Wrapper>
-      <Sidebar />
-      <HeaderAndContentWrapper>
-        <Header />
-        <Content />
-   </HeaderAndContentWrapper>
-    </Wrapper>
+    <PrivateRoute>
+      <Wrapper>
+        <Sidebar />
+        <HeaderAndContentWrapper>
+          <Header />
+          <Content><Outlet /></Content>
+        </HeaderAndContentWrapper>
+      </Wrapper>
+    </PrivateRoute>
   );
 }
 

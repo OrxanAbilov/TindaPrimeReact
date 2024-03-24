@@ -61,7 +61,7 @@ export default function History() {
         raised
         label="Yeni sənəd əlavə et"
         severity="success"
-        onClick={()=>navigate("/doc/new")}
+        onClick={()=>navigate("/esd/doc/new")}
       />
     </div>
   );
@@ -86,7 +86,7 @@ export default function History() {
           value={data}
           selectionMode="single"
           header={header}
-          onSelectionChange={(e) => navigate(`/doc/${e.value.id}`)}
+          onSelectionChange={(e) => navigate(`/esd/doc/${e.value.id}`)}
           
           dataKey="id"
           metaKeySelection={true}

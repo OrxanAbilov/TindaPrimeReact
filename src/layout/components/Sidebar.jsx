@@ -38,7 +38,7 @@ export default function HeadlessDemo() {
                   </StyleClass>
                   <ul className="list-none p-0 m-0 overflow-hidden">
                     <li>
-                      <NavLink to={"/income"}  style={{textDecoration:"none"}}  className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
+                      <NavLink to={"/esd/income"}  style={{textDecoration:"none"}}  className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
                         <i className="pi pi-inbox
 mr-2"></i>
                         <span className="font-medium">Gələnlər</span>
@@ -48,7 +48,7 @@ mr-2"></i>
 
 
                     <li>
-                      <NavLink to={"/outgoing"} style={{textDecoration:"none"}} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
+                      <NavLink to={"/esd/outgoing"} style={{textDecoration:"none"}} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
                         <i className="pi pi-send
 mr-2"></i>
                         <span className="font-medium">Göndərilənlər</span>
@@ -56,7 +56,7 @@ mr-2"></i>
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink to={"/history"} style={{textDecoration:"none"}}   className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                      <NavLink to={"/esd/history"} style={{textDecoration:"none"}}   className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
                         <i className="pi pi-history
 mr-2"></i>
                         <span className="font-medium" >Tarixçə</span>
