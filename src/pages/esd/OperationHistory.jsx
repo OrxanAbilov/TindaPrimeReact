@@ -56,9 +56,6 @@ const OperationHistory = () => {
       ) : (
         <DataTable
           value={operationHistory}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25]}
           emptyMessage="Əməliyyat tapılmadı."
         >
           <Column field="fullName" header="Ad Soyad" sortable></Column>

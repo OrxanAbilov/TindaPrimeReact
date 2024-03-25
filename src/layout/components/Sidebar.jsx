@@ -5,13 +5,16 @@ import { Ripple } from 'primereact/Ripple';
 import { StyleClass } from 'primereact/StyleClass';
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
-import Logo from '../../assets/images/logo.svg'
+import Logo from '../../assets/images/logo.svg';
+import { useSelector } from "react-redux";
+
 export default function HeadlessDemo() {
   const btnRef1 = useRef(null);
   const btnRef2 = useRef(null);
   const btnRef4 = useRef(null);
 
-
+  const { userData } = useSelector((state) => state.loginSlice);
+  const userType = userData ? userData.userType : null;
 
   return (
     <Wrapper>
@@ -69,42 +72,42 @@ mr-2"></i>
                   </ul>
                 </li>
               </ul>
-              <ul className="list-none p-3 m-0">
-                <li>
-                  <StyleClass nodeRef={btnRef4} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
-                    <div ref={btnRef4} className="p-ripple p-3 flex align-items-center justify-content-between text-600 cursor-pointer">
-                      <span className="font-medium">Admin</span>
-                      <i className="pi pi-chevron-down"></i>
-                      <Ripple />
-                    </div>
-                  </StyleClass>
-                  <ul className="list-none p-0 m-0 overflow-hidden">
-
-
-                    <li>
-                      <StyleClass nodeRef={btnRef2} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
-                        <a ref={btnRef2} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                          <i className="pi pi-book
-mr-2"></i>
-                          <span className="font-medium">ESD</span>
-                          <i className="pi pi-chevron-down ml-auto mr-1"></i>
-                          <Ripple />
-                        </a>
-                      </StyleClass>
-                      <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-
+              {userType === 1 && (
+                <ul className="list-none p-3 m-0">
+                  <li>
+                    <StyleClass nodeRef={btnRef4} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
+                      <div ref={btnRef4} className="p-ripple p-3 flex align-items-center justify-content-between text-600 cursor-pointer">
+                        <span className="font-medium">Admin</span>
+                        <i className="pi pi-chevron-down"></i>
+                        <Ripple />
+                      </div>
+                    </StyleClass>
+                    <ul className="list-none p-0 m-0 overflow-hidden">
                       <li>
-                          <NavLink to={"/admin/esd/doctype"}  style={{textDecoration:"none"}} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                            <i className="pi pi-file mr-2"></i>
-                            <span className="font-medium">Sənəd tipi</span>
+                        <StyleClass nodeRef={btnRef2} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
+                          <a ref={btnRef2} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
+                            <i className="pi pi-book
+  mr-2"></i>
+                            <span className="font-medium">ESD</span>
+                            <i className="pi pi-chevron-down ml-auto mr-1"></i>
                             <Ripple />
-                          </NavLink>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+                          </a>
+                        </StyleClass>
+                        <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                          <li>
+                            <NavLink to={"/admin/esd/doctype"}  style={{textDecoration:"none"}} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
+                              <i className="pi pi-file mr-2"></i>
+                              <span className="font-medium">Sənəd tipi</span>
+                              <Ripple />
+                            </NavLink>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              )}
+
             </div>
           </div>
         </div>
