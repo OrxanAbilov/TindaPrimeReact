@@ -59,7 +59,7 @@ const OperationHistory = () => {
           emptyMessage="Əməliyyat tapılmadı."
         >
           <Column field="fullName" header="Ad Soyad" sortable></Column>
-          <Column field="operationDate" header="Sənəd Tarixi" sortable></Column>
+          <Column field="operationDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.operationDate).toLocaleDateString()} sortable></Column>
           <Column field="reasonNote" header="Səbəb" sortable></Column>
           <Column field="status" header="Status" body={(rowData) => statusBodyTemplate(rowData.status)} sortable></Column>
         </DataTable>
@@ -74,5 +74,3 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 export default OperationHistory;
-
-//test

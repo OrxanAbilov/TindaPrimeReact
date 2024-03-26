@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../loginSlice";
 import { AUTH_LOGIN } from "../services/api";
 import { useToast } from "../../../context/ToastContext";
-import Logo from '../../../assets/images/logo.svg'
+import Logo from '../../../assets/images/Logo2.png'
 
 
 const Login = () => {
@@ -75,7 +75,7 @@ const Login = () => {
             borderRadius: "56px",
             padding: "0.3rem",
             background:
-              "linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)",
+              "linear-gradient(180deg, #339967 10%, rgba(33, 150, 243, 0) 30%)",
           }}
         >
           <div
@@ -137,7 +137,7 @@ const Login = () => {
                 </div>
                 <a
                   className="font-medium no-underline ml-2 text-right cursor-pointer"
-                  style={{ color: "var(--primary-color)",pointerEvents:"none" }}
+                  style={{ color:  "#339967" ,pointerEvents:"none" }}
                 >
                   Şifrəni unutdum
                 </a>
@@ -146,6 +146,7 @@ const Login = () => {
                 label="Daxil ol"
                 className="w-full p-3 text-xl"
                 loading={loading}
+                style={{ backgroundColor:  "#339967" }}
                 type="submit"
               />
             </div>

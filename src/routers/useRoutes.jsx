@@ -6,6 +6,7 @@ import PreviewDoc from '../pages/esd/PreviewDoc'
 import OutGoing from '../pages/esd/OutGoing'
 import EditDoc from '../pages/esd/EditDoc'
 import Login from '../features/login/components/Login'
+import Dashboard from '../pages/dashboard/Dashboard'
 
 export default function useRoutes() {
 
@@ -18,6 +19,7 @@ const routes =[
     {path:"outgoing",element: <OutGoing />},
     {path:"history",element: <History />},
     {path:"admin/esd/doctype",element: <DocumentType />},
+    {path:"dashboard",element: <Dashboard />},
     {path:"login",element: <Login />},
 
 ]

@@ -43,7 +43,7 @@ export default function Header() {
         icon="pi pi-user"
         size="normal"
         shape="circle"
-        style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
+        style={{ backgroundColor: "#339967", color: "#ffffff" }}
         onClick={(event) => menuRight.current.toggle(event)}
       />
     </HeaderWrapper>
