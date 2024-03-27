@@ -1,6 +1,7 @@
 {
   "name": "tinda_app",
   "private": true,
+  "homepage": ".",
   "version": "0.0.4",
   "type": "module",
   "scripts": {
