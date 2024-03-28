@@ -14,6 +14,7 @@ import NewDoc from "./pages/esd/NewDoc";
 import AdminEsd from "./pages/admin/esd/Root";
 import Admin from "./pages/admin/Root";
 import Esd from "./pages/esd/Root";
+import Dashboard from "./pages/dashboard/Dashboard";
 import { useSelector } from "react-redux";
 
 export default function App() {
@@ -26,7 +27,7 @@ export default function App() {
         <Route exact path="/login" element={<Login />} />
         <Route path="/" element={<Main />}>
           <Route path="*" element={"Not Found"} />
-          <Route path="/dashboard" element={"DashBoard"} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/esd" element={<Esd />}>
             <Route path="income" index element={<Income />} />
             <Route path="outgoing" element={<OutGoing />} />
