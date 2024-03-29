@@ -22,6 +22,7 @@ export default function Header() {
         showToast("success","Uğurlu əməliyyat!","Çıxış edildi")
         setTimeout(()=>{
           localStorage.removeItem("token")
+          localStorage.removeItem("data")
           dispatch(singOutSuccess())
           navigate("/")
         },1000)
