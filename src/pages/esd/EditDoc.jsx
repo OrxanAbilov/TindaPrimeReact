@@ -92,20 +92,35 @@ export default function EditDoc() {
 
   const onSubmit = (data) => {
     setButtonIsLoading(true)
-    PUT_DOC_TYPE(data).then((res)=>{
-        showToast("success","Uğurlu əməliyyat!","Dəyişiklik olundu!",3000)
-        navigate(-1)
 
-
-    }).catch((err)=>{
-        console.log(err)
-        showToast("error","Xəta",error.response.data.Exception[0])
-
-    }).finally(()=>{
-        setButtonIsLoading(false)
-    })
-    
-  };
+    // Update queueNo for workflows
+    const updatedData = { ...data };
+    updatedData.workFlows = updatedData.workFlows.map((item, index) => ({
+      ...item,
+      queueNo: index
+    }));
+  
+    // Update queueNo for viewers
+    updatedData.viewers = updatedData.viewers.map((item, index) => ({
+      ...item,
+      queueNo: index
+    }));
+  
+    PUT_DOC_TYPE(updatedData)
+      .then((res) => {
+        showToast("success", "Uğurlu əməliyyat!", "Dəyişiklik olundu!", 3000);
+        navigate(-1);
+      })
+      .catch((err) => {
+        console.log(err);
+        showToast("error", "Xəta", error.response.data.Exception[0]);
+      })
+      .finally(() => {
+        setButtonIsLoading(false);
+      });
+  
+    // console.log(updatedData);
+    };
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -134,20 +149,30 @@ export default function EditDoc() {
     e.preventDefault()
 
     if (selectedUser1) {
-
-        setValue("workFlows",[...getValues().workFlows,selectedUser1])
-      setSelectedUser1(null);
-    }
+      // setValue("workFlows",[...getValues().workFlows,selectedUser1, queueNo ])
+      // setSelectedUser1(null);  
+      
+      const workFlows = [...getValues().workFlows];
+      const newQueueNo = workFlows.length;
+      const newWorkFlow = { ...selectedUser1, queueNo: newQueueNo };
+      setValue("workFlows", [...workFlows, newWorkFlow]);
+      setSelectedUser1(null);  
+      }
   };
 
   const addUser2 = (e) => {
     e.preventDefault()
 
     if (selectedUser2) {
-    
-      setValue("viewers",[...getValues().viewers,selectedUser2])
+      const viewers = [...getValues().viewers];
+      const newQueueNo = viewers.length;
+      const newViewer = { ...selectedUser2, queueNo: newQueueNo };
+      setValue("viewers", [...viewers, newViewer]);
       setSelectedUser2(null);
-    }
+  
+      // setValue("viewers",[...getValues().viewers,selectedUser2], queueNo)
+      // setSelectedUser2(null);
+      }
   };
 
 
@@ -312,12 +337,18 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                 <Table>
                   <DataTable
                     value={getValues().workFlows}
+                    reorderableRows 
+                    onRowReorder={(e) => {
+                      setValue("workFlows", e.value);
+                      setForceUpdate(prevState => !prevState);
+                    }}
                     emptyMessage="Təsdiqləyənlər əlavə edilməyib"
                     paginator
                     rows={3}
                     key={forceUpdate}
 
                   >
+                    <Column rowReorder style={{ width: "3rem" }} />
                     <Column field="id" header="id"></Column>
                     <Column field="fullName" header="Ad:"></Column>
                     <Column
@@ -356,12 +387,18 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                 <Table>
                   <DataTable
                     value={getValues().viewers}
+                    reorderableRows 
+                    onRowReorder={(e) => {
+                      setValue("viewers", e.value);
+                      setForceUpdate(prevState => !prevState);
+                    }}
                     emptyMessage="Izləyən əlavə edilməyib"
                     paginator
                     rows={3}
                     key={forceUpdate}
 
                   >
+                    <Column rowReorder style={{ width: "3rem" }} />
                     <Column field="id" header="id"></Column>
                     <Column field="fullName" header="Ad:"></Column>
                     <Column
