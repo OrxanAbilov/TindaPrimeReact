@@ -19,6 +19,7 @@
     "@mui/material": "^5.15.14",
     "@reduxjs/toolkit": "^2.2.1",
     "axios": "^1.6.7",
+    "chart": "^0.1.2",
     "chart.js": "^4.4.2",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
