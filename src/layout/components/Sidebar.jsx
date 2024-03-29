@@ -120,4 +120,7 @@ mr-2"></i>
 const Wrapper = styled.div`
 width: 360px;
 height: 100%;
+@media (max-width:992px){
+  display:none;
+}
 `

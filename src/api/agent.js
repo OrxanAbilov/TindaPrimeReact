@@ -13,8 +13,22 @@ instance.interceptors.request.use(
     return config;
   },
   (error) => {
+   
     return Promise.reject(error);
   }
 );
+
+
+instance.interceptors.response.use(function (response) {
+
+  return response;
+}, function (error) {
+  if(error.response.status===401){
+    localStorage.removeItem("token")
+    localStorage.removeItem("data")
+  }
+  return Promise.reject(error);
+});
+
 
 export default instance;
