@@ -89,6 +89,7 @@ const navigate = useNavigate()
           onSelectionChange={(e) => navigate(`/esd/doc/${e.value.id}`)}
           dataKey="id"
           metaKeySelection={true}
+          tableStyle={{ width: "calc(100vW - 370px)" }}
           emptyMessage="Sənəd tapılmadı."
         >
           <Column

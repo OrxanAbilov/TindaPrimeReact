@@ -1,31 +1,31 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
-import { GET_ALL_INCOME_DOCUMENTS } from "../../features/esd/income/services/api";
+import { GET_ALL_OUTGOING_DOCUMENTS } from "../../features/esd/outgoing/services/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setData,
   setError,
   setIsLoading,
-} from "../../features/esd/income/incomeSlice";
+} from "../../features/esd/outgoing/outGoingSlice";
 import { getStatusLabel, getStatusSeverity } from "../../helper/Status";
 import { InputText } from "primereact/inputtext";
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
 import styled from "styled-components";
 
-export default function Income() {
+export default function OutGoing() {
   const dispatch = useDispatch();
-  const { data, error, isLoading } = useSelector((state) => state.incomeSlice);
+  const { data, error, isLoading } = useSelector((state) => state.outGoingSlice);
   const [globalFilter, setGlobalFilter] = useState("");
 const navigate = useNavigate()
   const fetchData = async () => {
     try {
       dispatch(setIsLoading(true));
-      const res = await GET_ALL_INCOME_DOCUMENTS();
+      const res = await GET_ALL_OUTGOING_DOCUMENTS();
       dispatch(setData(res.data));
     } catch (error) {
       dispatch(setError(error.response));
@@ -77,7 +77,7 @@ const navigate = useNavigate()
 
   return (
     <Wrapper>
-    <h2>Gələnlər</h2>
+      <h2>Göndərilənlər</h2>
       {!error && !isLoading && data ? (
         <DataTable
           globalFilter={globalFilter}
@@ -89,6 +89,7 @@ const navigate = useNavigate()
           onSelectionChange={(e) => navigate(`/esd/doc/${e.value.id}`)}
           dataKey="id"
           metaKeySelection={true}
+          tableStyle={{ width: "calc(100vW - 370px)" }}
           emptyMessage="Sənəd tapılmadı."
         >
           <Column
@@ -114,7 +115,7 @@ const navigate = useNavigate()
       )}
 
       <Outlet />
-      </Wrapper>
+    </Wrapper>
   );
 }
 
