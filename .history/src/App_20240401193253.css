@@ -1,0 +1,35 @@
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+
+}
+
+
+body{
+  margin: 0;
+  padding: 0;
+}
+
+.active{
+  color: #fff !important;
+  background-color: #2196f3;
+}
+.active i , .active span{
+  color: #fff;
+  
+}
+
+.active:hover{
+  background-color: #138ef3;
+
+}
+
+.p-datatable-emptymessage td{
+  text-align: center !important;
+}
+
+.p-panelmenu .p-panelmenu-content .p-menuitem > .p-menuitem-content .p-menuitem-link{
+  height: 60px;
+}
