@@ -421,6 +421,14 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
             </MainDropdownWrapper>
           )}
 
+
+        </form>
+      ) : isLoading && !error ? (
+        <Loading />
+      ) : (
+        <Error />
+      )}
+
           <Buttons>
             <Button
               severity="success"
@@ -430,12 +438,6 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
               loading={buttonisLoading}
             />
           </Buttons>
-        </form>
-      ) : isLoading && !error ? (
-        <Loading />
-      ) : (
-        <Error />
-      )}
     </Wrapper>
   );
 }
@@ -444,10 +446,8 @@ const Buttons = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  margin-top: 120px;
-  position: absolute;
-  bottom: 36px;
-  right: 36px;
+  margin-top: 20px;
+  padding-bottom: 10px;
 `;
 
 const InputsWrapper = styled.div`
@@ -456,6 +456,9 @@ const InputsWrapper = styled.div`
   align-items: center;
   gap: 24px;
   margin-bottom: 16px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const Table = styled.div`
@@ -474,13 +477,23 @@ const MainDropdownWrapper = styled.div`
   display: flex;
   gap: 32px;
   align-items: flex-start;
-  height: 410px;
+  // height: 410px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
 `;
 const DropdownWrapper = styled.div`
   display: grid;
   width: 50%;
   grid-template-columns: 4fr 1fr;
   grid-gap: 8px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
 `;
 
 const Wrapper = styled.div`
