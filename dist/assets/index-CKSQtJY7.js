@@ -1669,7 +1669,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   display: flex;
   justify-content: center;
   align-items: center;
-`;function xl(){return x.jsxs(nN,{children:[x.jsx(rN,{children:"Xəta"}),x.jsx(aN,{children:"Texniki prolem baş verdi. Birazdan yenidən yoxlayın"})]})}const nN=Mt.div`
+`;function xl(){return x.jsxs(nN,{children:[x.jsx(rN,{children:"Xəta"}),x.jsx(aN,{children:"Texniki prolem baş verdi. Zəhmət olmasa səhifəni yeniləyin"})]})}const nN=Mt.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -2006,20 +2006,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   width: 100%;
   display: flex;
   flex-direction: column;
-`;function LM(){const{id:e}=B1(),[t,n]=s.useState([]),[a,r]=s.useState(!1),[o,i]=s.useState(!1),[l,u]=s.useState(!1),[c,d]=s.useState(!1),[f,g]=s.useState(!1),[b,y]=s.useState(null),[S,R]=s.useState(null),{showToast:w}=Sl(),m=async()=>{try{d(!0);const te=await sN();n(te.data),u(!1)}catch(te){console.log(te),u(!0)}finally{d(!1)}},h=wa(),P={id:"",name:"",description:"",workFlows:[],sendToLeader:!1,sendToUpper:!1,viewers:[]},{control:I,formState:{errors:F},handleSubmit:C,setValue:E,getValues:L}=om({defaultValues:P}),H=async te=>{try{i(!0);const Z=await uN(te);E("name",Z.data.name),E("description",Z.data.description),E("workFlows",Z.data.workFlows),E("sendToLeader",Z.data.sendToLeader),E("sendToUpper",Z.data.sendToUpper),E("viewers",Z.data.viewers),E("id",Z.data.id),r(!1)}catch{r(!0)}finally{i(!1)}},V=te=>{g(!0);const Z={...te};Z.workFlows=Z.workFlows.map((ae,W)=>({...ae,queueNo:W})),Z.viewers=Z.viewers.map((ae,W)=>({...ae,queueNo:W})),cN(Z).then(ae=>{w("success","Uğurlu əməliyyat!","Dəyişiklik olundu!",3e3),h(-1)}).catch(ae=>{console.log(ae),w("error","Xəta",a.response.data.Exception[0])}).finally(()=>{g(!1)})},K=te=>F[te]?x.jsx("small",{className:"p-error",children:F[te].message}):x.jsx("small",{className:"p-error",children:" "});s.useEffect(()=>{let te=!0;return te&&(m(),H(e)),()=>{te=!1}},[]);const[Y,Q]=s.useState(!1),Oe=te=>{if(te.preventDefault(),b){const Z=[...L().workFlows],ae=Z.length,W={...b,queueNo:ae};E("workFlows",[...Z,W]),y(null)}},Re=te=>{if(te.preventDefault(),S){const Z=[...L().viewers],ae=Z.length,W={...S,queueNo:ae};E("viewers",[...Z,W]),R(null)}},je=te=>{const Z=[...L().workFlows.filter(ae=>ae.id!==te)];E("workFlows",Z),Q(ae=>!ae)},le=te=>{const Z=[...L().viewers.filter(ae=>ae.id!==te)];E("viewers",Z),Q(ae=>!ae)};return x.jsxs(UM,{children:[x.jsx(VM,{children:x.jsx(on,{onClick:()=>h(-1),label:"Geri qayıt",icon:"pi pi-angle-left",text:!0,style:{width:"130px"}})}),!o&&!a?x.jsxs("form",{onSubmit:C(V),className:"flex flex-column gap-2",children:[x.jsxs(BM,{children:[x.jsx(Ya,{name:"name",control:I,rules:{required:"Məcburidir"},render:({field:te,fieldState:Z})=>x.jsxs(i2,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.value}),children:"Sənəd tipinin adı"}),x.jsx("span",{className:"p-float-label",children:x.jsx(Na,{id:te.name,value:te.value,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.target.value),style:{width:"100%"}})}),K(te.name)]})}),x.jsx(Ya,{name:"description",control:I,rules:{required:"Məcburidir"},render:({field:te,fieldState:Z})=>x.jsxs(i2,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.value}),children:"Sənəd tipinin açıqlaması"}),x.jsx("span",{className:"p-float-label",children:x.jsx(Na,{id:te.name,value:te.value,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.target.value),style:{width:"100%"}})}),K(te.name)]})})]}),x.jsxs(zM,{children:[x.jsx(Ya,{name:"sendToLeader",control:I,render:({field:te,fieldState:Z})=>x.jsxs(x.Fragment,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.checked}),children:"Rəhbərə göndər"}),x.jsx(Qf,{inputId:te.name,checked:te.value,inputRef:te.ref,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.checked)})]})}),x.jsx(Ya,{name:"sendToUpper",control:I,render:({field:te,fieldState:Z})=>x.jsxs(x.Fragment,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.checked}),children:"Bir üst rəhbərə göndər"}),x.jsx(Qf,{inputId:te.name,checked:te.value,inputRef:te.ref,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.checked)})]})})]}),c&&!l?x.jsx(Ii,{}):x.jsxs(HM,{children:[x.jsxs(o2,{children:[x.jsx(hl,{value:b,onChange:te=>{y(te.value)},options:t,optionLabel:"fullName",placeholder:"Təsdiqləyənlər"}),x.jsx(on,{severity:"primary",label:"Əlavə et",onClick:Oe}),x.jsx(a2,{children:x.jsxs(Di,{value:L().workFlows,reorderableRows:!0,onRowReorder:te=>{E("workFlows",te.value),Q(Z=>!Z)},emptyMessage:"Təsdiqləyənlər əlavə edilməyib",paginator:!0,rows:3,children:[x.jsx(fn,{rowReorder:!0,style:{width:"3rem"}}),x.jsx(fn,{field:"id",header:"id"}),x.jsx(fn,{field:"fullName",header:"Ad:"}),x.jsx(fn,{style:{flex:"0 0 4rem",textAlign:"right"},body:te=>x.jsx(on,{icon:"pi pi-times",onClick:Z=>{Z.preventDefault(),je(te.id)},size:"small",severity:"danger"})})]},Y)})]}),x.jsxs(o2,{children:[x.jsx(hl,{value:S,onChange:te=>R(te.value),options:t,optionLabel:"fullName",placeholder:"İzləyənlər"}),x.jsx(on,{severity:"primary",label:"Əlavə et",onClick:Re}),x.jsx(a2,{children:x.jsxs(Di,{value:L().viewers,reorderableRows:!0,onRowReorder:te=>{E("viewers",te.value),Q(Z=>!Z)},emptyMessage:"Izləyən əlavə edilməyib",paginator:!0,rows:3,children:[x.jsx(fn,{rowReorder:!0,style:{width:"3rem"}}),x.jsx(fn,{field:"id",header:"id"}),x.jsx(fn,{field:"fullName",header:"Ad:"}),x.jsx(fn,{style:{flex:"0 0 4rem",textAlign:"right"},body:te=>x.jsx(on,{icon:"pi pi-times",size:"small",severity:"danger",onClick:Z=>{Z.preventDefault(),le(te.id)}})})]},Y)})]})]}),x.jsx($M,{children:x.jsx(on,{severity:"success",label:"Yadda saxla",type:"submit",size:"normal",loading:f})})]}):o&&!a?x.jsx(Ii,{}):x.jsx(xl,{})]})}const $M=Mt.div`
+`;function LM(){const{id:e}=B1(),[t,n]=s.useState([]),[a,r]=s.useState(!1),[o,i]=s.useState(!1),[l,u]=s.useState(!1),[c,d]=s.useState(!1),[f,g]=s.useState(!1),[b,y]=s.useState(null),[S,R]=s.useState(null),{showToast:w}=Sl(),m=async()=>{try{d(!0);const te=await sN();n(te.data),u(!1)}catch(te){console.log(te),u(!0)}finally{d(!1)}},h=wa(),P={id:"",name:"",description:"",workFlows:[],sendToLeader:!1,sendToUpper:!1,viewers:[]},{control:I,formState:{errors:F},handleSubmit:C,setValue:E,getValues:L}=om({defaultValues:P}),H=async te=>{try{i(!0);const Z=await uN(te);E("name",Z.data.name),E("description",Z.data.description),E("workFlows",Z.data.workFlows),E("sendToLeader",Z.data.sendToLeader),E("sendToUpper",Z.data.sendToUpper),E("viewers",Z.data.viewers),E("id",Z.data.id),r(!1)}catch{r(!0)}finally{i(!1)}},V=te=>{g(!0);const Z={...te};Z.workFlows=Z.workFlows.map((ae,W)=>({...ae,queueNo:W})),Z.viewers=Z.viewers.map((ae,W)=>({...ae,queueNo:W})),cN(Z).then(ae=>{w("success","Uğurlu əməliyyat!","Dəyişiklik olundu!",3e3),h(-1)}).catch(ae=>{console.log(ae),w("error","Xəta",a.response.data.Exception[0])}).finally(()=>{g(!1)})},K=te=>F[te]?x.jsx("small",{className:"p-error",children:F[te].message}):x.jsx("small",{className:"p-error",children:" "});s.useEffect(()=>{let te=!0;return te&&(m(),H(e)),()=>{te=!1}},[]);const[Y,Q]=s.useState(!1),Oe=te=>{if(te.preventDefault(),b){const Z=[...L().workFlows],ae=Z.length,W={...b,queueNo:ae};E("workFlows",[...Z,W]),y(null)}},Re=te=>{if(te.preventDefault(),S){const Z=[...L().viewers],ae=Z.length,W={...S,queueNo:ae};E("viewers",[...Z,W]),R(null)}},je=te=>{const Z=[...L().workFlows.filter(ae=>ae.id!==te)];E("workFlows",Z),Q(ae=>!ae)},le=te=>{const Z=[...L().viewers.filter(ae=>ae.id!==te)];E("viewers",Z),Q(ae=>!ae)};return x.jsxs(UM,{children:[x.jsx(VM,{children:x.jsx(on,{onClick:()=>h(-1),label:"Geri qayıt",icon:"pi pi-angle-left",text:!0,style:{width:"130px"}})}),!o&&!a?x.jsxs("form",{onSubmit:C(V),className:"flex flex-column gap-2",children:[x.jsxs(BM,{children:[x.jsx(Ya,{name:"name",control:I,rules:{required:"Məcburidir"},render:({field:te,fieldState:Z})=>x.jsxs(i2,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.value}),children:"Sənəd tipinin adı"}),x.jsx("span",{className:"p-float-label",children:x.jsx(Na,{id:te.name,value:te.value,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.target.value),style:{width:"100%"}})}),K(te.name)]})}),x.jsx(Ya,{name:"description",control:I,rules:{required:"Məcburidir"},render:({field:te,fieldState:Z})=>x.jsxs(i2,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.value}),children:"Sənəd tipinin açıqlaması"}),x.jsx("span",{className:"p-float-label",children:x.jsx(Na,{id:te.name,value:te.value,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.target.value),style:{width:"100%"}})}),K(te.name)]})})]}),x.jsxs(zM,{children:[x.jsx(Ya,{name:"sendToLeader",control:I,render:({field:te,fieldState:Z})=>x.jsxs(x.Fragment,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.checked}),children:"Rəhbərə göndər"}),x.jsx(Qf,{inputId:te.name,checked:te.value,inputRef:te.ref,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.checked)})]})}),x.jsx(Ya,{name:"sendToUpper",control:I,render:({field:te,fieldState:Z})=>x.jsxs(x.Fragment,{children:[x.jsx("label",{htmlFor:te.name,className:be({"p-error":F.checked}),children:"Bir üst rəhbərə göndər"}),x.jsx(Qf,{inputId:te.name,checked:te.value,inputRef:te.ref,className:be({"p-invalid":Z.error}),onChange:ae=>te.onChange(ae.checked)})]})})]}),c&&!l?x.jsx(Ii,{}):x.jsxs(HM,{children:[x.jsxs(o2,{children:[x.jsx(hl,{value:b,onChange:te=>{y(te.value)},options:t,optionLabel:"fullName",placeholder:"Təsdiqləyənlər"}),x.jsx(on,{severity:"primary",label:"Əlavə et",onClick:Oe}),x.jsx(a2,{children:x.jsxs(Di,{value:L().workFlows,reorderableRows:!0,onRowReorder:te=>{E("workFlows",te.value),Q(Z=>!Z)},emptyMessage:"Təsdiqləyənlər əlavə edilməyib",paginator:!0,rows:3,children:[x.jsx(fn,{rowReorder:!0,style:{width:"3rem"}}),x.jsx(fn,{field:"id",header:"id"}),x.jsx(fn,{field:"fullName",header:"Ad:"}),x.jsx(fn,{style:{flex:"0 0 4rem",textAlign:"right"},body:te=>x.jsx(on,{icon:"pi pi-times",onClick:Z=>{Z.preventDefault(),je(te.id)},size:"small",severity:"danger"})})]},Y)})]}),x.jsxs(o2,{children:[x.jsx(hl,{value:S,onChange:te=>R(te.value),options:t,optionLabel:"fullName",placeholder:"İzləyənlər"}),x.jsx(on,{severity:"primary",label:"Əlavə et",onClick:Re}),x.jsx(a2,{children:x.jsxs(Di,{value:L().viewers,reorderableRows:!0,onRowReorder:te=>{E("viewers",te.value),Q(Z=>!Z)},emptyMessage:"Izləyən əlavə edilməyib",paginator:!0,rows:3,children:[x.jsx(fn,{rowReorder:!0,style:{width:"3rem"}}),x.jsx(fn,{field:"id",header:"id"}),x.jsx(fn,{field:"fullName",header:"Ad:"}),x.jsx(fn,{style:{flex:"0 0 4rem",textAlign:"right"},body:te=>x.jsx(on,{icon:"pi pi-times",size:"small",severity:"danger",onClick:Z=>{Z.preventDefault(),le(te.id)}})})]},Y)})]})]})]}):o&&!a?x.jsx(Ii,{}):x.jsx(xl,{}),x.jsx($M,{children:x.jsx(on,{severity:"success",label:"Yadda saxla",type:"submit",size:"normal",loading:f})})]})}const $M=Mt.div`
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  margin-top: 120px;
-  position: absolute;
-  bottom: 36px;
-  right: 36px;
+  margin-top: 20px;
+  padding-bottom: 10px;
 `,BM=Mt.div`
   width: 100%;
   display: flex;
   align-items: center;
   gap: 24px;
   margin-bottom: 16px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `,a2=Mt.div`
   grid-column: 1/3;
 `,zM=Mt.div`
@@ -2033,12 +2034,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   display: flex;
   gap: 32px;
   align-items: flex-start;
-  height: 410px;
+  // height: 410px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
 `,o2=Mt.div`
   display: grid;
   width: 50%;
   grid-template-columns: 4fr 1fr;
   grid-gap: 8px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
 `,UM=Mt.div`
   width: 100%;
   display: flex;

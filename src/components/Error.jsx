@@ -4,7 +4,7 @@ export default function Error() {
   return (
     <Wrapper>
       <ErrorTitle>Xəta</ErrorTitle>
-      <ErrorDescription>Texniki prolem baş verdi. Birazdan yenidən yoxlayın</ErrorDescription>
+      <ErrorDescription>Texniki prolem baş verdi. Zəhmət olmasa səhifəni yeniləyin</ErrorDescription>
       
     </Wrapper>
   );

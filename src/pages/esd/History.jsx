@@ -86,8 +86,10 @@ export default function History() {
           value={data}
           selectionMode="single"
           header={header}
-          onSelectionChange={(e) => navigate(`/esd/doc/${e.value.id}`)}
-          
+          onSelectionChange={(e) => {if(e.value.docTypeId===1)
+            navigate(`/esd/doc/cashorder/${e.value.id}`);
+           else if (e.value.docTypeId===2)
+            navigate(`/esd/doc/warehousedemand/${e.value.id}`);}}
           dataKey="id"
           metaKeySelection={true}
           emptyMessage="Sənəd tapılmadı."
