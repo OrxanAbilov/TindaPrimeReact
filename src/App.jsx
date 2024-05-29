@@ -5,17 +5,22 @@ import { Routes, Route } from "react-router-dom";
 import { ToastProvider } from "./context/ToastContext";
 import Modal from "./components/modal/Modal";
 import Income from "./pages/esd/Income";
+import ProcurementDocs from "./pages/procurement/Procurement"
 import OutGoing from "./pages/esd/OutGoing";
 import History from "./pages/esd/History";
 import DocumentType from "./pages/admin/esd/DocumentType";
 import EditDoc from "./pages/esd/EditDoc";
 import PreviewDoc from "./pages/esd/PreviewDoc";
+import PreviewWareHouseDoc from "./pages/esd/PreviewWareHouseDoc";
 import NewDoc from "./pages/esd/NewDoc";
 import AdminEsd from "./pages/admin/esd/Root";
 import Admin from "./pages/admin/Root";
 import Esd from "./pages/esd/Root";
+import Procurement from "./pages/procurement/Root"
 import Dashboard from "./pages/dashboard/Dashboard";
 import { useSelector } from "react-redux";
+import ProcurementDetail from "./pages/procurement/ProcurementDetail";
+
 
 export default function App() {
   const { userData } = useSelector((state) => state.loginSlice);
@@ -32,9 +37,15 @@ export default function App() {
             <Route path="income" index element={<Income />} />
             <Route path="outgoing" element={<OutGoing />} />
             <Route path="history" element={<History />} />
-            <Route path="doc/:id" element={<PreviewDoc />} />
+            <Route path="doc/cashorder/:id" element={<PreviewDoc />} />
+            <Route path="doc/warehousedemand/:id" element={<PreviewWareHouseDoc />} />
             <Route path="doc/new" element={<NewDoc />} />
           </Route>
+          <Route path="/procurement" element={<Procurement />}>
+            <Route path="docs" index element={<ProcurementDocs />} />
+            <Route path="docs/detail/:id" element={<ProcurementDetail />} />
+          </Route>
+
           {userType === 1 && (
             <Route path="/admin" element={<Admin />}>
               <Route path="esd" element={<AdminEsd />}>

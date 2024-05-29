@@ -1,27 +1,29 @@
 
 import styled from "styled-components";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/Logo2.png";
 import { Button } from "primereact/button";
 import { PanelMenu } from "primereact/panelmenu";
+import 'primeicons/primeicons.css';
 
-export default function MobileSidebar({setIsShowMobileMenu}) {
+export default function MobileSidebar({ setIsShowMobileMenu }) {
 
 
- 
+
     const navigate = useNavigate()
-    const changeRouteAndHideMobileMenu = (path)=>{
+    const changeRouteAndHideMobileMenu = (path) => {
         navigate(path)
         setIsShowMobileMenu(false)
-  
-      }
+
+    }
     const items = [
 
-        {  label: 'Dashboard',
+        {
+            label: 'Dashboard',
             icon: 'pi pi-home',
-            command: ()=>changeRouteAndHideMobileMenu("/dashboard")
-            
-       },
+            command: () => changeRouteAndHideMobileMenu("/dashboard")
+
+        },
         {
             label: 'ESD',
             icon: 'pi pi-book',
@@ -29,25 +31,39 @@ export default function MobileSidebar({setIsShowMobileMenu}) {
                 {
                     label: 'Gələnlər',
                     icon: 'pi pi-inbox',
-                    command: ()=>changeRouteAndHideMobileMenu("esd/income")
+                    command: () => changeRouteAndHideMobileMenu("esd/income")
 
-                  
+
                 },
                 {
                     label: 'Göndərilənlər',
                     icon: 'pi pi-send',
-                    command: ()=>changeRouteAndHideMobileMenu("esd/outgoing")
+                    command: () => changeRouteAndHideMobileMenu("esd/outgoing")
 
-                  
-                },  {
+
+                }, {
                     label: 'Tarixçə',
                     icon: 'pi pi-history',
-                    command: ()=>changeRouteAndHideMobileMenu("esd/history")
+                    command: () => changeRouteAndHideMobileMenu("esd/history")
 
-                  
+
                 }
             ]
         },
+        {
+            label: 'Satınalma',
+            icon: 'pi pi-shopping-cart',
+            items: [
+                {
+                    label: 'Tələb üçün təkliflər',
+                    icon: 'pi pi-clipboard',
+                    command: () => changeRouteAndHideMobileMenu("procurement/docs")
+
+
+                }
+            ]
+        },
+
         {
             label: 'Admin',
             icon: 'pi pi-user-edit',
@@ -55,31 +71,31 @@ export default function MobileSidebar({setIsShowMobileMenu}) {
                 {
                     label: 'ESD',
                     icon: 'pi pi-book',
-                    items:[{
+                    items: [{
                         label: 'Sənəd tipi',
-                    icon: 'pi pi-file',
-                    command: ()=>changeRouteAndHideMobileMenu("admin/esd/doctype")
+                        icon: 'pi pi-file',
+                        command: () => changeRouteAndHideMobileMenu("admin/esd/doctype")
 
                     }
 
                     ]
                 },
-             
+
             ]
         },
-      
+
     ];
-  return (
-    <MobileWrapper>
-      <Header>
-        <img src={Logo} alt="Logo" width={30} />
-      <Button icon="pi pi-times" rounded text  aria-label="Close" onClick={()=>setIsShowMobileMenu(false)} />
+    return (
+        <MobileWrapper>
+            <Header>
+                <img src={Logo} alt="Logo" width={30} />
+                <Button icon="pi pi-times" rounded text aria-label="Close" onClick={() => setIsShowMobileMenu(false)} />
 
-      </Header>
-      <PanelMenu model={items}  multiple />
+            </Header>
+            <PanelMenu model={items} multiple />
 
-    </MobileWrapper>
-  );
+        </MobileWrapper>
+    );
 }
 
 const Header = styled.div`

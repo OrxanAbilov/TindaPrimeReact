@@ -2,31 +2,32 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
-import { GET_ALL_OUTGOING_DOCUMENTS } from "../../features/esd/outgoing/services/api";
-import { useDispatch, useSelector } from "react-redux";
+import { GET_ALL_PROCUREMENTS } from "../../features/procurement/services/api";
 import {
   setData,
   setError,
-  setIsLoading,
-} from "../../features/esd/outgoing/outGoingSlice";
+  setIsLoading
+} from "../../features/procurement/procurementSlice";
 import { getStatusLabel, getStatusSeverity } from "../../helper/Status";
 import { InputText } from "primereact/inputtext";
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
 
-export default function OutGoing() {
+export default function Procurement() {
   const dispatch = useDispatch();
-  const { data, error, isLoading } = useSelector((state) => state.outGoingSlice);
+
+  const { data, error, isLoading } = useSelector((state) => state.procurementSlice);
   const [globalFilter, setGlobalFilter] = useState("");
 const navigate = useNavigate()
   const fetchData = async () => {
     try {
       dispatch(setIsLoading(true));
-      const res = await GET_ALL_OUTGOING_DOCUMENTS();
+      const res = await GET_ALL_PROCUREMENTS();
       dispatch(setData(res.data));
+      Console.Log(res.data);
     } catch (error) {
       dispatch(setError(error.response));
     } finally {
@@ -56,13 +57,6 @@ const navigate = useNavigate()
           placeholder="Axtar"
         />
       </div>
-      <Button
-        icon="pi pi-plus-circle"
-        raised
-        label="Yeni sənəd əlavə et"
-        severity="success"
-        onClick={()=>navigate("/esd/doc/new")}
-      />
     </div>
   );
 
@@ -77,7 +71,7 @@ const navigate = useNavigate()
 
   return (
     <Wrapper>
-      <h2>Göndərilənlər</h2>
+      <h2>Satınalma</h2>
       {!error && !isLoading && data ? (
         <DataTable
           globalFilter={globalFilter}
@@ -86,10 +80,8 @@ const navigate = useNavigate()
           value={data}
           selectionMode="single"
           header={header}
-          onSelectionChange={(e) => {if(e.value.docTypeId===1)
-            navigate(`/esd/doc/cashorder/${e.value.id}`);
-           else if (e.value.docTypeId===2)
-            navigate(`/esd/doc/warehousedemand/${e.value.id}`);}}
+          onSelectionChange={(e) => {
+            navigate(`/procurement/docs/detail/${e.value.id}`);}}
           dataKey="id"
           metaKeySelection={true}
           emptyMessage="Sənəd tapılmadı."
@@ -101,8 +93,6 @@ const navigate = useNavigate()
             sortable
           ></Column>
           <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column>
-          <Column field="docTypeName" header="Sənəd Növü" sortable></Column>
-          <Column field="senderName" header="Göndərən" sortable></Column>
           <Column
             sortable
             field="status"

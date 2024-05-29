@@ -1,6 +1,6 @@
 
 import { useRef } from 'react';
-
+import 'primeicons/primeicons.css';
 import { Ripple } from 'primereact/Ripple';
 import { StyleClass } from 'primereact/StyleClass';
 import styled from 'styled-components';
@@ -12,13 +12,14 @@ export default function HeadlessDemo() {
   const btnRef2 = useRef(null);
   const btnRef3 = useRef(null);
   const btnRef4 = useRef(null);
+  const btnRef5 = useRef(null);
 
   const { userData } = useSelector((state) => state.loginSlice);
   const userType = userData ? userData.userType : null;
 
   return (
     <Wrapper>
-            <style>
+      <style>
         {`
           .active {
             background-color: #339967;
@@ -36,16 +37,16 @@ export default function HeadlessDemo() {
           <div className="flex flex-column h-full">
             <div className="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
               <span className="inline-flex align-items-center gap-2">
-              <img src={Logo} alt="Logo" width={40} />
+                <img src={Logo} alt="Logo" width={40} />
 
-                <span className="font-bold text-3xl" style={{color: "#339967"}}>Tinda</span>
+                <span className="font-bold text-3xl" style={{ color: "#339967" }}>Tinda</span>
               </span>
 
             </div>
             <div className="overflow-y-auto">
               <ul className="list-none p-3 m-0 pb-0 mt-3">
-              <li>
-                  <NavLink to={"/dashboard"} style={{textDecoration:"none"}} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                <li>
+                  <NavLink to={"/dashboard"} style={{ textDecoration: "none" }} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
                     <span className="font-medium"><i className="pi pi-home mr-2"></i>Dashboard</span>
                     <Ripple />
                   </NavLink>
@@ -60,7 +61,7 @@ export default function HeadlessDemo() {
                   </StyleClass>
                   <ul className="list-none p-0 m-0 pl-3 overflow-hidden hidden">
                     <li>
-                      <NavLink to={"/esd/income"}  style={{textDecoration:"none"}}  className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                      <NavLink to={"/esd/income"} style={{ textDecoration: "none" }} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
                         <i className="pi pi-inbox
 mr-2"></i>
                         <span className="font-medium">Gələnlər</span>
@@ -70,7 +71,7 @@ mr-2"></i>
 
 
                     <li>
-                      <NavLink to={"/esd/outgoing"} style={{textDecoration:"none"}} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                      <NavLink to={"/esd/outgoing"} style={{ textDecoration: "none" }} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
                         <i className="pi pi-send
 mr-2"></i>
                         <span className="font-medium">Göndərilənlər</span>
@@ -78,16 +79,35 @@ mr-2"></i>
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink to={"/esd/history"} style={{textDecoration:"none"}}   className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                      <NavLink to={"/esd/history"} style={{ textDecoration: "none" }} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
                         <i className="pi pi-history
 mr-2"></i>
                         <span className="font-medium" >Tarixçə</span>
-                        
+
                         <Ripple />
                       </NavLink>
                     </li>
 
 
+                  </ul>
+                </li>
+
+                <li>
+                  <StyleClass nodeRef={btnRef5} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
+                    <div ref={btnRef5} className="p-ripple p-3 flex align-items-center justify-content-between text-600 cursor-pointer">
+                      <span className="font-medium"><i className="pi pi-shopping-cart mr-2"></i>Satınalma</span>
+                      <i className="pi pi-chevron-down"></i>
+                      <Ripple />
+                    </div>
+                  </StyleClass>
+                  <ul className="list-none p-0 m-0 pl-3 overflow-hidden hidden">
+                    <li>
+                      <NavLink to={"/procurement/docs"} style={{ textDecoration: "none" }} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                        <i className="pi pi-clipboard mr-2"></i>
+                        <span className="font-medium">Tələb üçün təkliflər</span>
+                        <Ripple />
+                      </NavLink>
+                    </li>
                   </ul>
                 </li>
               </ul>
@@ -114,7 +134,7 @@ mr-2"></i>
                         </StyleClass>
                         <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
                           <li>
-                            <NavLink to={"/admin/esd/doctype"}  style={{textDecoration:"none"}} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                            <NavLink to={"/admin/esd/doctype"} style={{ textDecoration: "none" }} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
                               <i className="pi pi-file mr-2"></i>
                               <span className="font-medium">Sənəd tipi</span>
                               <Ripple />
