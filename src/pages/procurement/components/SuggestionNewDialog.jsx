@@ -16,9 +16,11 @@ import {
     setIsLoading,
 } from "../../../features/procurement/procurementDetails/procurementDetailSlice";
 import { useSelector } from 'react-redux';
+import { useToast } from '../../../context/ToastContext';
+import { setRef } from '@mui/material';
 
 
-export default function SuggestionNewDialog({ procDetails,onClose  }) {
+export default function SuggestionNewDialog({ procDetails,onClose,setRefresh }) {
     const [selectedValue, setSelectedValue] = useState(null);
     const [dropdownOptions, setDropdownOptions] = useState([]);
     const [items, setItems] = useState([]);
@@ -28,8 +30,7 @@ export default function SuggestionNewDialog({ procDetails,onClose  }) {
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const { data, error, isLoading } = useSelector((state) => state.procurementDetailSlice);
-    const [refresh, setRefresh] = useState(false);
-
+    const {showToast} = useToast()
     const fetchData = async () => {
         try {
             setIsLoading(true);
@@ -52,7 +53,7 @@ export default function SuggestionNewDialog({ procDetails,onClose  }) {
         return () => {
             mounted = false;
         };
-    }, [refresh]);
+    }, [data,error,isLoading]);
 
     useEffect(() => {
         const newItems = procDetails.procurementLines.map(item => ({
@@ -126,15 +127,15 @@ export default function SuggestionNewDialog({ procDetails,onClose  }) {
             total: selectedItems.reduce((acc, item) => acc + item.total, 0),
             files: files
         };
+        
         try {
             const responseData = await ADD_NEW_SUGGESTION(postData);
-            toast.current.show({ severity: 'success', summary: 'Uğurlu əməliyyat', detail: 'Məlumat uğurla göndərildi', life: 3000 });
+            showToast('success','Uğurlu əməliyyat','Məlumat uğurla göndərildi',3000);
             onClose();
+            setRefresh();
         } catch (error) {
             // Handle error
-            console.log('Error adding new suggestion:', error.response.data.Exception[0]);
-            toast.current.show({ severity: 'error', summary: 'Xəta baş verdi', detail: error.response.data.Exception[0], life: 3000 });
-            // Optionally, you can show an error message to the user
+            showToast('error','Xəta',error.response.data.Exception[0],3000);
         }
         
     };

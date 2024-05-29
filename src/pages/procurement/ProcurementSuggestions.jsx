@@ -1,8 +1,7 @@
-import { useParams } from "react-router-dom";
 import { Button } from "primereact/button";
 import styled from "styled-components";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { GET_ALL_SUGESTION_BY_PROCUREMENT_ID,DELETE_PROCUREMENT_SUGGESTION } from "../../features/procurement/services/api";
+import { GET_ALL_SUGESTION_BY_PROCUREMENT_ID, DELETE_PROCUREMENT_SUGGESTION, DOWNLOAD_SUGGESTION_FILE_BY_ID, SELECT_SUGGESTION } from "../../features/procurement/services/api";
 import Loading from "../../components/Loading";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -11,25 +10,31 @@ import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import React from "react";
+import { useToast } from "../../context/ToastContext";
+import { Dialog } from "primereact/dialog";
+import SuggestionNewDialog from "./components/SuggestionNewDialog";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { InputSwitch } from "primereact/inputswitch";
 
 
 
-export default function ProcurementSuggestions({ procurementId }) {
+export default function ProcurementSuggestions({ procurement }) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(false);
     const toast = useRef(null);
     //const { id } = useParams();
     const [data, setData] = useState(false);
     const [refresh, setRefresh] = useState(false);
-
+    const { showToast } = useToast()
+    const [visible, setVisible] = useState(false);
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const res = await GET_ALL_SUGESTION_BY_PROCUREMENT_ID(procurementId);
-            setData(res.data);
+            const res = await GET_ALL_SUGESTION_BY_PROCUREMENT_ID(procurement.id);
+            const sortedData = res.data.sort((a, b) => a.isDeleted - b.isDeleted); // Sort by total in ascending order
+            setData(sortedData);
             setError(false);
         } catch (error) {
-            console.log(error);
             setError(true);
         } finally {
             setIsLoading(false);
@@ -47,18 +52,58 @@ export default function ProcurementSuggestions({ procurementId }) {
         };
     }, [refresh]);
 
+    const downloadFile = async (id, fileName) => {
+        const responseFileData = await DOWNLOAD_SUGGESTION_FILE_BY_ID(id);
+        const link = document.createElement('a');
+        link.href = `data:application/octet-stream;base64,${responseFileData.data}`;
+        link.download = fileName;
+        link.click();
+    };
 
-    const handleDelete = async (id) => {
+    const selectSuggestion = async (suggestionId, isSelected) => {
         try {
-            const responseData = await DELETE_PROCUREMENT_SUGGESTION(id);
-            toast.current.show({ severity: 'success', summary: 'Uğurlu əməliyyat', detail: 'Təklif uğurla silindi', life: 3000 });
+            const responseData = await SELECT_SUGGESTION(suggestionId, isSelected);
+            isSelected ? (
+                showToast('success', 'Uğurlu əməliyyat', 'Təklif seçilmiş təyin edildi', 3000)
+            )
+                :
+                (
+                    showToast('success', 'Uğurlu əməliyyat', 'Təklif seçilməmiş təyin edildi', 3000));
             setRefresh(true);
         } catch (error) {
             // Handle error
             toast.current.show({ severity: 'error', summary: 'Xəta baş verdi', detail: error.response.data.Exception[0], life: 3000 });
             // Optionally, you can show an error message to the user
         }
-        
+    }
+
+    const confirmDelete = (id) => {
+
+        confirmDialog({
+            message: 'Təklifi silmək istədiyinizə əminsiniz?',
+            header: 'Məlumatın Silinməsi',
+            icon: 'pi pi-info-circle',
+            defaultFocus: 'handleDelete',
+            acceptClassName: 'p-button-danger',
+            accept: () => handleDelete(id),
+            acceptLabel: "Sil",
+            rejectLabel: "Ləğv et"
+        });
+    };
+
+    
+
+    const handleDelete = async (id) => {
+        try {
+            const responseData = await DELETE_PROCUREMENT_SUGGESTION(id);
+            showToast('success', 'Uğurlu əməliyyat', 'Təklif uğurla silindi', 3000);
+            setRefresh(true);
+        } catch (error) {
+            // Handle error
+            toast.current.show({ severity: 'error', summary: 'Xəta baş verdi', detail: error.response.data.Exception[0], life: 3000 });
+            // Optionally, you can show an error message to the user
+        }
+
     };
 
     const createDynamicTabs = () => {
@@ -68,16 +113,26 @@ export default function ProcurementSuggestions({ procurementId }) {
             return (
                 <AccordionTab
                     header={
-                        <HeaderWrapper>
-                            <span className="font-bold white-space-nowrap">{headerData}</span>
-                            
-                        </HeaderWrapper>
+                        suggestion.isSelected ? (
+                            <CustomAccordionHeader>
+                                <span className="font-bold white-space-nowrap">{headerData}</span>
+
+                            </CustomAccordionHeader>) : (
+                            <HeaderWrapper>
+                                <span className="font-bold white-space-nowrap">{headerData}</span>
+
+                            </HeaderWrapper>
+                        )
                     } key={headerData}
                 >
                     <Card>
-                        <HeaderWrapper>
-                        <Button icon="pi pi-trash" className="p-button-danger p-button-text" onClick={() => handleDelete(suggestion.id)} />
-                        </HeaderWrapper>
+                        {procurement.status === 6 ? (<></>) : (
+                            <DeleteButton>
+                                <InputSwitch checked={suggestion.isSelected} onChange={(e) => selectSuggestion(suggestion.id, e.value)} />
+                                <ConfirmDialog />
+                                <Button icon="pi pi-trash" className="p-button-danger p-button-text" onClick={() => confirmDelete(suggestion.id)} />
+                            </DeleteButton>
+                        )}
                         <Information>
                             <InfoGroup>
                                 <TitleInfo>Kodu:</TitleInfo>
@@ -95,18 +150,23 @@ export default function ProcurementSuggestions({ procurementId }) {
 
                             <InfoGroup>
                                 <TitleInfo>Fayllar:</TitleInfo>
-                                {data[i]?.files?.length && data[i]?.files.map((file) => (
-                                    <Button
-                                        key={file.id}
-                                        label={file.fileName}
-                                        severity="secondary"
-                                        outlined
-                                        size="small"
-                                        style={{ width: '350px' }}
-                                        icon = "pi pi-arrow-circle-down"
-                                        iconPos = "left"
-                                    />
-                                ))}
+                                {data[i]?.files?.length > 0 ? (
+                                    data[i]?.files.map((file) => (
+                                        <Button
+                                            key={file.id}
+                                            label={file.fileName}
+                                            severity="secondary"
+                                            outlined
+                                            size="small"
+                                            style={{ width: '350px' }}
+                                            icon="pi pi-arrow-circle-down"
+                                            iconPos="left"
+                                            onClick={() => downloadFile(file.id, file.fileName)}
+                                        />
+                                    ))
+                                ) : (
+                                    <Desc>--</Desc>
+                                )}
                             </InfoGroup>
 
                         </Information>
@@ -135,12 +195,18 @@ export default function ProcurementSuggestions({ procurementId }) {
 
 
     return (<>
-
-
-
-
         <br />
         <Toast ref={toast} />
+        <div className="flex flex-wrap gap-2">
+
+            <TitleSuggestion>Təkliflər:  </TitleSuggestion>
+            <div style={{ flex: '1', textAlign: 'right' }}>
+                <Button label="Əlavə et" severity="success" icon="pi pi-plus" onClick={() => setVisible(true)} />
+            </div>
+        </div>
+        <Dialog header="Yeni Təklif" visible={visible} style={{ width: '60vw' }} onHide={() => setVisible(false)}>
+            <SuggestionNewDialog procDetails={procurement} onClose={() => setVisible(false)} setRefresh={setRefresh} />
+        </Dialog>
         <Fragment>
             {data && !error && !isLoading && data.length > 0 ? (
                 <div className="card">
@@ -148,11 +214,8 @@ export default function ProcurementSuggestions({ procurementId }) {
                     <br />
                     <br />
 
+                    
                 </div>
-
-
-
-
 
 
 
@@ -199,7 +262,12 @@ const TitleInfo = styled.div`
   font-size: 18px;
 `;
 
+const TitleSuggestion = styled.p`
+with: 50%;
+font-weight: 600;
+font-size: 20px;
 
+`;
 
 const InfoGroup = styled.div`
   width: 100%;
@@ -231,13 +299,17 @@ const HeaderWrapper = styled.div`
   align-items: center;
 `;
 
-const TabButtons = styled.div`
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+const CustomAccordionHeader = styled(HeaderWrapper)`
+  background-color: #339967;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+`;
 
-  .active {
-    background-color: #007ad9 !important;
-    color: #ffffff !important;
-  }
+
+const DeleteButton = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 `;

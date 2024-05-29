@@ -45,6 +45,28 @@ const DELETE_PROCUREMENT_SUGGESTION = async (id) => {
   return res.data;
 };
 
+const DOWNLOAD_SUGGESTION_FILE_BY_ID = async (id) => {
+  const res = await instance.get(
+    `Procurement/DownloadSuggestionFileById:int?id=${id}`
+  );
+  return res.data;
+};
+
+const SELECT_SUGGESTION = async (suggestionId,isSelected) => {
+  const res = await instance.get(
+    `Procurement/SelectSuggestion?suggestionId=${suggestionId}&isSelected=${isSelected}`
+  );
+  return res.data;
+};
+
+const SEND_TO_APPROVE_PROCUREMENT = async (id) => {
+  const res = await instance.get(
+    `Procurement/SendToApproveProcurement?procurementId=${id}`
+  );
+  return res.data;
+};
 
 
-export { GET_ALL_PROCUREMENTS, GET_PROCUEMENT_DOCDETAIL_BY_ID, GET_ALL_SUGESTION_BY_PROCUREMENT_ID,GET_CARI_HESAPLAR_FOR_DROP_DOWN,ADD_NEW_SUGGESTION,DELETE_PROCUREMENT_SUGGESTION }
+
+
+export { GET_ALL_PROCUREMENTS, GET_PROCUEMENT_DOCDETAIL_BY_ID, GET_ALL_SUGESTION_BY_PROCUREMENT_ID,GET_CARI_HESAPLAR_FOR_DROP_DOWN,ADD_NEW_SUGGESTION,DELETE_PROCUREMENT_SUGGESTION,DOWNLOAD_SUGGESTION_FILE_BY_ID,SELECT_SUGGESTION,SEND_TO_APPROVE_PROCUREMENT }

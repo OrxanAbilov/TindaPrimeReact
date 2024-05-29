@@ -3,7 +3,7 @@ import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { GET_PROCUEMENT_DOCDETAIL_BY_ID } from "../../features/procurement/services/api";
+import { GET_PROCUEMENT_DOCDETAIL_BY_ID, SEND_TO_APPROVE_PROCUREMENT } from "../../features/procurement/services/api";
 import { getStatusLabel, getStatusSeverity } from "../../helper/Status";
 import { Tag } from "primereact/tag";
 import {
@@ -15,27 +15,29 @@ import Loading from "../../components/Loading";
 import Error from "../../components/Error";
 import { Toast } from "primereact/toast";
 import { useDispatch, useSelector } from "react-redux";
-import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import ProcurementSuggestions from "./ProcurementSuggestions";
-import SuggestionNewDialog from "./components/SuggestionNewDialog";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useToast } from "../../context/ToastContext";
+
 
 export default function ProcurementDetail() {
   const navigate = useNavigate();
   const { data, error, isLoading } = useSelector((state) => state.procurementDetailSlice);
   const toast = useRef(null);
+  const { showToast } = useToast()
   const dispatch = useDispatch();
   const { id } = useParams();
-  const [visible, setVisible] = useState(false);
+
   const [refresh, setRefresh] = useState(false);
-  
+
   const fetchData = async () => {
     try {
+      dispatch(setError(false));
       dispatch(setIsLoading(true));
       const res = await GET_PROCUEMENT_DOCDETAIL_BY_ID(id);
       dispatch(setData(res.data));
-      dispatch(setError(false));
     } catch (error) {
       dispatch(setError(true));
     } finally {
@@ -53,6 +55,32 @@ export default function ProcurementDetail() {
       mounted = false;
     };
   }, [refresh]);
+ 
+  const showSendToApprovemodal = (id) => {
+    console.log(id);
+    confirmDialog({
+      message: 'Satınalma Sifarişi yaradılsın və təstiqə göndərilsin?',
+      header: 'Təstiqə göndər',
+      icon: 'pi pi-exclamation-triangle',
+      defaultFocus: 'sendToApprove',
+      accept: () => sendToApprove(id),
+      acceptLabel: "Göndər",
+      rejectLabel: "Ləğv et"
+    });
+  };
+
+  const sendToApprove = async (id) => {
+    try {
+      const responseData = await SEND_TO_APPROVE_PROCUREMENT(id);
+      showToast('success', 'Uğurlu əməliyyat', 'Sifariş Təstiqə göndərildi', 3000);
+      setRefresh(true);
+    } catch (error) {
+      // Handle error
+      toast.current.show({ severity: 'error', summary: 'Xəta baş verdi', detail: error.response.data.Exception[0], life: 3000 });
+      // Optionally, you can show an error message to the user
+    }
+  };
+
 
   const statusBodyTemplate = (status) => {
     return (
@@ -128,40 +156,14 @@ export default function ProcurementDetail() {
             <br />
             <br />
 
-            <div className="flex flex-wrap gap-2">
-
-              <TitleSuggestion>Təkliflər:  </TitleSuggestion>
-              <div style={{ flex: '1', textAlign: 'right' }}>
-                <Button label="Əlavə et" severity="success" icon="pi pi-plus" onClick={() => setVisible(true)} />
-              </div>
-            </div>
-
-            <Dialog header="Yeni Təklif" visible={visible} style={{ width: '60vw' }} onHide={() => setVisible(false)}>
-              <SuggestionNewDialog procDetails={data}  onClose={() => setVisible(false)}/>
-            </Dialog>
-
-
-            <ProcurementSuggestions procurementId={data.id} />
+            <ProcurementSuggestions procurement={data} />
+            <ConfirmDialog />
             <Buttons>
-              {data.showApproveButton && (
+              {data.showSendToApproveButton && (
                 <Button
-                  label="Təsdiq et"
+                  label="Təsdiqə Göndər"
                   severity="success"
-                  onClick={showApprovemodal}
-                />
-              )}
-              {data.showCancelButton && (
-                <Button
-                  label="Ləğv et"
-                  severity="danger"
-                  onClick={showCancelemodal}
-                />
-              )}
-              {data.showApproveButton && (
-                <Button
-                  label="İmtina et"
-                  severity="danger"
-                  onClick={showRejectemodal}
+                  onClick={() => showSendToApprovemodal(data.id)}
                 />
               )}
             </Buttons>
@@ -205,12 +207,7 @@ const TitleInfo = styled.div`
   font-weight: 500;
   font-size: 18px;
 `;
-const TitleSuggestion = styled.p`
-with: 50%;
-font-weight: 600;
-font-size: 20px;
 
-`;
 
 const InfoGroup = styled.div`
   width: 100%;
@@ -240,15 +237,4 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-const TabButtons = styled.div`
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-
-  .active {
-    background-color: #007ad9 !important;
-    color: #ffffff !important;
-  }
 `;

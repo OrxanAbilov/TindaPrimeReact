@@ -274,19 +274,20 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
               control={control}
               render={({ field, fieldState }) => (
                 <>
-                  <label
-                    htmlFor={field.name}
-                    className={classNames({ "p-error": errors.checked })}
-                  >
-                    Rəhbərə göndər
-                  </label>
-                  <Checkbox
+                <Checkbox
                     inputId={field.name}
                     checked={field.value}
                     inputRef={field.ref}
                     className={classNames({ "p-invalid": fieldState.error })}
                     onChange={(e) => field.onChange(e.checked)}
                   />
+                  <label
+                    htmlFor={field.name}
+                    className={classNames({ "p-error": errors.checked })}
+                  >
+                    Rəhbərə göndər
+                  </label>
+                  
                 </>
               )}
             />
@@ -296,19 +297,20 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
               control={control}
               render={({ field, fieldState }) => (
                 <>
-                  <label
-                    htmlFor={field.name}
-                    className={classNames({ "p-error": errors.checked })}
-                  >
-                    Bir üst rəhbərə göndər
-                  </label>
-                  <Checkbox
+                 <Checkbox
                     inputId={field.name}
                     checked={field.value}
                     inputRef={field.ref}
                     className={classNames({ "p-invalid": fieldState.error })}
                     onChange={(e) => field.onChange(e.checked)}
                   />
+                  <label
+                    htmlFor={field.name}
+                    className={classNames({ "p-error": errors.checked })}
+                  >
+                    Bir üst rəhbərə göndər
+                  </label>
+                 
                 </>
               )}
             />
