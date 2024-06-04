@@ -112,6 +112,7 @@ export default function ProcurementSuggestions({ procurement }) {
             const headerData = suggestion.clientCode + "-" + suggestion.clientName + "   | Məbləğ:" + suggestion.total + " AZN";
             return (
                 <AccordionTab
+                style={{background:"#339967 !important"}}
                     header={
                         suggestion.isSelected ? (
                             <CustomAccordionHeader>
