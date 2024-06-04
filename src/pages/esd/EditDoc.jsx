@@ -17,6 +17,7 @@ import {
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
 import { useToast } from "../../context/ToastContext";
+import { InputNumber } from "primereact/inputnumber";
 
 export default function EditDoc() {
   const { id } = useParams();
@@ -25,15 +26,16 @@ export default function EditDoc() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorUser, setErrorUser] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
-  const [buttonisLoading,setButtonIsLoading] = useState(false)
+  const [buttonisLoading, setButtonIsLoading] = useState(false);
+  const [amount, setAmount] = useState(0);
 
   const [selectedUser1, setSelectedUser1] = useState(null);
   const [selectedUser2, setSelectedUser2] = useState(null);
 
-  const {showToast} = useToast()
+  const { showToast } = useToast()
 
 
-  
+
 
   const fetUsers = async () => {
     try {
@@ -99,13 +101,13 @@ export default function EditDoc() {
       ...item,
       queueNo: index
     }));
-  
+
     // Update queueNo for viewers
     updatedData.viewers = updatedData.viewers.map((item, index) => ({
       ...item,
       queueNo: index
     }));
-  
+
     PUT_DOC_TYPE(updatedData)
       .then((res) => {
         showToast("success", "Uğurlu əməliyyat!", "Dəyişiklik olundu!", 3000);
@@ -118,9 +120,9 @@ export default function EditDoc() {
       .finally(() => {
         setButtonIsLoading(false);
       });
-  
+
     // console.log(updatedData);
-    };
+  };
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -151,13 +153,14 @@ export default function EditDoc() {
     if (selectedUser1) {
       // setValue("workFlows",[...getValues().workFlows,selectedUser1, queueNo ])
       // setSelectedUser1(null);  
-      
+
       const workFlows = [...getValues().workFlows];
       const newQueueNo = workFlows.length;
-      const newWorkFlow = { ...selectedUser1, queueNo: newQueueNo };
+      const newWorkFlow = { ...selectedUser1, queueNo: newQueueNo, amount: amount };
       setValue("workFlows", [...workFlows, newWorkFlow]);
-      setSelectedUser1(null);  
-      }
+      setSelectedUser1(null);
+      setAmount(0);
+    }
   };
 
   const addUser2 = (e) => {
@@ -169,17 +172,17 @@ export default function EditDoc() {
       const newViewer = { ...selectedUser2, queueNo: newQueueNo };
       setValue("viewers", [...viewers, newViewer]);
       setSelectedUser2(null);
-  
+
       // setValue("viewers",[...getValues().viewers,selectedUser2], queueNo)
       // setSelectedUser2(null);
-      }
+    }
   };
 
 
 
   const removeUser1 = (id) => {
-    const arr =[...getValues().workFlows.filter((e) => e.id !== id)]
-    setValue("workFlows",arr);
+    const arr = [...getValues().workFlows.filter((e) => e.id !== id)]
+    setValue("workFlows", arr);
     setForceUpdate(prevState => !prevState); // Toggle the forceUpdate state
 
 
@@ -187,8 +190,8 @@ export default function EditDoc() {
   };
 
   const removeUser2 = (id) => {
-const arr = [...getValues().viewers.filter((e) => e.id !== id)]
-    setValue("viewers",arr);
+    const arr = [...getValues().viewers.filter((e) => e.id !== id)]
+    setValue("viewers", arr);
     setForceUpdate(prevState => !prevState); // Toggle the forceUpdate state
 
 
@@ -232,7 +235,7 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                       value={field.value}
                       className={classNames({ "p-invalid": fieldState.error })}
                       onChange={(e) => field.onChange(e.target.value)}
-                      style={{width:"100%"}}
+                      style={{ width: "100%" }}
                     />
                   </span>
                   {getFormErrorMessage(field.name)}
@@ -258,7 +261,7 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                       value={field.value}
                       className={classNames({ "p-invalid": fieldState.error })}
                       onChange={(e) => field.onChange(e.target.value)}
-                      style={{width:"100%"}}
+                      style={{ width: "100%" }}
 
                     />
                   </span>
@@ -267,60 +270,61 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
               )}
             />
           </InputsWrapper>
+          {id == 1 ? (
+            <CheckboxWrapper>
+              <Controller
+                name="sendToLeader"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Checkbox
+                      inputId={field.name}
+                      checked={field.value}
+                      inputRef={field.ref}
+                      className={classNames({ "p-invalid": fieldState.error })}
+                      onChange={(e) => field.onChange(e.checked)}
+                    />
+                    <label
+                      htmlFor={field.name}
+                      className={classNames({ "p-error": errors.checked })}
+                    >
+                      Rəhbərə göndər
+                    </label>
 
-          <CheckboxWrapper>
-            <Controller
-              name="sendToLeader"
-              control={control}
-              render={({ field, fieldState }) => (
-                <>
-                <Checkbox
-                    inputId={field.name}
-                    checked={field.value}
-                    inputRef={field.ref}
-                    className={classNames({ "p-invalid": fieldState.error })}
-                    onChange={(e) => field.onChange(e.checked)}
-                  />
-                  <label
-                    htmlFor={field.name}
-                    className={classNames({ "p-error": errors.checked })}
-                  >
-                    Rəhbərə göndər
-                  </label>
-                  
-                </>
-              )}
-            />
+                  </>
+                )}
+              />
 
-            <Controller
-              name="sendToUpper"
-              control={control}
-              render={({ field, fieldState }) => (
-                <>
-                 <Checkbox
-                    inputId={field.name}
-                    checked={field.value}
-                    inputRef={field.ref}
-                    className={classNames({ "p-invalid": fieldState.error })}
-                    onChange={(e) => field.onChange(e.checked)}
-                  />
-                  <label
-                    htmlFor={field.name}
-                    className={classNames({ "p-error": errors.checked })}
-                  >
-                    Bir üst rəhbərə göndər
-                  </label>
-                 
-                </>
-              )}
-            />
-          </CheckboxWrapper>
+              <Controller
+                name="sendToUpper"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Checkbox
+                      inputId={field.name}
+                      checked={field.value}
+                      inputRef={field.ref}
+                      className={classNames({ "p-invalid": fieldState.error })}
+                      onChange={(e) => field.onChange(e.checked)}
+                    />
+                    <label
+                      htmlFor={field.name}
+                      className={classNames({ "p-error": errors.checked })}
+                    >
+                      Bir üst rəhbərə göndər
+                    </label>
+
+                  </>
+                )}
+              />
+            </CheckboxWrapper>
+          ) : (<></>)}
 
           {isLoadingUser && !errorUser ? (
             <Loading />
           ) : (
             <MainDropdownWrapper>
-              <DropdownWrapper>
+              {id!=2?(<DropdownWrapper>
                 <Dropdown
                   value={selectedUser1}
                   onChange={(e) => {
@@ -330,6 +334,11 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                   optionLabel="fullName"
                   placeholder="Təsdiqləyənlər"
                 />
+                {id == 3 ? (
+                  <InputNumber value={amount} onValueChange={(e) => setAmount(e.value)} />
+                  
+                ) : (<></>)}
+
                 <Button
                   severity="primary"
                   label="Əlavə et"
@@ -339,7 +348,7 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                 <Table>
                   <DataTable
                     value={getValues().workFlows}
-                    reorderableRows 
+                    reorderableRows
                     onRowReorder={(e) => {
                       setValue("workFlows", e.value);
                       setForceUpdate(prevState => !prevState);
@@ -353,14 +362,15 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                     <Column rowReorder style={{ width: "3rem" }} />
                     <Column field="id" header="id"></Column>
                     <Column field="fullName" header="Ad:"></Column>
+                    {id == 3 ? (<Column field="amount" header="Məbləğ:"></Column>) : (null)}
                     <Column
-                      style={{ flex: "0 0 4rem",textAlign:"right" }}
+                      style={{ flex: "0 0 4rem", textAlign: "right" }}
                       body={(row) => (
                         <Button
                           icon="pi pi-times"
                           onClick={(e) => {
                             e.preventDefault()
-                           
+
                             removeUser1(row.id);
                           }}
                           size="small"
@@ -370,7 +380,8 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                     ></Column>
                   </DataTable>
                 </Table>
-              </DropdownWrapper>
+              </DropdownWrapper>):(<></>)}
+              
 
               <DropdownWrapper>
                 <Dropdown
@@ -389,7 +400,7 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                 <Table>
                   <DataTable
                     value={getValues().viewers}
-                    reorderableRows 
+                    reorderableRows
                     onRowReorder={(e) => {
                       setValue("viewers", e.value);
                       setForceUpdate(prevState => !prevState);
@@ -404,7 +415,7 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
                     <Column field="id" header="id"></Column>
                     <Column field="fullName" header="Ad:"></Column>
                     <Column
-                      style={{ flex: "0 0 4rem",textAlign:"right" }}
+                      style={{ flex: "0 0 4rem", textAlign: "right" }}
                       body={(row) => (
                         <Button
                           icon="pi pi-times"
@@ -422,15 +433,6 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
               </DropdownWrapper>
             </MainDropdownWrapper>
           )}
-
-
-        </form>
-      ) : isLoading && !error ? (
-        <Loading />
-      ) : (
-        <Error />
-      )}
-
           <Buttons>
             <Button
               severity="success"
@@ -440,6 +442,15 @@ const arr = [...getValues().viewers.filter((e) => e.id !== id)]
               loading={buttonisLoading}
             />
           </Buttons>
+
+        </form>
+      ) : isLoading && !error ? (
+        <Loading />
+      ) : (
+        <Error />
+      )}
+
+
     </Wrapper>
   );
 }

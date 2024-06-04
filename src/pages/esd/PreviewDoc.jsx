@@ -39,7 +39,6 @@ export default function PreviewDoc() {
       setData(res.data);
       setError(false);
     } catch (error) {
-      console.log(error);
       setError(true);
     } finally {
       setIsLoading(false);
@@ -178,12 +177,10 @@ export default function PreviewDoc() {
                   />
                 )}
               </Buttons>
-            </Fragment>
-          ) : !data && !error && isLoading ? (
-            <Loading />
-          ) : (
+              </Fragment>
+          ) : !data && error && !isLoading ? (
             <Error />
-          )}
+          ):(<Loading />)}
         </Fragment>
       )}
       {activeTab === "second" && (

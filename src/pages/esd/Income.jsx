@@ -89,7 +89,10 @@ const navigate = useNavigate()
           onSelectionChange={(e) => {if(e.value.docTypeId===1)
                                          navigate(`/esd/doc/cashorder/${e.value.id}`);
                                         else if (e.value.docTypeId===2)
-                                         navigate(`/esd/doc/warehousedemand/${e.value.id}`);}}
+                                         navigate(`/esd/doc/procurementdemand/${e.value.id}`);
+                                        else if (e.value.docTypeId===3)
+                                          navigate(`/esd/doc/procurementorder/${e.value.id}`);
+                                        }}
           dataKey="id"
           metaKeySelection={true}
           emptyMessage="Sənəd tapılmadı."

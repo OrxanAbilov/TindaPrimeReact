@@ -91,7 +91,7 @@ export default function ProcurementSuggestions({ procurement }) {
         });
     };
 
-    
+
 
     const handleDelete = async (id) => {
         try {
@@ -109,9 +109,10 @@ export default function ProcurementSuggestions({ procurement }) {
     const createDynamicTabs = () => {
         return data.map((suggestion, i) => {
             const total = suggestion.total;
-            const headerData = suggestion.clientCode + "-" + suggestion.clientName + "   | Məbləğ:" + suggestion.total + " AZN";
+            const headerData = suggestion.clientCode + "-" + suggestion.clientName + "   | Məbləğ:" + suggestion.total + " " + suggestion.curr;
             return (
                 <AccordionTab
+                    style={{ background: "#339967 !important" }}
                     header={
                         suggestion.isSelected ? (
                             <CustomAccordionHeader>
@@ -145,7 +146,7 @@ export default function ProcurementSuggestions({ procurement }) {
                             </InfoGroup>
                             <InfoGroup>
                                 <TitleInfo>Məbləğ:</TitleInfo>
-                                <Desc>{suggestion.total}</Desc>
+                                <Desc>{suggestion.total + " " + suggestion.curr}</Desc>
                             </InfoGroup>
 
                             <InfoGroup>
@@ -182,9 +183,18 @@ export default function ProcurementSuggestions({ procurement }) {
                             <Column showFilterMenu field="cardType" header="Tip" sortable></Column>
                             <Column showFilterMenu field="itemCode" header="Mal Kodu" sortable></Column>
                             <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
-                            <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column>
-                            <Column field="amount" header="Miqdar" sortable></Column>
+                            {/* <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column> */}
+                            <Column showFilterMenu field="sonAlis" header="Son alış" sortable></Column>
+                            <Column field="suggestedAmount" header="Tələb miqdarı" sortable></Column>
+                            <Column field="amount" header="Təklif miqdarı" sortable></Column>
                             <Column field="price" header="Qiymət" sortable></Column>
+                            <Column field="curr" header="Valyuta" sortable></Column>
+                            <Column
+                                field="isIncludeVat"
+                                header="ƏDV"
+                                body={(rowData) => rowData.isIncludeVat ? 'Daxil' : 'Xaric'}
+                                sortable
+                            ></Column>
                             <Column field="total" header="Toplam" sortable></Column>
                         </DataTable>
                     </Card>
@@ -200,11 +210,13 @@ export default function ProcurementSuggestions({ procurement }) {
         <div className="flex flex-wrap gap-2">
 
             <TitleSuggestion>Təkliflər:  </TitleSuggestion>
+            {procurement.status === 6 ? (<></>) : (
             <div style={{ flex: '1', textAlign: 'right' }}>
                 <Button label="Əlavə et" severity="success" icon="pi pi-plus" onClick={() => setVisible(true)} />
             </div>
+            )}
         </div>
-        <Dialog header="Yeni Təklif" visible={visible} style={{ width: '60vw' }} onHide={() => setVisible(false)}>
+        <Dialog header="Yeni Təklif" visible={visible} maximizable style={{ width: '80vw' }} onHide={() => setVisible(false)}>
             <SuggestionNewDialog procDetails={procurement} onClose={() => setVisible(false)} setRefresh={setRefresh} />
         </Dialog>
         <Fragment>
@@ -214,7 +226,7 @@ export default function ProcurementSuggestions({ procurement }) {
                     <br />
                     <br />
 
-                    
+
                 </div>
 
 
