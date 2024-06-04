@@ -141,8 +141,30 @@ export default function PreviewDoc() {
                   <TitleInfo>Status:</TitleInfo>
                   <Desc>{statusBodyTemplate(data.status)}</Desc>
                 </InfoGroup>
+
+                <InfoGroup>
+                  <TitleInfo>Seri/Sira:</TitleInfo>
+                  <Desc>{data.seri} / {data.sira}</Desc>
+                </InfoGroup>
+
+                <InfoGroup>
+                  <TitleInfo>Kim üçün / Kim açıb:</TitleInfo>
+                  <Desc>{data?.kimUcun} / {data?.KimAcib}</Desc>
+                </InfoGroup>
+
+                <InfoGroup>
+                  <TitleInfo>Məsuliyyət Mərkəzi:</TitleInfo>
+                  <Desc>{data.mesMer}</Desc>
+                </InfoGroup>
+
+                <InfoGroup>
+                  <TitleInfo>Anbar:</TitleInfo>
+                  <Desc>{data.anbar}</Desc>
+                </InfoGroup>
               </Information>
-              
+              <br/>
+              <br/>
+
               <DataTable
                   //globalFilter={globalFilter}
                   //paginator
@@ -155,11 +177,15 @@ export default function PreviewDoc() {
                   //metaKeySelection={true}
                   emptyMessage="Mal sətri tapılmadı."
                 >
-                  <Column showFilterMenu field="rowNo" header="Sıra" sortable></Column>
+                  <Column showFilterMenu field="cardType" header="Cins" sortable></Column>
                   <Column showFilterMenu field="itemCode" header="Mal Kodu" sortable></Column>
                   <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
+                  <Column showFilterMenu field="amount" header="Miqdar" sortable></Column>
+                  <Column showFilterMenu field="teslimMiqdar" header="Təslim Miqdar" sortable></Column>
+                  <Column showFilterMenu field="aktivDepo" header="Aktiv Depo" sortable></Column>
+                  <Column showFilterMenu field="umumiDepo" header="Ümumi Depo" sortable></Column>
+                  <Column showFilterMenu field="sonAlis" header="Son Alış" sortable></Column>
                   {/* <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column> */}
-                  <Column field="amount" header="Miqdar" sortable></Column>
                   <Column field="description" header="Açıqlama" sortable></Column>
                 </DataTable>
 
@@ -235,11 +261,11 @@ const InfoGroup = styled.div`
   flex-direction: column;
   gap: 6px;
 
-  &:nth-of-type(6) {
+  &:nth-of-type(12) {
     grid-column-start: 1;
     grid-column-end: 3;
   }
-  &:nth-of-type(7) {
+  &:nth-of-type(13) {
     grid-column-start: 1;
     grid-column-end: 3;
   }
