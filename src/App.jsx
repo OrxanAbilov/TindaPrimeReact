@@ -21,6 +21,8 @@ import Procurement from "./pages/procurement/Root"
 import Dashboard from "./pages/dashboard/Dashboard";
 import { useSelector } from "react-redux";
 import ProcurementDetail from "./pages/procurement/ProcurementDetail";
+import MesMer from "./pages/admin/esd/MesMer";
+import EditMesMer from "./pages/admin/esd/EditMesMer";
 
 
 export default function App() {
@@ -53,6 +55,9 @@ export default function App() {
               <Route path="esd" element={<AdminEsd />}>
                 <Route path="doctype" element={<DocumentType />} />
                 <Route path="doctype/edit/:id" element={<EditDoc />} />
+                <Route path="mesmer" element={<MesMer />} />
+                <Route path="mesmer/edit/:id" element={<EditMesMer />} />
+                <Route path="mesmer/add/" element={<EditMesMer />} />
               </Route>
             </Route>
           )}

@@ -76,6 +76,11 @@ export default function MobileSidebar({ setIsShowMobileMenu }) {
                         icon: 'pi pi-file',
                         command: () => changeRouteAndHideMobileMenu("admin/esd/doctype")
 
+                    },{
+                        label: 'Məsuliyyət mərkəzi',
+                        icon: 'pi pi-file',
+                        command: () => changeRouteAndHideMobileMenu("admin/esd/mesmer")
+
                     }
 
                     ]
