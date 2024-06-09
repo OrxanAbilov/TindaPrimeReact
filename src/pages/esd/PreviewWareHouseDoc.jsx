@@ -212,12 +212,10 @@ export default function PreviewDoc() {
                   />
                 )}
               </Buttons>
-            </Fragment>
-          ) : !data && !error && isLoading ? (
-            <Loading />
-          ) : (
+              </Fragment>
+          ) : !data && error && !isLoading ? (
             <Error />
-          )}
+          ):(<Loading />)}
         </Fragment>
       )}
       {activeTab === "second" && (

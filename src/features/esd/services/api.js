@@ -13,6 +13,14 @@ const GET_WAREHOUSE_DEMAND_DOCUMENT_BY_ID = async (id) => {
   );
   return res.data;
 };
+
+const GET_PORCUREMENT_ORDER_DOCUMENT_BY_ID = async (id) => {
+  const res = await instance.get(
+    `DocumentManagement/GetProcurementOrderDocumentById?docId=${id}`
+  );
+  return res.data;
+};
+
 const REJECT_DOCUMENT = async (id,reason) => {
   const res = await instance.post(
     `DocumentManagement/RejectDocument?docId=${id}&rejectReason=${reason}`
@@ -40,4 +48,4 @@ const GET_OPERATION_HISTORY_BY_DOC_ID = async (id) => {
   return res.data;
 }
 
-export { GET_CASH_ORDER_DOCUMENT_BY_ID,APPROVE_DOCUMENT,CANCEL_DOCUMENT,REJECT_DOCUMENT, GET_OPERATION_HISTORY_BY_DOC_ID, GET_WAREHOUSE_DEMAND_DOCUMENT_BY_ID };
+export { GET_CASH_ORDER_DOCUMENT_BY_ID,APPROVE_DOCUMENT,CANCEL_DOCUMENT,REJECT_DOCUMENT, GET_OPERATION_HISTORY_BY_DOC_ID, GET_WAREHOUSE_DEMAND_DOCUMENT_BY_ID,GET_PORCUREMENT_ORDER_DOCUMENT_BY_ID };

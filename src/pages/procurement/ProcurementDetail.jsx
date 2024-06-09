@@ -55,7 +55,7 @@ export default function ProcurementDetail() {
       mounted = false;
     };
   }, [refresh]);
- 
+
   const showSendToApprovemodal = (id) => {
     console.log(id);
     confirmDialog({
@@ -145,12 +145,15 @@ export default function ProcurementDetail() {
               dataKey="procurementId"
               emptyMessage="Mal sətri tapılmadı."
             >
-              {/* <Column showFilterMenu field="rowNo" header="Sıra" sortable></Column> */}
+              <Column showFilterMenu field="cardType" header="Tip" sortable></Column>
               <Column showFilterMenu field="itemCode" header="Mal Kodu" sortable></Column>
               <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
               <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column>
               {/* <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column> */}
               <Column field="amount" header="Miqdar" sortable></Column>
+              <Column showFilterMenu field="aktivDepo" header="Aktiv Depo" sortable></Column>
+              <Column showFilterMenu field="umumiDepo" header="Ümumi Depo" sortable></Column>
+              <Column showFilterMenu field="sonAlis" header="Son Alış" sortable></Column>
               <Column field="description" header="Açıqlama" sortable></Column>
             </DataTable>
             <br />
@@ -167,13 +170,11 @@ export default function ProcurementDetail() {
                 />
               )}
             </Buttons>
-          </Fragment>
-        ) : !data && !error && isLoading ? (
-          <Loading />
-        ) : (
-          <Error />
-        )}
-      </Fragment>
+            </Fragment>
+          ) : !data && error && !isLoading ? (
+            <Error />
+          ):(<Loading />)}
+        </Fragment>
 
     </Wrapper>
   );

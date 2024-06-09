@@ -12,6 +12,7 @@ import DocumentType from "./pages/admin/esd/DocumentType";
 import EditDoc from "./pages/esd/EditDoc";
 import PreviewDoc from "./pages/esd/PreviewDoc";
 import PreviewWareHouseDoc from "./pages/esd/PreviewWareHouseDoc";
+import PreviewProcurementOrderDoc from "./pages/esd/PreviewProcurementOrderDoc";
 import NewDoc from "./pages/esd/NewDoc";
 import AdminEsd from "./pages/admin/esd/Root";
 import Admin from "./pages/admin/Root";
@@ -38,7 +39,8 @@ export default function App() {
             <Route path="outgoing" element={<OutGoing />} />
             <Route path="history" element={<History />} />
             <Route path="doc/cashorder/:id" element={<PreviewDoc />} />
-            <Route path="doc/warehousedemand/:id" element={<PreviewWareHouseDoc />} />
+            <Route path="doc/procurementdemand/:id" element={<PreviewWareHouseDoc />} />
+            <Route path="doc/procurementorder/:id" element={<PreviewProcurementOrderDoc />} />
             <Route path="doc/new" element={<NewDoc />} />
           </Route>
           <Route path="/procurement" element={<Procurement />}>

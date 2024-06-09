@@ -177,12 +177,12 @@ export default function PreviewDoc() {
                   />
                 )}
               </Buttons>
-            </Fragment>
-          ) : !data && !error && isLoading ? (
-            <Loading />
+
+              </Fragment>
           ) : !data && error && !isLoading ? (
             <Error />
-          ):null}
+          ):(<Loading />)}
+
         </Fragment>
       )}
       {activeTab === "second" && (
