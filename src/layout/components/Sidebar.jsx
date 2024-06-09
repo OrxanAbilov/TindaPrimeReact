@@ -140,6 +140,14 @@ mr-2"></i>
                               <Ripple />
                             </NavLink>
                           </li>
+
+                          <li>
+                            <NavLink to={"/admin/esd/mesmer"} style={{ textDecoration: "none" }} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 transition-duration-150 transition-colors w-full">
+                              <i className="pi pi-file mr-2"></i>
+                              <span className="font-medium">Məsuliyyət Mərkəzi</span>
+                              <Ripple />
+                            </NavLink>
+                          </li>
                         </ul>
                       </li>
                     </ul>
