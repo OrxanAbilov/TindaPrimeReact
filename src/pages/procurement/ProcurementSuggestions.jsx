@@ -129,7 +129,7 @@ export default function ProcurementSuggestions({ procurement }) {
                         {procurement.status === 6 ? (<></>) : (
                             <DeleteButton>
                                 <InputSwitch checked={suggestion.isSelected} onChange={(e) => selectSuggestion(suggestion.id, e.value)} />
-                                <ConfirmDialog />
+                                
                                 <Button icon="pi pi-trash" className="p-button-danger p-button-text" onClick={() => confirmDelete(suggestion.id)} />
                             </DeleteButton>
                         )}
@@ -205,6 +205,7 @@ export default function ProcurementSuggestions({ procurement }) {
 
     return (<>
         <br />
+        
         <Toast ref={toast} />
         <div className="flex flex-wrap gap-2">
 

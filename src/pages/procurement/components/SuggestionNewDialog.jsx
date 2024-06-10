@@ -206,6 +206,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
 
     return (
         <NewForm>
+            
             <Toast ref={toast} />
             <Card>
                 <label>Təchizatçı: </label>
@@ -306,7 +307,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
 
 
             </Card>
-            <ConfirmDialog />
+            
             <Btn>
             <Button label="Yadda Saxla" icon="pi pi-check" onClick={confirm1} />
             </Btn>
