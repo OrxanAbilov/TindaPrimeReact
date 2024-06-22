@@ -161,6 +161,11 @@ export default function PreviewDoc() {
                   <TitleInfo>Anbar:</TitleInfo>
                   <Desc>{data.anbar}</Desc>
                 </InfoGroup>
+
+                <InfoGroup>
+                  <TitleInfo>Layihə:</TitleInfo>
+                  <Desc>{data.projectCode}</Desc>
+                </InfoGroup>
               </Information>
               <br/>
               <br/>

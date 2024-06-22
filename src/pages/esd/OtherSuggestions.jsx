@@ -12,13 +12,12 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import React from "react";
 import { useToast } from "../../context/ToastContext";
 import { Dialog } from "primereact/dialog";
-import SuggestionNewDialog from "./components/SuggestionNewDialog";
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { InputSwitch } from "primereact/inputswitch";
 
 
 
-export default function ProcurementSuggestions({ procurement }) {
+export default function OtherSuggestions({ procurementId }) {
+    console.log(procurementId);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(false);
     const toast = useRef(null);
@@ -30,7 +29,7 @@ export default function ProcurementSuggestions({ procurement }) {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const res = await GET_ALL_SUGESTION_BY_PROCUREMENT_ID(procurement.id);
+            const res = await GET_ALL_SUGESTION_BY_PROCUREMENT_ID(procurementId);
             const sortedData = res.data.sort((a, b) => a.isDeleted - b.isDeleted); // Sort by total in ascending order
             setData(sortedData);
             setError(false);
@@ -60,51 +59,8 @@ export default function ProcurementSuggestions({ procurement }) {
         link.click();
     };
 
-    const selectSuggestion = async (suggestionId, isSelected) => {
-        try {
-            const responseData = await SELECT_SUGGESTION(suggestionId, isSelected);
-            isSelected ? (
-                showToast('success', 'Uğurlu əməliyyat', 'Təklif seçilmiş təyin edildi', 3000)
-            )
-                :
-                (
-                    showToast('success', 'Uğurlu əməliyyat', 'Təklif seçilməmiş təyin edildi', 3000));
-            setRefresh(true);
-        } catch (error) {
-            // Handle error
-            toast.current.show({ severity: 'error', summary: 'Xəta baş verdi', detail: error.response.data.Exception[0], life: 3000 });
-            // Optionally, you can show an error message to the user
-        }
-    }
-
-    const confirmDelete = (id) => {
-
-        confirmDialog({
-            message: 'Təklifi silmək istədiyinizə əminsiniz?',
-            header: 'Məlumatın Silinməsi',
-            icon: 'pi pi-info-circle',
-            defaultFocus: 'handleDelete',
-            acceptClassName: 'p-button-danger',
-            accept: () => handleDelete(id),
-            acceptLabel: "Sil",
-            rejectLabel: "Ləğv et"
-        });
-    };
 
 
-
-    const handleDelete = async (id) => {
-        try {
-            const responseData = await DELETE_PROCUREMENT_SUGGESTION(id);
-            showToast('success', 'Uğurlu əməliyyat', 'Təklif uğurla silindi', 3000);
-            setRefresh(true);
-        } catch (error) {
-            // Handle error
-            toast.current.show({ severity: 'error', summary: 'Xəta baş verdi', detail: error.response.data.Exception[0], life: 3000 });
-            // Optionally, you can show an error message to the user
-        }
-
-    };
 
     const createDynamicTabs = () => {
         return data.map((suggestion, i) => {
@@ -126,13 +82,6 @@ export default function ProcurementSuggestions({ procurement }) {
                     } key={headerData}
                 >
                     <Card>
-                        {procurement.status === 6 ? (<></>) : (
-                            <DeleteButton>
-                                <InputSwitch checked={suggestion.isSelected} onChange={(e) => selectSuggestion(suggestion.id, e.value)} />
-                                
-                                <Button icon="pi pi-trash" className="p-button-danger p-button-text" onClick={() => confirmDelete(suggestion.id)} />
-                            </DeleteButton>
-                        )}
                         <Information>
                             <InfoGroup>
                                 <TitleInfo>Kodu:</TitleInfo>
@@ -143,19 +92,11 @@ export default function ProcurementSuggestions({ procurement }) {
                                 <TitleInfo>Adı:</TitleInfo>
                                 <Desc>{suggestion.clientName}</Desc>
                             </InfoGroup>
-                            
-                            <InfoGroup>
-                                <TitleInfo>Ödəmə Şərti:</TitleInfo>
-                                <Desc>{suggestion.paymentTerm ? suggestion.paymentTerm : '---'}</Desc>
-                            </InfoGroup>
-                            <InfoGroup>
-                                <TitleInfo>Daşınma Şərti:</TitleInfo>
-                                <Desc>{suggestion.deliveryTerm ? suggestion.deliveryTerm : '---'}</Desc>
-                            </InfoGroup>
                             <InfoGroup>
                                 <TitleInfo>Məbləğ:</TitleInfo>
                                 <Desc>{suggestion.total + " " + suggestion.curr}</Desc>
                             </InfoGroup>
+
                             <InfoGroup>
                                 <TitleInfo>Fayllar:</TitleInfo>
                                 {data[i]?.files?.length > 0 ? (
@@ -213,20 +154,13 @@ export default function ProcurementSuggestions({ procurement }) {
 
     return (<>
         <br />
-        
+
         <Toast ref={toast} />
         <div className="flex flex-wrap gap-2">
 
             <TitleSuggestion>Təkliflər:  </TitleSuggestion>
-            {procurement.status === 6 ? (<></>) : (
-            <div style={{ flex: '1', textAlign: 'right' }}>
-                <Button label="Əlavə et" severity="success" icon="pi pi-plus" onClick={() => setVisible(true)} />
-            </div>
-            )}
         </div>
-        <Dialog header="Yeni Təklif" visible={visible} maximizable style={{ width: '80vw' }} onHide={() => setVisible(false)}>
-            <SuggestionNewDialog procDetails={procurement} onClose={() => setVisible(false)} setRefresh={setRefresh} />
-        </Dialog>
+
         <Fragment>
             {data && !error && !isLoading && data.length > 0 ? (
                 <div className="card">
@@ -253,7 +187,14 @@ export default function ProcurementSuggestions({ procurement }) {
     );
 }
 
-
+const Buttons = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 32px;
+`;
 const Information = styled.div`
   width: 100%;
   display: grid;
@@ -288,11 +229,11 @@ const InfoGroup = styled.div`
   flex-direction: column;
   gap: 6px;
 
-  &:nth-of-type(8) {
+  &:nth-of-type(6) {
     grid-column-start: 1;
     grid-column-end: 3;
   }
-  &:nth-of-type(9) {
+  &:nth-of-type(7) {
     grid-column-start: 1;
     grid-column-end: 3;
   }
