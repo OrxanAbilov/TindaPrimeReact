@@ -1,8 +1,9 @@
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 const instance = axios.create({
-  //baseURL: 'https://localhost:7243/api/',
-  baseURL: 'http://5.180.81.184:1134/api/',
+  baseURL: 'https://localhost:7243/api/',
+  //baseURL: 'http://46.22.224.73:1134/api/',
 });
 
 instance.interceptors.request.use(
@@ -27,6 +28,7 @@ instance.interceptors.response.use(function (response) {
   if(error.response.status===401){
     localStorage.removeItem("token")
     localStorage.removeItem("data")
+    Navigate('/login/')
   }
   return Promise.reject(error);
 });

@@ -20,6 +20,7 @@ import ApproveModalContent from "../../features/esd/components/ApproveModalConte
 import RejectModalContent from "../../features/esd/components/RejectModalContent";
 import CancelModalContent from "../../features/esd/components/CancelModalContent";
 import OperationHistory from "./OperationHistory";
+import OtherSuggestions from "./OtherSuggestions";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 export default function PreviewDoc() {
@@ -109,10 +110,16 @@ export default function PreviewDoc() {
                     className={activeTab === "first" ? "active" : ""}
                 />
                 <Button
+                    label="Digər Təkliflər"
+                    onClick={() => setActiveTab("third")}
+                    className={activeTab === "third" ? "active" : ""}
+                />
+                <Button
                     label="Əməliyyat Tarixçəsi"
                     onClick={() => setActiveTab("second")}
                     className={activeTab === "second" ? "active" : ""}
                 />
+                
             </TabButtons>
             {activeTab === "first" && (
                 <Fragment>
@@ -240,6 +247,9 @@ export default function PreviewDoc() {
             )}
             {activeTab === "second" && (
                 <OperationHistory />
+            )}
+             {activeTab === "third" && (
+                <OtherSuggestions procurementId={data.suggestion.procurementId} />
             )}
         </Wrapper>
     );

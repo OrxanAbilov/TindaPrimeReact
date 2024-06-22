@@ -8,7 +8,11 @@ import { Toast } from "primereact/toast";
 import { InputText } from 'primereact/inputtext';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Button } from 'primereact/button';
-import { GET_CARI_HESAPLAR_FOR_DROP_DOWN, ADD_NEW_SUGGESTION, GET_CURR_BY_CLIENTCODE } from '../../../features/procurement/services/api';
+import {
+    GET_CARI_HESAPLAR_FOR_DROP_DOWN,
+    ADD_NEW_SUGGESTION, GET_CURR_BY_CLIENTCODE,
+    GET_PROCUREMENT_TERMS
+} from '../../../features/procurement/services/api';
 import { InputNumber } from 'primereact/inputnumber';
 import {
     setData,
@@ -25,8 +29,12 @@ import { Checkbox } from 'primereact/checkbox';
 export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }) {
     const [selectedValue, setSelectedValue] = useState(null);
     const [selectedCurr, setSelectedCurr] = useState(null);
+    const [selectedPTerm, setSelectedPTerm] = useState(null);
+    const [selectedDTerm, setSelectedDTerm] = useState(null);
     const [dropdownOptions, setDropdownOptions] = useState([]);
     const [dropdownOptionsCurr, setDropdownOptionsCurr] = useState([]);
+    const [dropdownOptionsPTerm, setDropdownOptionsPTerm] = useState([]);
+    const [dropdownOptionsDTerm, setDropdownOptionsDTerm] = useState([]);
     const [items, setItems] = useState([]);
     const toast = useRef(null);
     const [files, setFiles] = useState([]);
@@ -40,6 +48,13 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
             setIsLoading(true);
             const res = await GET_CARI_HESAPLAR_FOR_DROP_DOWN();
             setDropdownOptions(res.data);
+
+            const resPTerm = await GET_PROCUREMENT_TERMS("Payment");
+            setDropdownOptionsPTerm(resPTerm.data);
+
+            const resDTerm = await GET_PROCUREMENT_TERMS("Delivery");
+            setDropdownOptionsDTerm(resDTerm.data);
+
             setError(false);
         } catch (error) {
             setError(true);
@@ -150,6 +165,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
     };
 
     const handleSubmit = async () => {
+
         const postData = {
             id: 0,
             isSelected: false,
@@ -157,6 +173,8 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
             clientCode: selectedValue,
             clientName: '',
             curr: selectedCurr,
+            paymentTerm: selectedPTerm,
+            deliveryTerm: selectedDTerm,
             items: selectedItems,
             total: selectedItems.reduce((acc, item) => acc + item.total, 0),
             files: files
@@ -181,17 +199,48 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
     };
 
     const confirm1 = () => {
-        confirmDialog({
-            message: 'Məlumatları yadda saxlamaq istəyirsinizmi?',
-            header: 'Təstiq',
-            icon: 'pi pi-exclamation-triangle',
-            defaultFocus: 'accept',
-            accept: handleSubmit,
-            acceptLabel: "Yadda saxla",
-            rejectLabel: "Ləğv et",
-            handleSubmit: true
 
-        });
+        if (!selectedValue) {
+            showToast('error', 'Xəta', 'Təchizatçı seçilməyib!', 3000);
+            return;
+        }
+
+        if (!selectedCurr) {
+            showToast('error', 'Xəta', 'Valyuta seçilməyib!', 3000);
+            return;
+        }
+
+        if (selectedItems.length === 0) {
+            showToast('error', 'Xəta', 'Məhsul seçilməyib!', 3000);
+            return;
+        }
+
+        for (const item of selectedItems) {
+            if (item.amount == null) {
+                showToast('error', 'Xəta', '"'+item.itemName+'"' +' Məhsul miqdarı daxil edilməyib!', 3000);
+                return;
+            }
+            if (item.price == null) {
+                showToast('error', 'Xəta', '"'+item.itemName+'"' +' Məhsul qiyməti daxil edilməyib!', 3000);
+                return;
+            }
+        }
+
+        if (selectedCurr || selectedValue) {
+            confirmDialog({
+                message: 'Məlumatları yadda saxlamaq istəyirsinizmi?',
+                header: 'Təstiq',
+                icon: 'pi pi-exclamation-triangle',
+                defaultFocus: 'accept',
+                accept: handleSubmit,
+                acceptLabel: "Yadda saxla",
+                rejectLabel: "Ləğv et",
+                handleSubmit: true
+
+            });
+        }
+
+
     };
 
     const handleVatChange = (checked, rowIndex) => {
@@ -201,38 +250,72 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
     };
 
     const isRowSelected = (rowData) => {
-        return selectedItems.some(item => item.id === rowData.id);
+        return selectedItems.some(item => item.procurementLineId === rowData.procurementLineId);
     };
 
     return (
         <NewForm>
-            <Toast ref={toast} />
-            <Card>
-                <label>Təchizatçı: </label>
-                <Dropdown
-                    value={selectedValue}
-                    options={dropdownOptions}
-                    onChange={(e) => setSelectedValue(e.value)}
-                    placeholder="Təchizatçı seçin"
-                    optionLabel="name"
-                    optionValue="code"
-                    style={{ width: '250px' }}
-                    filter
-                    className="w-full md:w-14rem"
-                />
 
-                <label style={{ marginLeft: '20px' }}>Valyuta: </label>
-                <Dropdown
-                    value={selectedCurr}
-                    options={dropdownOptionsCurr}
-                    onChange={(e) => setSelectedCurr(e.value)}
-                    placeholder="Valyuta Seçin"
-                    style={{ width: '100px', marginLeft: '20px' }}
-                    filter
-                    defaultValue={dropdownOptionsCurr[0]}
-                    className="w-full md:w-14rem"
-                />
-            </Card>
+            <Toast ref={toast} />
+            <Information>
+                <InfoGroup>
+                    <TitleInfo>Təchizatçı:</TitleInfo>
+                    <Desc><Dropdown
+                        value={selectedValue}
+                        options={dropdownOptions}
+                        onChange={(e) => setSelectedValue(e.value)}
+                        placeholder="Təchizatçı seçin"
+                        optionLabel="name"
+                        optionValue="code"
+                        style={{ width: '250px' }}
+                        filter
+                        className="w-full md:w-14rem"
+                    /></Desc>
+                </InfoGroup>
+
+                <InfoGroup>
+                    <TitleInfo>Valyuta:</TitleInfo>
+                    <Desc><Dropdown
+                        value={selectedCurr}
+                        options={dropdownOptionsCurr}
+                        onChange={(e) => setSelectedCurr(e.value)}
+                        placeholder="Valyuta Seçin"
+                        style={{ width: '100px', marginLeft: '20px' }}
+                        filter
+                        defaultValue={dropdownOptionsCurr[0]}
+                        className="w-full md:w-14rem"
+                    /></Desc>
+                </InfoGroup>
+                <InfoGroup>
+                    <TitleInfo>Ödəniş üsulu:</TitleInfo>
+                    <Desc><Dropdown
+                        value={selectedPTerm}
+                        options={dropdownOptionsPTerm}
+                        onChange={(e) => setSelectedPTerm(e.value)}
+                        placeholder="Ödəniş üsulu seçin"
+                        optionLabel="name"
+                        optionValue="code"
+                        style={{ width: '250px' }}
+                        filter
+                        className="w-full md:w-14rem"
+                    /></Desc>
+                </InfoGroup>
+
+                <InfoGroup>
+                    <TitleInfo>Təslim şərti:</TitleInfo>
+                    <Desc><Dropdown
+                        value={selectedDTerm}
+                        options={dropdownOptionsDTerm}
+                        onChange={(e) => setSelectedDTerm(e.value)}
+                        placeholder="Təslim şərti seçin"
+                        optionLabel="name"
+                        optionValue="code"
+                        style={{ width: '100px', marginLeft: '20px' }}
+                        filter
+                        className="w-full md:w-14rem"
+                    /></Desc>
+                </InfoGroup>
+            </Information>
             <Card>
                 <DataTable
                     value={items}
@@ -245,11 +328,10 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
                     <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
                     <Column field="itemCode" header="Mal Kodu" />
                     <Column field="itemName" header="Mal Adı" />
-                    
+
                     <Column fiels='cardType' header="Tip" sortable></Column>
                     <Column field="sonAlis" header="Son Alış" sortable></Column>
                     <Column field="suggestedAmount" header="Tələb miqdarı" />
-                    <Column field="amount" header="Təklif miqdarı" />
                     <Column
                         field="amount"
                         header="Təklif miqdarı"
@@ -306,9 +388,9 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
 
 
             </Card>
-            <ConfirmDialog />
+
             <Btn>
-            <Button label="Yadda Saxla" icon="pi pi-check" onClick={confirm1} />
+                <Button label="Yadda Saxla" icon="pi pi-check" onClick={confirm1} />
             </Btn>
             <br />
         </NewForm>
@@ -327,10 +409,50 @@ const NewForm = styled.div`
 `;
 
 const Card = styled.div`
-    margin-bottom: 20px;
-    margin-top: 20px;
+    width: 100%;
+  display: grid;
+  margin-top: 32px;
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
 `;
 
 const Btn = styled.div`
     display: flex;
+`;
+
+const Information = styled.div`
+  width: 100%;
+  display: grid;
+  margin-top: 32px;
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
+`;
+
+
+const Desc = styled.div`
+  width: 100%;
+  font-size: 14px;
+  color: #3b3a3a;
+`;
+
+const TitleInfo = styled.div`
+  width: 100%;
+  font-weight: 500;
+  font-size: 18px;
+`;
+
+const InfoGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &:nth-of-type(12) {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+  &:nth-of-type(13) {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
 `;
