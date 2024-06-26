@@ -9,7 +9,6 @@ import Logo from '../../assets/images/Logo2.png';
 import { useSelector } from "react-redux";
 import MenuItem from './MenuItem';
 import {GET_USER_MENUS} from '../../features/layout/services/api';
-import menuSlice from '../../features/layout/menuSlice';
 
 import {
   setData,
@@ -82,7 +81,6 @@ export default function HeadlessDemo() {
 
             </div>
             <ul className="list-none p-3 m-0 pb-0 mt-3">
-              {console.log(data)}
               {data.map(item => (
                 <MenuItem key={item.id} item={item} />
               ))}
