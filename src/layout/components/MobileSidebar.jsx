@@ -4,11 +4,21 @@ import { useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/Logo2.png";
 import { Button } from "primereact/button";
 import { PanelMenu } from "primereact/panelmenu";
+import { GET_USER_MENUS } from '../../features/layout/services/api';
+import menuSlice from '../../features/layout/menuSlice';
 import 'primeicons/primeicons.css';
+import {
+    setData,
+    setError,
+    setIsLoading,
+} from "../../features/layout/menuSlice";
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useRef } from "react";
+import { useSelector } from "react-redux";
+
 
 export default function MobileSidebar({ setIsShowMobileMenu }) {
-
-
 
     const navigate = useNavigate()
     const changeRouteAndHideMobileMenu = (path) => {
@@ -16,80 +26,56 @@ export default function MobileSidebar({ setIsShowMobileMenu }) {
         setIsShowMobileMenu(false)
 
     }
-    const items = [
 
-        {
-            label: 'Dashboard',
-            icon: 'pi pi-home',
-            command: () => changeRouteAndHideMobileMenu("/dashboard")
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const toast = useRef(null);
+    const [data, setData] = useState([]);
+    const [refresh, setRefresh] = useState(false);
+    const { userData } = useSelector((state) => state.loginSlice);
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            const res = await GET_USER_MENUS();
+            setData(res.data);
+            setError(false);
+        } catch (error) {
+            setError(true);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
+        let mounted = true;
+        if (mounted) {
+            fetchData();
+        }
 
-        },
-        {
-            label: 'ESD',
-            icon: 'pi pi-book',
-            items: [
-                {
-                    label: 'Gələnlər',
-                    icon: 'pi pi-inbox',
-                    command: () => changeRouteAndHideMobileMenu("esd/income")
+        return () => {
+            mounted = false;
+            setRefresh(false);
+        };
+    }, [refresh]);
 
-
-                },
-                {
-                    label: 'Göndərilənlər',
-                    icon: 'pi pi-send',
-                    command: () => changeRouteAndHideMobileMenu("esd/outgoing")
-
-
-                }, {
-                    label: 'Tarixçə',
-                    icon: 'pi pi-history',
-                    command: () => changeRouteAndHideMobileMenu("esd/history")
-
-
+    const transformData = (data) => {
+        const transformItems = (items) => {
+            return items.map(item => {
+                const transformedItem = {
+                    label: item.label,
+                    icon: item.icon,
+                    items: item.items ? transformItems(item.items) : []
+                };
+                if (item.link !== '#') {
+                    transformedItem.command = () => changeRouteAndHideMobileMenu(item.link);
                 }
-            ]
-        },
-        {
-            label: 'Satınalma',
-            icon: 'pi pi-shopping-cart',
-            items: [
-                {
-                    label: 'Tələb üçün təkliflər',
-                    icon: 'pi pi-clipboard',
-                    command: () => changeRouteAndHideMobileMenu("procurement/docs")
+                return transformedItem;
+            });
+        };
 
+        return transformItems(data);
+    };
 
-                }
-            ]
-        },
-
-        {
-            label: 'Admin',
-            icon: 'pi pi-user-edit',
-            items: [
-                {
-                    label: 'ESD',
-                    icon: 'pi pi-book',
-                    items: [{
-                        label: 'Sənəd tipi',
-                        icon: 'pi pi-file',
-                        command: () => changeRouteAndHideMobileMenu("admin/esd/doctype")
-
-                    },{
-                        label: 'Məsuliyyət mərkəzi',
-                        icon: 'pi pi-file',
-                        command: () => changeRouteAndHideMobileMenu("admin/esd/mesmer")
-
-                    }
-
-                    ]
-                },
-
-            ]
-        },
-
-    ];
+    const items = transformData(data);
     return (
         <MobileWrapper>
             <Header>
