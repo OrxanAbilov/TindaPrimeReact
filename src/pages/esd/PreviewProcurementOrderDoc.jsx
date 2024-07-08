@@ -188,7 +188,10 @@ export default function PreviewDoc() {
                                     <Desc>--</Desc>
                                 )}
                             </InfoGroup>
-
+                            <InfoGroup>
+                                <TitleInfo>İdxal:</TitleInfo>
+                                <Desc>{data.suggestion.isImportedProduct? "Bəli":"Xeyr"}</Desc>
+                            </InfoGroup>
                             </Information>
                             <br />
                             <br />

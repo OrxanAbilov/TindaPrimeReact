@@ -56,13 +56,13 @@ export default function History() {
           placeholder="Axtar"
         />
       </div>
-      <Button
+      {/* <Button
         icon="pi pi-plus-circle"
         raised
         label="Yeni sənəd əlavə et"
         severity="success"
         onClick={()=>navigate("/esd/doc/new")}
-      />
+      /> */}
     </div>
   );
 

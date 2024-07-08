@@ -176,7 +176,11 @@ export default function ProcurementSuggestions({ procurement }) {
                                     <Desc>--</Desc>
                                 )}
                             </InfoGroup>
-
+                            
+                            <InfoGroup>
+                                <TitleInfo>İdxal:</TitleInfo>
+                                <Desc>{suggestion.isImportedProduct? "Bəli":"Xeyr"}</Desc>
+                            </InfoGroup>
                         </Information>
 
                         <br />
