@@ -149,6 +149,7 @@ export default function ProcurementDetail() {
               <Column showFilterMenu field="itemCode" header="Mal Kodu" sortable></Column>
               <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
               <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column>
+              <Column showFilterMenu field="projectCode" header="Layihə Kodu" sortable></Column>
               {/* <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column> */}
               <Column field="amount" header="Miqdar" sortable></Column>
               <Column showFilterMenu field="aktivDepo" header="Aktiv Depo" sortable></Column>

@@ -43,6 +43,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
     const [selectedFiles, setSelectedFiles] = useState([]);
     const { data, error, isLoading } = useSelector((state) => state.procurementDetailSlice);
     const { showToast } = useToast()
+    const [isImportedProduct, setIsImportedProduct]=useState(false);
     const fetchData = async () => {
         try {
             setIsLoading(true);
@@ -99,6 +100,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
             itemCode: item.itemCode,
             itemName: item.itemName,
             erpId: item.erpId,
+            projectCode: item.projectCode,
             amount: null,
             suggestedAmount: item.amount,
             description: item.description,
@@ -173,8 +175,9 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
             clientCode: selectedValue,
             clientName: '',
             curr: selectedCurr,
-            paymentTerm: selectedPTerm,
-            deliveryTerm: selectedDTerm,
+            isImportedProduct: isImportedProduct,
+            paymentTerm: selectedPTerm.toString(),
+            deliveryTerm: selectedDTerm.toString(),
             items: selectedItems,
             total: selectedItems.reduce((acc, item) => acc + item.total, 0),
             files: files
@@ -249,6 +252,14 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
         setItems(updatedItems);
     };
 
+    const onImportedChange = (e) => {
+
+        if (e.checked)
+            setIsImportedProduct(true);
+        else
+            setIsImportedProduct(false);
+    }
+
     const isRowSelected = (rowData) => {
         return selectedItems.some(item => item.procurementLineId === rowData.procurementLineId);
     };
@@ -315,6 +326,12 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
                         className="w-full md:w-14rem"
                     /></Desc>
                 </InfoGroup>
+
+                <InfoGroup>
+                    <TitleInfo>İdxal:</TitleInfo>
+                    <Desc><Checkbox inputId="ingredient1" name="pizza" value="Cheese" onChange={onImportedChange} checked={isImportedProduct} />
+                    </Desc>
+                </InfoGroup>
             </Information>
             <Card>
                 <DataTable
@@ -328,7 +345,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
                     <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
                     <Column field="itemCode" header="Mal Kodu" />
                     <Column field="itemName" header="Mal Adı" />
-
+                    <Column field="projectCode" header="Layihə" />
                     <Column fiels='cardType' header="Tip" sortable></Column>
                     <Column field="sonAlis" header="Son Alış" sortable></Column>
                     <Column field="suggestedAmount" header="Tələb miqdarı" />

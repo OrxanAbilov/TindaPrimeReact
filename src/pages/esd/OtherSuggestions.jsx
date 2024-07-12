@@ -117,7 +117,10 @@ export default function OtherSuggestions({ procurementId }) {
                                     <Desc>--</Desc>
                                 )}
                             </InfoGroup>
-
+                            <InfoGroup>
+                                <TitleInfo>İdxal:</TitleInfo>
+                                <Desc>{suggestion.isImportedProduct? "Bəli":"Xeyr"}</Desc>
+                            </InfoGroup>
                         </Information>
 
                         <br />
@@ -131,7 +134,7 @@ export default function OtherSuggestions({ procurementId }) {
                             <Column showFilterMenu field="cardType" header="Tip" sortable></Column>
                             <Column showFilterMenu field="itemCode" header="Mal Kodu" sortable></Column>
                             <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
-                            {/* <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column> */}
+                            <Column showFilterMenu field="projectCode" header="Layihə" sortable></Column>
                             <Column showFilterMenu field="sonAlis" header="Son alış" sortable></Column>
                             <Column field="suggestedAmount" header="Tələb miqdarı" sortable></Column>
                             <Column field="amount" header="Təklif miqdarı" sortable></Column>

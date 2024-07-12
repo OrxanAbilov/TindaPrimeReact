@@ -162,10 +162,10 @@ export default function PreviewDoc() {
                   <Desc>{data.anbar}</Desc>
                 </InfoGroup>
 
-                <InfoGroup>
+                {/* <InfoGroup>
                   <TitleInfo>Layihə:</TitleInfo>
                   <Desc>{data.projectCode}</Desc>
-                </InfoGroup>
+                </InfoGroup> */}
               </Information>
               <br/>
               <br/>
@@ -190,10 +190,12 @@ export default function PreviewDoc() {
                   <Column showFilterMenu field="aktivDepo" header="Aktiv Depo" sortable></Column>
                   <Column showFilterMenu field="umumiDepo" header="Ümumi Depo" sortable></Column>
                   <Column showFilterMenu field="sonAlis" header="Son Alış" sortable></Column>
+                  <Column showFilterMenu field="projectCode" header="Layihə" sortable></Column>
                   {/* <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column> */}
                   <Column field="description" header="Açıqlama" sortable></Column>
                 </DataTable>
-
+                  <br />
+                  <br />
               <Buttons>
                 {data.showApproveButton && (
                   <Button
