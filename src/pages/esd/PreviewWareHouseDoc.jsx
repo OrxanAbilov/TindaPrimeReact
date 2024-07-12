@@ -190,7 +190,7 @@ export default function PreviewDoc() {
                   <Column showFilterMenu field="aktivDepo" header="Aktiv Depo" sortable></Column>
                   <Column showFilterMenu field="umumiDepo" header="Ümumi Depo" sortable></Column>
                   <Column showFilterMenu field="sonAlis" header="Son Alış" sortable></Column>
-                  <Column showFilterMenu field="projectCode" header="Layihə Kodu" sortable></Column>
+                  <Column showFilterMenu field="projectCode" header="Layihə" sortable></Column>
                   {/* <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column> */}
                   <Column field="description" header="Açıqlama" sortable></Column>
                 </DataTable>

@@ -176,8 +176,8 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
             clientName: '',
             curr: selectedCurr,
             isImportedProduct: isImportedProduct,
-            paymentTerm: selectedPTerm,
-            deliveryTerm: selectedDTerm,
+            paymentTerm: selectedPTerm.toString(),
+            deliveryTerm: selectedDTerm.toString(),
             items: selectedItems,
             total: selectedItems.reduce((acc, item) => acc + item.total, 0),
             files: files
@@ -345,7 +345,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
                     <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
                     <Column field="itemCode" header="Mal Kodu" />
                     <Column field="itemName" header="Mal Adı" />
-                    <Column field="projectCode" header="Layihə Kodu" />
+                    <Column field="projectCode" header="Layihə" />
                     <Column fiels='cardType' header="Tip" sortable></Column>
                     <Column field="sonAlis" header="Son Alış" sortable></Column>
                     <Column field="suggestedAmount" header="Tələb miqdarı" />

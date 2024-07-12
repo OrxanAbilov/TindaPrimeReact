@@ -207,6 +207,7 @@ export default function PreviewDoc() {
                             <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
                             {/* <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column> */}
                             <Column showFilterMenu field="sonAlis" header="Son alış" sortable></Column>
+                            <Column field="restAmount" header="Anbar Qallığı" sortable></Column>
                             <Column field="amount" header="Təklif miqdarı" sortable></Column>
                             <Column field="price" header="Qiymət" sortable></Column>
                             <Column field="curr" header="Valyuta" sortable></Column>
