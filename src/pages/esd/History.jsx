@@ -104,6 +104,7 @@ export default function History() {
           ></Column>
           <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column>
           <Column field="docTypeName" header="Sənəd Növü" sortable></Column>
+          <Column field="description" header="Açıqlama" sortable></Column>
           <Column field="senderName" header="Göndərən" sortable></Column>
           <Column
             sortable
