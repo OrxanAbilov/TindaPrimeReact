@@ -23,7 +23,11 @@ import { useSelector } from "react-redux";
 import ProcurementDetail from "./pages/procurement/ProcurementDetail";
 import MesMer from "./pages/admin/esd/MesMer";
 import EditMesMer from "./pages/admin/esd/EditMesMer";
-
+import QuestionGroups from "./pages/clients/checklist/question-group/QuestionGroups";
+import Reasons from "./pages/clients/checklist/reasons/Reasons";
+import Questions from "./pages/clients/checklist/questions/Questions";
+import Checklists from "./pages/clients/checklist/checklists/Checklists";
+import ChecklistResults from "./pages/clients/checklist/checklist-results/ChecklistResults";
 
 export default function App() {
   const { userData } = useSelector((state) => state.loginSlice);
@@ -48,6 +52,13 @@ export default function App() {
           <Route path="/procurement" element={<Procurement />}>
             <Route path="docs" index element={<ProcurementDocs />} />
             <Route path="docs/detail/:id" element={<ProcurementDetail />} />
+          </Route>
+          <Route path="/clients" element={<Procurement />}>
+            <Route path="checklists" element={<Checklists />} />
+            <Route path="checklist/question-groups" element={<QuestionGroups />} />
+            <Route path="checklist/reasons" element={<Reasons />} />
+            <Route path="checklist/questions" element={<Questions />} />
+            <Route path="checklist/checklist-results" element={<ChecklistResults />} />
           </Route>
 
           {userType === 1 && (

@@ -8,6 +8,7 @@ import { PrimeReactProvider } from 'primereact/api';
 import { Provider } from 'react-redux'
 import store from './app/store.js'
 import { BrowserRouter} from 'react-router-dom';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
 

@@ -1,0 +1,65 @@
+/* AddEditDialog.css */
+
+.image-upload-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.image-square {
+    position: relative;
+    min-width: 100px;
+    height: 100px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Ensure images don't overflow the square */
+    position: relative; /* Ensure positioning of trash icon */
+    margin-bottom: 10px;
+    margin-right: 10px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+}
+
+.image-square img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.trash-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 20px;
+    color: #fff; /* Trash icon color */
+    cursor: pointer;
+    color: red;
+    background-color: #fff; /* Background color */
+    display: flex;
+    border-radius: 20%;
+    align-items: center;
+    justify-content: center;
+}
+
+.plus-icon {
+    font-size: 24px;
+    color: #555; /* Plus icon color */
+    cursor: pointer;
+}
+
+.image-square input[type="file"] {
+    display: none;
+}
+
+.image-square span {
+    font-size: 24px;
+    cursor: pointer;
+    color: #555; /* Change color as needed */
+}
+
+.image-square:hover {
+    border-color: #007ad9; /* Change hover border color */
+    box-shadow: 0 0 5px rgba(0, 122, 217, 0.5); /* Add a subtle box shadow on hover */
+}

@@ -1,0 +1,81 @@
+import React, { useState } from 'react';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import PropTypes from 'prop-types';
+
+const AddEditDialog = ({ visible, onHide, newGroup, setNewGroup, onSave, header }) => {
+    const [validationErrors, setValidationErrors] = useState({});
+
+    const handleInputChange = (e, field) => {
+        setNewGroup({ ...newGroup, [field]: e.target.value });
+    };
+
+    const validate = () => {
+        const errors = {};
+        if (!newGroup.name) errors.name = '* Adı qeyd edin';
+        if (!newGroup.desc) errors.desc = '* Açıqlamanı qeyd edin';
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleSave = () => {
+        if (validate()) {
+            onSave();
+        }
+    };
+
+    return (
+        <Dialog header={header} visible={visible} style={{ width: '50vw' }} modal onHide={onHide}>
+            <div className="p-fluid">
+                <div className="p-field">
+                    <label htmlFor="code">Kod</label>
+                    <InputText
+                        id="code"
+                        value={newGroup.code}
+                        onChange={(e) => handleInputChange(e, 'code')}
+                        className="p-inputtext-lg p-d-block my-2"
+                        disabled
+                    />
+                </div>
+                <div className="p-field">
+                    <label htmlFor="name">Ad</label>
+                    <InputText
+                        id="name"
+                        value={newGroup.name}
+                        onChange={(e) => handleInputChange(e, 'name')}
+                        className="p-inputtext-lg p-d-block my-2"
+                        required
+                    />
+                    {validationErrors.name && <small className="p-error">{validationErrors.name}</small>}
+                </div>
+                <div className="p-field">
+                    <label htmlFor="desc">Açıqlama</label>
+                    <InputText
+                        id="desc"
+                        value={newGroup.desc}
+                        onChange={(e) => handleInputChange(e, 'desc')}
+                        className="p-inputtext-lg p-d-block my-2"
+                        required
+                    />
+                    {validationErrors.desc && <small className="p-error">{validationErrors.desc}</small>}
+                </div>
+            </div>
+            <div className="p-dialog-footer" style={{ marginTop: '15px', padding: '0' }}>
+                <Button label="Yadda saxla" onClick={handleSave} className="p-button-primary" />
+                <Button label="Ləğv et" onClick={onHide} className="p-button-secondary" />
+            </div>
+        </Dialog>
+    );
+};
+
+AddEditDialog.propTypes = {
+    visible: PropTypes.bool.isRequired,
+    onHide: PropTypes.func.isRequired,
+    newGroup: PropTypes.object.isRequired,
+    setNewGroup: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+    header: PropTypes.string.isRequired,
+};
+
+export default AddEditDialog;
