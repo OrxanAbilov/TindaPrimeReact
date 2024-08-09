@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Paginator } from 'primereact/paginator';
-import { GET_ALL_QUESTION_GROUPS, POST_NEW_QUESTION_GROUP, EDIT_QUESTION_GROUP, REMOVE_QUESTION_GROUP } from '../../../../features/clients/services/api';
+import { GET_SPECIAL_SETTINGS_OPERATIONS, 
+         EDIT_SPECIAL_SETTING_OPERATION, 
+         POST_NEW_SPECIAL_SETTING_OPERATION, 
+         REMOVE_SETTING_OPERATION } from '../../../../features/clients/services/api';
 import Loading from '../../../../components/Loading';
 import Error from '../../../../components/Error';
 import styled from 'styled-components';
@@ -10,9 +13,8 @@ import { BiSearch, BiPencil, BiTrash, BiPlus } from 'react-icons/bi';
 import AddEditDialog from './AddEditDialog';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
 
-const QuestionGroups = () => {
+const SpecialSettingsOperations = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -27,14 +29,12 @@ const QuestionGroups = () => {
     });
 
     const [searchCriteria, setSearchCriteria] = useState([
-        { colName: 'code' },
         { colName: 'name' },
         { colName: 'desc' },
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newGroup, setNewGroup] = useState({
-        code: '',
+    const [newOperation, setNewOperation] = useState({
         name: '',
         desc: '',
     });
@@ -50,7 +50,7 @@ const QuestionGroups = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await GET_ALL_QUESTION_GROUPS({
+            const response = await GET_SPECIAL_SETTINGS_OPERATIONS({
                 ...filters,
                 start: filters.first,
                 pageSize: filters.pageSize
@@ -89,7 +89,7 @@ const QuestionGroups = () => {
     };
 
     const handleEditClick = (rowData) => {
-        setNewGroup({ typE_ID: rowData.typE_ID, id: rowData.id, code: rowData.code, name: rowData.name, desc: rowData.desc });
+        setNewOperation({ id: rowData.id, name: rowData.name, desc: rowData.desc });
         setIsModalOpen(true);
     };
 
@@ -100,7 +100,7 @@ const QuestionGroups = () => {
 
     const handleDeleteConfirm = async (item) => {
         try {
-            await REMOVE_QUESTION_GROUP(item.id);
+            await REMOVE_SETTING_OPERATION(item.id);
             setShowDeleteModal(false);
             fetchData();
         } catch (error) {
@@ -109,13 +109,13 @@ const QuestionGroups = () => {
     };
 
     const openModal = () => {
-        setNewGroup({ typE_ID: 0, id: 0, code: '', name: '', desc: '', status: true });
+        setNewOperation({ id: 0, name: '', desc: '' });
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setNewGroup({ typE_ID: 0, id: 0, code: '', name: '', desc: '', status: true });
+        setNewOperation({  id: 0, name: '', desc: '' });
     };
 
     if (loading) {
@@ -169,21 +169,21 @@ const QuestionGroups = () => {
     );
 
     const onSave = async () => {
-        if (newGroup?.id > 0) {
+        if (newOperation?.id > 0) {
             try {
-                await EDIT_QUESTION_GROUP(newGroup);
+                await EDIT_SPECIAL_SETTING_OPERATION(newOperation);
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question group', error);
+                console.error('Error saving setting operation', error);
             }
         } else {
             try {
-                await POST_NEW_QUESTION_GROUP(newGroup);
+                await POST_NEW_SPECIAL_SETTING_OPERATION(newOperation);
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question group', error);
+                console.error('Error saving setting operation', error);
             }
         }
     };
@@ -191,7 +191,7 @@ const QuestionGroups = () => {
     return (
         <Wrapper>
             <TopBar>
-                <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni sual qrupu</Button>
+                <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni özəl ayar</Button>
             </TopBar>
             <DataTableContainer>
                 <DataTable
@@ -202,12 +202,6 @@ const QuestionGroups = () => {
                     emptyMessage="Məlumat tapılmadı"
                     className="p-datatable-sm"
                 >
-                    <Column
-                        field="code"
-                        header={renderHeader('code', 'Kod')}
-                        body={(rowData) => <Truncate>{rowData.code}</Truncate>}
-                        frozen
-                    />
                     <Column
                         field="name"
                         header={renderHeader('name', 'Ad')}
@@ -236,9 +230,9 @@ const QuestionGroups = () => {
                 visible={isModalOpen}
                 onHide={closeModal}
                 onSave={onSave}
-                newGroup={newGroup}
-                setNewGroup={setNewGroup}
-                header={newGroup?.id > 0 ? 'Dəyişdir' : 'Əlavə et'}
+                newOperation={newOperation}
+                setNewOperation={setNewOperation}
+                header={newOperation?.id > 0 ? 'Dəyişdir' : 'Əlavə et'}
             />
             <DeleteConfirmationModal
                 visible={showDeleteModal}
@@ -265,7 +259,7 @@ const TopBar = styled.div`
 const DataTableContainer = styled.div`
   overflow-y: auto;
   width: 100%;
-  max-width: 82vw;
+  max-width: 85vw;
   font-size: 12px;
 `;
 
@@ -306,4 +300,4 @@ const RemoveButton = styled.button`
   cursor: pointer;
 `;
 
-export default QuestionGroups;
+export default SpecialSettingsOperations;

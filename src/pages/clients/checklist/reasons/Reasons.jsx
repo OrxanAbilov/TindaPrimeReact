@@ -188,7 +188,7 @@ const Reasons = () => {
                     }}
                     onKeyPress={handleKeyPress}
                 />
-                {field !== 'status' && <SearchIcon onClick={handleSearchClick}><BiSearch size={16} /></SearchIcon>}
+                {field !== 'status' && <SearchIcon onClick={handleSearchClick}><BiSearch size={18} /></SearchIcon>}
             </InputContainer>
         </div>
     );
@@ -196,10 +196,10 @@ const Reasons = () => {
     const editButtonTemplate = (rowData) => (
         <ButtonContainer>
             <EditButton onClick={() => handleEditClick(rowData)}>
-                <BiPencil size={16} />
+                <BiPencil size={18} />
             </EditButton>
             <RemoveButton onClick={() => handleRemoveClick(rowData)}>
-                <BiTrash size={16} />
+                <BiTrash size={18} />
             </RemoveButton>
         </ButtonContainer>
     );
@@ -211,7 +211,7 @@ const Reasons = () => {
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question group', error);
+                alert('Bilinməyən bir xəta baş verdi', error);
             }
         } else {
             try {
@@ -219,7 +219,7 @@ const Reasons = () => {
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question group', error);
+                alert('Bilinməyən bir xəta baş verdi', error);
             }
         }
     };
@@ -248,7 +248,7 @@ const Reasons = () => {
                     rows={filters.pageSize}
                     totalRecords={totalRecords}
                     dataKey="id"
-                    emptyMessage="No documents found"
+                    emptyMessage="Məlumat tapılmadı"
                     className="p-datatable-sm"
                 >
                     <Column

@@ -86,6 +86,7 @@ const AddEditDialog = ({ visible, onHide, newReason, setnewReason, onSave, heade
                         onChange={(e) => handleInputChange(e, 'code')}
                         className="p-inputtext-lg p-d-block my-2"
                         disabled
+                        style={{backgroundColor: '#ECECEC'}}
                     />
                 </div>
                 <div className="p-field">

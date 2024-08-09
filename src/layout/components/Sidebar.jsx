@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import 'primeicons/primeicons.css';
-import { Ripple } from 'primereact/ripple';
+import { Ripple } from 'primereact/Ripple';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/images/Logo2.png';

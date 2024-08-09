@@ -46,7 +46,6 @@ const GET_QUESTION_GROUPS_FOR_DROPDOWN = async (filters) => {
   return res.data;
 };
 
-
 const POST_NEW_QUESTION_GROUP = async (newGroupData) => {
   try {
     const res = await instance.post('CheckListQuestionGroup', newGroupData);
@@ -319,6 +318,125 @@ const GET_ALL_CHECKLIST_RESULTS = async (filters) => {
   return res.data;
 };
 
+
+const GET_CHECKLIST_RESULT_DETAILS_BY_CHEKLIST_ID = async (id) => {
+  const res = await instance.get(
+    `CheckListResult/${id}`
+  );
+  return res.data;
+};
+
+const GET_SPECIAL_SETTINGS_OPERATIONS = async (filters) => {
+  const { start, pageSize, order, orderColumn, searchList } = filters;
+  
+  const res = await instance.post('SpecialSettingOperations/GetWithPagination', {
+    start,
+    pageSize,
+    draw: filters.draw || 0,
+    order: order || 'asc',
+    orderColumn: orderColumn || 'id',
+    searchList: searchList || []
+  });
+  
+  return res.data;
+};
+
+const POST_NEW_SPECIAL_SETTING_OPERATION = async (newOperationData) => {
+  try {
+    const res = await instance.post('SpecialSettingOperations', newOperationData);
+    return res.data;
+  } catch (error) {
+    console.error('Error creating setting operation', error);
+    throw new Error('Error creating setting operation');
+  }
+};
+
+const EDIT_SPECIAL_SETTING_OPERATION = async (newOperationData) => {
+  try {
+    const res = await instance.put('SpecialSettingOperations', newOperationData);
+    return res.data;
+  } catch (error) {
+    console.error('Error editing setting operation', error);
+    throw new Error('Error editing setting operation');
+  }
+};
+
+const REMOVE_SETTING_OPERATION = async (operationId) => {
+  try {
+    const res = await instance.delete(`SpecialSettingOperations/${operationId}`);
+    return res.data;
+  } catch (error) {
+    console.error('Error deleting setting operation', error);
+    throw new Error('Error deleting setting operation');
+  }
+};
+
+const GET_SPECIAL_SETTINGS = async (filters) => {
+  const { start, pageSize, order, orderColumn, searchList } = filters;
+  
+  const res = await instance.post('SpecialSetting/GetWithPagination/1', {
+    start,
+    pageSize,
+    draw: filters.draw || 0,
+    order: order || 'asc',
+    orderColumn: orderColumn || 'id',
+    searchList: searchList || []
+  });
+  
+  return res.data;
+};
+
+const GET_ALL_CLIENTS = async (filters) => {
+  const { start, pageSize, order, orderColumn, searchList } = filters;
+  
+  const res = await instance.post('SpecialSetting/GetClientsWithPagination', {
+    start,
+    pageSize,
+    draw: filters.draw || 0,
+    order: order || 'asc',
+    orderColumn: orderColumn || 'id',
+    searchList: searchList || []
+  });
+  
+  return res.data;
+};
+
+const POST_NEW_SPEACIAL_SETTING = async (blockData) => {
+  try {
+    const res = await instance.post('SpecialSetting', blockData);
+    return res.data;
+  } catch (error) {
+    console.error('Error creating question group', error);
+    throw new Error('Error creating question group');
+  }
+};
+
+
+const GET_SPECIAL_SETTINGS_OPERATIONS_BY_CODE = async (code,filters) => {
+  const { start, pageSize, order, orderColumn, searchList } = filters;
+  
+    const res = await instance.post(`SpecialSetting/GetOperationsWithPagination/${code}`, {
+    start,
+    pageSize,
+    draw: filters.draw || 0,
+    order: order || 'asc',
+    orderColumn: orderColumn || 'id',
+    searchList: searchList || []
+  });
+  
+  return res.data;
+};
+
+const UPDATE_SPEACIAL_SETTING = async (blockData) => {
+  try {
+    const res = await instance.put('SpecialSetting', blockData);
+    return res.data;
+  } catch (error) {
+    console.error('Error creating question group', error);
+    throw new Error('Error creating question group');
+  }
+};
+
 export {
    GET_ALL_DOCUMENTS_FOR_HISTORY, 
    POST_NEW_CHECKLIST, 
@@ -348,5 +466,15 @@ export {
    GET_QUESTIONS_BY_CHECKLIST_ID,
    GET_SALESMEN_BY_CHECKLIST_ID,
    GET_ALL_SALESMEN,
-   GET_ALL_CHECKLIST_RESULTS
+   GET_ALL_CHECKLIST_RESULTS,
+   GET_CHECKLIST_RESULT_DETAILS_BY_CHEKLIST_ID,
+   GET_SPECIAL_SETTINGS_OPERATIONS,
+   POST_NEW_SPECIAL_SETTING_OPERATION,
+   EDIT_SPECIAL_SETTING_OPERATION,
+   REMOVE_SETTING_OPERATION,
+   GET_SPECIAL_SETTINGS,
+   GET_ALL_CLIENTS,
+   POST_NEW_SPEACIAL_SETTING,
+   GET_SPECIAL_SETTINGS_OPERATIONS_BY_CODE,
+   UPDATE_SPEACIAL_SETTING
   };

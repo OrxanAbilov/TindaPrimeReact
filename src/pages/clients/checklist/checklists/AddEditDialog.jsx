@@ -103,7 +103,7 @@ const AddEditDialog = ({ visible, onHide, newChecklist, setNewChecklist, onSave,
                         onKeyPress={handleKeyPress}
                     />
                 )}
-                <SearchIcon onClick={handleSearchClick}><BiSearch size={16} /></SearchIcon>
+                <SearchIcon onClick={handleSearchClick}><BiSearch size={18} /></SearchIcon>
             </InputContainer>
         </div>
     );
@@ -320,7 +320,7 @@ const AddEditDialog = ({ visible, onHide, newChecklist, setNewChecklist, onSave,
                 console.log('editData CHECKLIST:',postData);
                 await EDIT_CHECKLIST(postData);
                 } catch (error) {
-                    console.error('Error saving question', error);
+                    alert('Bilinməyən bir xəta baş verdi', error);
                 }
             } 
             else {
@@ -328,7 +328,7 @@ const AddEditDialog = ({ visible, onHide, newChecklist, setNewChecklist, onSave,
                 console.log('postData CHECKLIST:',postData);
                 await POST_NEW_CHECKLIST(postData);
                 } catch (error) {
-                console.error('Error saving question', error);
+                alert('Bilinməyən bir xəta baş verdi', error);
                 }
             }
         }
@@ -462,6 +462,7 @@ const AddEditDialog = ({ visible, onHide, newChecklist, setNewChecklist, onSave,
                                     onChange={(e) => setNewChecklist({ ...newChecklist, code: e.target.value })}
                                     className="p-inputtext-lg p-d-block my-2"
                                     disabled
+                                    style={{backgroundColor: '#ECECEC'}}
                                 />
                             </div>
                             <div className="p-field" style={{ width: '33.3%' }}>
@@ -821,7 +822,7 @@ AddEditDialog.propTypes = {
 const DataTableContainer = styled.div`
   overflow-y: auto;
   width: 100%;
-  max-width: 1350px;
+  max-width: 88.5vw;
   font-size: 12px;
 `;
 

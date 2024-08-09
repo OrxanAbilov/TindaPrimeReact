@@ -4,6 +4,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    align-items: center;
 }
 
 .image-square {
@@ -14,12 +15,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* Ensure images don't overflow the square */
-    position: relative; /* Ensure positioning of trash icon */
-    margin-bottom: 10px;
-    margin-right: 10px;
+    overflow: hidden;
     background-color: #f0f0f0;
     border-radius: 8px;
+}
+
+.image-square.no-image {
+    min-width: 40px;
+    height: 40px;
+}
+
+.image-square.image-present {
+    min-width: 100px;
+    height: 100px;
 }
 
 .image-square img {
@@ -62,4 +70,9 @@
 .image-square:hover {
     border-color: #007ad9; /* Change hover border color */
     box-shadow: 0 0 5px rgba(0, 122, 217, 0.5); /* Add a subtle box shadow on hover */
+}
+
+
+.button-and-image-container{
+    margin-bottom: 10px;
 }

@@ -170,7 +170,7 @@ const Checklist = () => {
             onKeyPress={handleKeyPress}
           />
         )}
-        <SearchIcon onClick={handleSearchClick}><BiSearch size={16} /></SearchIcon>
+        <SearchIcon onClick={handleSearchClick}><BiSearch size={18} /></SearchIcon>
       </InputContainer>
     </div>
   );
@@ -183,7 +183,7 @@ const Checklist = () => {
   const editButtonTemplate = (rowData) => (
     <ButtonContainer>
       <EditButton onClick={() => handleEditClick(rowData)}>
-        <BiPencil size={16} />
+        <BiPencil size={18} />
       </EditButton>
     </ButtonContainer>
   );

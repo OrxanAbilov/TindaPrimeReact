@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Paginator } from 'primereact/paginator';
-import { GET_ALL_QUESTION_GROUPS, POST_NEW_QUESTION_GROUP, EDIT_QUESTION_GROUP, REMOVE_QUESTION_GROUP } from '../../../../features/clients/services/api';
-import Loading from '../../../../components/Loading';
-import Error from '../../../../components/Error';
+import { EDIT_NOTIFICATION_OPERATION, GET_ALL_NOTIFICATION_OPERATIONS, POST_NEW_NOTIFICATION_OPERATION, REMOVE_NOTIFICATION_OPERATION } from '../../../features/notification/services/api';
+import Loading from '../../../components/Loading';
+import Error from '../../../components/Error';
 import styled from 'styled-components';
 import { BiSearch, BiPencil, BiTrash, BiPlus } from 'react-icons/bi';
 import AddEditDialog from './AddEditDialog';
@@ -12,7 +12,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 
-const QuestionGroups = () => {
+const NotificationOperations = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,14 +28,12 @@ const QuestionGroups = () => {
 
     const [searchCriteria, setSearchCriteria] = useState([
         { colName: 'code' },
-        { colName: 'name' },
         { colName: 'desc' },
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newGroup, setNewGroup] = useState({
+    const [newOperation, setNewOperation] = useState({
         code: '',
-        name: '',
         desc: '',
     });
 
@@ -50,7 +48,7 @@ const QuestionGroups = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await GET_ALL_QUESTION_GROUPS({
+            const response = await GET_ALL_NOTIFICATION_OPERATIONS({
                 ...filters,
                 start: filters.first,
                 pageSize: filters.pageSize
@@ -89,7 +87,7 @@ const QuestionGroups = () => {
     };
 
     const handleEditClick = (rowData) => {
-        setNewGroup({ typE_ID: rowData.typE_ID, id: rowData.id, code: rowData.code, name: rowData.name, desc: rowData.desc });
+        setNewOperation({ id: rowData.id, code: rowData.code, desc: rowData.desc });
         setIsModalOpen(true);
     };
 
@@ -100,22 +98,22 @@ const QuestionGroups = () => {
 
     const handleDeleteConfirm = async (item) => {
         try {
-            await REMOVE_QUESTION_GROUP(item.id);
+            await REMOVE_NOTIFICATION_OPERATION(item.id);
             setShowDeleteModal(false);
             fetchData();
         } catch (error) {
-            alert('Sual qrupunu silərkən xəta baş verdi', error);
+            alert('Xəta baş verdi', error);
         }
     };
 
     const openModal = () => {
-        setNewGroup({ typE_ID: 0, id: 0, code: '', name: '', desc: '', status: true });
+        setNewOperation({  id: 0, code: '', desc: '', status: true });
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setNewGroup({ typE_ID: 0, id: 0, code: '', name: '', desc: '', status: true });
+        setNewOperation({  id: 0, code: '', desc: '', status: true });
     };
 
     if (loading) {
@@ -169,21 +167,21 @@ const QuestionGroups = () => {
     );
 
     const onSave = async () => {
-        if (newGroup?.id > 0) {
+        if (newOperation?.id > 0) {
             try {
-                await EDIT_QUESTION_GROUP(newGroup);
+                await EDIT_NOTIFICATION_OPERATION(newOperation);
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question group', error);
+                console.error('Error saving NotificationOperation', error);
             }
         } else {
             try {
-                await POST_NEW_QUESTION_GROUP(newGroup);
+                await POST_NEW_NOTIFICATION_OPERATION(newOperation);
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question group', error);
+                console.error('Error saving NotificationOperation', error);
             }
         }
     };
@@ -191,7 +189,7 @@ const QuestionGroups = () => {
     return (
         <Wrapper>
             <TopBar>
-                <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni sual qrupu</Button>
+                <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni əməliyyat</Button>
             </TopBar>
             <DataTableContainer>
                 <DataTable
@@ -207,11 +205,6 @@ const QuestionGroups = () => {
                         header={renderHeader('code', 'Kod')}
                         body={(rowData) => <Truncate>{rowData.code}</Truncate>}
                         frozen
-                    />
-                    <Column
-                        field="name"
-                        header={renderHeader('name', 'Ad')}
-                        body={(rowData) => <Truncate>{rowData.name}</Truncate>}
                     />
                     <Column
                         field="desc"
@@ -236,9 +229,9 @@ const QuestionGroups = () => {
                 visible={isModalOpen}
                 onHide={closeModal}
                 onSave={onSave}
-                newGroup={newGroup}
-                setNewGroup={setNewGroup}
-                header={newGroup?.id > 0 ? 'Dəyişdir' : 'Əlavə et'}
+                newOperation={newOperation}
+                setNewOperation={setNewOperation}
+                header={newOperation?.id > 0 ? 'Dəyişdir' : 'Əlavə et'}
             />
             <DeleteConfirmationModal
                 visible={showDeleteModal}
@@ -286,7 +279,7 @@ const Truncate = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 150px;
+  max-width: 450px;
 `;
 
 const ButtonContainer = styled.div`
@@ -306,4 +299,4 @@ const RemoveButton = styled.button`
   cursor: pointer;
 `;
 
-export default QuestionGroups;
+export default NotificationOperations;

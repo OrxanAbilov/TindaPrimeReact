@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Paginator } from 'primereact/paginator';
-import { GET_ALL_QUESTION_GROUPS, POST_NEW_QUESTION_GROUP, EDIT_QUESTION_GROUP, REMOVE_QUESTION_GROUP } from '../../../../features/clients/services/api';
+import { GET_SPECIAL_SETTINGS, POST_NEW_SPEACIAL_SETTING, GET_SPECIAL_SETTINGS_OPERATIONS_BY_CODE, UPDATE_SPEACIAL_SETTING } from '../../../../features/clients/services/api';
 import Loading from '../../../../components/Loading';
 import Error from '../../../../components/Error';
 import styled from 'styled-components';
-import { BiSearch, BiPencil, BiTrash, BiPlus } from 'react-icons/bi';
-import AddEditDialog from './AddEditDialog';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
+import { BiSearch, BiBlock, BiTrash, BiPlus } from 'react-icons/bi';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
+import AddDialog from './AddDialog';
+import EditDialog from './EditDialog';
 
-const QuestionGroups = () => {
+const SpecialSettings = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -27,20 +26,19 @@ const QuestionGroups = () => {
     });
 
     const [searchCriteria, setSearchCriteria] = useState([
-        { colName: 'code' },
-        { colName: 'name' },
-        { colName: 'desc' },
+        { colName: 'blockeD_CODE' },
+        { colName: 'blockeD_NAME' },
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newGroup, setNewGroup] = useState({
-        code: '',
-        name: '',
-        desc: '',
+    const [newBlock, setNewBlock] = useState({
+        blockeD_CODEs: [],
+        typE_ID: 0,
+        operatioN_IDs: []
     });
 
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editedBlock, setEditedBlock] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -50,7 +48,7 @@ const QuestionGroups = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await GET_ALL_QUESTION_GROUPS({
+            const response = await GET_SPECIAL_SETTINGS({
                 ...filters,
                 start: filters.first,
                 pageSize: filters.pageSize
@@ -88,34 +86,32 @@ const QuestionGroups = () => {
         }));
     };
 
-    const handleEditClick = (rowData) => {
-        setNewGroup({ typE_ID: rowData.typE_ID, id: rowData.id, code: rowData.code, name: rowData.name, desc: rowData.desc });
-        setIsModalOpen(true);
-    };
-
-    const handleRemoveClick = (rowData) => {
-        setItemToDelete(rowData);
-        setShowDeleteModal(true);
-    };
-
-    const handleDeleteConfirm = async (item) => {
+    const handleEditClick = async (rowData) => {
         try {
-            await REMOVE_QUESTION_GROUP(item.id);
-            setShowDeleteModal(false);
-            fetchData();
+            const response = await GET_SPECIAL_SETTINGS_OPERATIONS_BY_CODE(rowData.blockeD_CODE, filters);
+            console.log(response.data);
+            const operations = response.data.data;
+            setEditedBlock({ ...rowData, operations });
+            setIsEditModalOpen(true);
         } catch (error) {
-            alert('Sual qrupunu silərkən xəta baş verdi', error);
+            console.error('Error fetching operations data', error);
+            setError('Error fetching operations data');
         }
     };
-
-    const openModal = () => {
-        setNewGroup({ typE_ID: 0, id: 0, code: '', name: '', desc: '', status: true });
+    
+    const openAddModal = () => {
+        setNewBlock({ blockeD_CODEs: [], typE_ID: 0, operatioN_IDs: 0 });
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setNewGroup({ typE_ID: 0, id: 0, code: '', name: '', desc: '', status: true });
+        setNewBlock({ blockeD_CODEs: [], typE_ID: 0, operatioN_IDs: 0 });
+    };
+
+    const closeEditModal = () => {
+        setIsEditModalOpen(false);
+        setEditedBlock(null);
     };
 
     if (loading) {
@@ -160,38 +156,40 @@ const QuestionGroups = () => {
     const editButtonTemplate = (rowData) => (
         <ButtonContainer>
             <EditButton onClick={() => handleEditClick(rowData)}>
-                <BiPencil size={18} />
+                <BiBlock size={18} />
             </EditButton>
-            <RemoveButton onClick={() => handleRemoveClick(rowData)}>
-                <BiTrash size={18} />
-            </RemoveButton>
         </ButtonContainer>
     );
 
-    const onSave = async () => {
-        if (newGroup?.id > 0) {
+    
+    const onSave = async (blockData) => {
+        console.log('POSTDATA:',blockData)
             try {
-                await EDIT_QUESTION_GROUP(newGroup);
+                await POST_NEW_SPEACIAL_SETTING(blockData);
                 closeModal();
                 fetchData();
             } catch (error) {
                 console.error('Error saving question group', error);
             }
-        } else {
-            try {
-                await POST_NEW_QUESTION_GROUP(newGroup);
-                closeModal();
-                fetchData();
-            } catch (error) {
-                console.error('Error saving question group', error);
-            }
+    };
+
+    const onEdit = async (blockData) => {
+        console.log('putdata:',blockData)
+        try {
+            await UPDATE_SPEACIAL_SETTING(blockData);
+            closeEditModal();
+            fetchData();
+        } catch (error) {
+            console.error('Error saving question group', error);
         }
     };
+
+
 
     return (
         <Wrapper>
             <TopBar>
-                <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni sual qrupu</Button>
+                <Button onClick={openAddModal} severity="secondary"><BiPlus size={18} />Əlavə et</Button>
             </TopBar>
             <DataTableContainer>
                 <DataTable
@@ -203,20 +201,14 @@ const QuestionGroups = () => {
                     className="p-datatable-sm"
                 >
                     <Column
-                        field="code"
-                        header={renderHeader('code', 'Kod')}
-                        body={(rowData) => <Truncate>{rowData.code}</Truncate>}
-                        frozen
+                        field="blockeD_CODE"
+                        header={renderHeader('blockeD_CODE', 'Kod')}
+                        body={(rowData) => <Truncate>{rowData.blockeD_CODE	}</Truncate>}
                     />
                     <Column
-                        field="name"
-                        header={renderHeader('name', 'Ad')}
-                        body={(rowData) => <Truncate>{rowData.name}</Truncate>}
-                    />
-                    <Column
-                        field="desc"
-                        header={renderHeader('desc', 'Açıqlama')}
-                        body={(rowData) => <Truncate>{rowData.desc}</Truncate>}
+                        field="blockeD_NAME"
+                        header={renderHeader('blockeD_NAME', 'Ad')}
+                        body={(rowData) => <Truncate>{rowData.blockeD_NAME}</Truncate>}
                     />
                     <Column
                         header={'#'}
@@ -232,19 +224,19 @@ const QuestionGroups = () => {
                     onPageChange={onPageChange}
                 />
             </DataTableContainer>
-            <AddEditDialog
+            <AddDialog
                 visible={isModalOpen}
                 onHide={closeModal}
                 onSave={onSave}
-                newGroup={newGroup}
-                setNewGroup={setNewGroup}
-                header={newGroup?.id > 0 ? 'Dəyişdir' : 'Əlavə et'}
+                newBlock={newBlock}
+                setNewBlock={setNewBlock}
             />
-            <DeleteConfirmationModal
-                visible={showDeleteModal}
-                onHide={() => setShowDeleteModal(false)}
-                onConfirm={handleDeleteConfirm}
-                itemToDelete={itemToDelete}
+            <EditDialog
+                visible={isEditModalOpen}
+                onHide={closeEditModal}
+                onEdit={onEdit}
+                editedBlock={editedBlock}
+                setEditedBlock={setEditedBlock}
             />
         </Wrapper>
     );
@@ -265,7 +257,7 @@ const TopBar = styled.div`
 const DataTableContainer = styled.div`
   overflow-y: auto;
   width: 100%;
-  max-width: 82vw;
+  max-width: 85vw;
   font-size: 12px;
 `;
 
@@ -286,7 +278,7 @@ const Truncate = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 150px;
+  max-width: 300px;
 `;
 
 const ButtonContainer = styled.div`
@@ -300,10 +292,5 @@ const EditButton = styled.button`
   cursor: pointer;
 `;
 
-const RemoveButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-`;
 
-export default QuestionGroups;
+export default SpecialSettings;

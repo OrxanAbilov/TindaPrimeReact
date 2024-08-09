@@ -28,6 +28,10 @@ import Reasons from "./pages/clients/checklist/reasons/Reasons";
 import Questions from "./pages/clients/checklist/questions/Questions";
 import Checklists from "./pages/clients/checklist/checklists/Checklists";
 import ChecklistResults from "./pages/clients/checklist/checklist-results/ChecklistResults";
+import SpecialSettingsOperations from "./pages/clients/special-settings/special-settings-operations/SpecialSettingsOperations";
+import SpecialSettings from "./pages/clients/special-settings/special-settings/SpecialSettings";
+import NotificationOperations from "./pages/notification/notification-operations/NotificationOperations";
+import NotificationHistory from "./pages/notification/notification-senders/NotificationHistory";
 
 export default function App() {
   const { userData } = useSelector((state) => state.loginSlice);
@@ -59,6 +63,13 @@ export default function App() {
             <Route path="checklist/reasons" element={<Reasons />} />
             <Route path="checklist/questions" element={<Questions />} />
             <Route path="checklist/checklist-results" element={<ChecklistResults />} />
+            <Route path="special-settings/special-settings-operations" element={<SpecialSettingsOperations />} />
+            <Route path="sx" element={<SpecialSettings/>} />
+          </Route>
+
+          <Route path="/notification" element={<Procurement />}>
+            <Route path="operations" element={<NotificationOperations />} />
+            <Route path="history" element={<NotificationHistory />} />
           </Route>
 
           {userType === 1 && (

@@ -154,7 +154,7 @@ const Checklists = () => {
             setShowDeleteModal(false);
             fetchData();
         } catch (error) {
-            console.error('Error deleting checklist', error);
+            alert('Bilinməyən bir xəta baş verdi', error);
         }
     };
 
@@ -248,7 +248,7 @@ const Checklists = () => {
                         onKeyPress={handleKeyPress}
                     />
                 )}
-                <SearchIcon onClick={handleSearchClick}><BiSearch size={16} /></SearchIcon>
+                <SearchIcon onClick={handleSearchClick}><BiSearch size={18} /></SearchIcon>
             </InputContainer>
         </div>
     );
@@ -256,13 +256,10 @@ const Checklists = () => {
     const editButtonTemplate = (rowData) => (
         <ButtonContainer>
             <EditButton onClick={() => handleEditClick(rowData)}>
-                <BiPencil size={20} />
+                <BiPencil size={18} />
             </EditButton>
-            {/* <RemoveButton onClick={() => handleRemoveClick(rowData)}>
-                <BiTrash size={16} />
-            </RemoveButton> */}
             <CopyButton onClick={() => handleCopyClick(rowData)}>
-                <BiCopy size={20} />
+                <BiCopy size={18} />
             </CopyButton>
         </ButtonContainer>
     );
@@ -378,7 +375,7 @@ const TopBar = styled.div`
 const DataTableContainer = styled.div`
   overflow-y: auto;
   width: 100%;
-  max-width: 1200px;
+  max-width: 82vw;
   font-size: 12px;
 `;
 

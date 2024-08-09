@@ -18,22 +18,35 @@ import {
 } from '../../../../features/clients/services/api';
 import Variants from './Variants';
 
-const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, header, variant, setVariant, showVariants, images, setImages, setShowVariants }) => {
+const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, header, variant, setVariant, showVariants, images, setImages, setShowVariants, isCopy }) => {
     const [questionGroups, setQuestionGroups] = useState([]);
     const [rateTypes, setRateTypes] = useState([]);
     const [answerTypes, setAnswerTypes] = useState([]);
     const [imagePermissions, setImagePermissions] = useState([]);
     const [reasonPermissions, setReasonPermissions] = useState([]);
-    const [viewImageIndex, setViewImageIndex] = useState(null); // State to track the index of the image being viewed
-
+    const [viewImageIndex, setViewImageIndex] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
+    const [operatioN_STATUS, setOperatioN_STATUS] = useState(false); // Or some initial logic to set this
+    const [loading, setLoading] = useState(true); // Track loading state
 
     const fileInputRef = useRef(null);
-
     const statusOptions = [
         { label: 'Aktiv', value: true },
         { label: 'Passiv', value: false }
     ];
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .custom-dropdown .p-dropdown-label.p-placeholder {
+                color: #ff4d4d;
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
 
     useEffect(() => {
         if (newQuestion.id) {
@@ -55,7 +68,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
         setShowVariants(!showVariants);
         if ((newQuestion.answeR_TYPE_ID == 5 || newQuestion.answeR_TYPE_ID == 9 || newQuestion.answeR_TYPE_ID == 10 || newQuestion.answeR_TYPE_ID == 8) && newQuestion.id !== 0) {
             if (!showVariants) {
-                fetchVariants(newQuestion.id); // Fetch variants when toggling showVariants
+                fetchVariants(newQuestion.id);
             }
         }
     };
@@ -73,6 +86,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
         }
     }, [newQuestion.id]);
 
+
     useEffect(() => {
         if (newQuestion.ratE_TYPE_ID) {
             fetchAnswerTypes(newQuestion.ratE_TYPE_ID);
@@ -83,7 +97,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
         if (newQuestion.ratE_TYPE_ID !== 1) {
             setNewQuestion(prevState => ({
                 ...prevState,
-                questioN_POINT: null
+                questioN_POINT: 0 
             }));
         }
     }, [newQuestion.ratE_TYPE_ID]);
@@ -92,16 +106,16 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
         if (newQuestion.ratE_TYPE_ID !== 1) {
             setNewQuestion(prevState => ({
                 ...prevState,
-                answeR_REASON_PERMISSION_ID: null
+                answeR_REASON_PERMISSION_ID: 0
             }));
         }
     }, [newQuestion.ratE_TYPE_ID]);
 
     useEffect(() => {
-        if (newQuestion.answeR_IMG_PERMISSION_ID !== 1) {
+        if (newQuestion.answeR_IMG_PERMISSION_ID == 1) {
             setNewQuestion(prevState => ({
                 ...prevState,
-                answeR_IMG_COUNT: null
+                answeR_IMG_COUNT: 0 
             }));
         }
     }, [newQuestion.answeR_IMG_PERMISSION_ID]);
@@ -155,6 +169,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
 
     const fetchQuestionDetails = async (id) => {
         try {
+            setLoading(true); // Set loading to true when starting fetch
             const data = await GET_QUESTION_BY_ID(id);
             const questionData = data.data;
             setNewQuestion({
@@ -164,10 +179,14 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                 ratE_TYPE: questionData.ratE_TYPE || '',
                 ratE_TYPE_ID: questionData.ratE_TYPE_ID || ''
             });
+            setLoading(false); // Set loading to false when fetch is successful
         } catch (error) {
+            setError(error); // Set error state if an error occurs
+            setLoading(false); // Set loading to false if there's an error
             console.error('Error fetching question details:', error);
         }
     };
+
 
     const handleImageUpload = (event) => {
         const files = event.target.files;
@@ -201,16 +220,33 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
 
     const fetchImageAsBase64 = async (filePath) => {
         try {
-            console.log('Fetching image from:', filePath); // Log file path
-            const response = await fetch(filePath);
+            const encodedFilePath = encodeURI(filePath);
+            console.log('Fetching image from:', encodedFilePath);
+    
+            const response = await fetch(encodedFilePath);
+            console.log('Response Status:', response.status);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+    
             const blob = await response.blob();
+            console.log('Blob received:', blob);
+            console.log('Blob size:', blob.size);
+            
+            if (blob.size === 0) {
+                throw new Error('Blob is empty');
+            }
+            
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = reject;
+                reader.onloadend = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = (error) => {
+                    reject(error);
+                };
                 reader.readAsDataURL(blob);
             });
         } catch (error) {
@@ -218,7 +254,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
             return '';
         }
     };
-
+    
     useEffect(() => {
         async function fetchImages() {
             if (newQuestion.id) {
@@ -259,10 +295,11 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
         if (!newQuestion.desc) errors.desc = '* Açıqlama tələb olunur';
         if (newQuestion.status === undefined || newQuestion.status === null) errors.status = '* Status tələb olunur';
         if (!newQuestion.ratE_TYPE_ID) errors.ratE_TYPE_ID = '* Qiymətləndirmə forması tələb olunur';
-        if (!newQuestion.answeR_TYPE_ID) errors.answeR_TYPE_ID = '* Cavab tipi tələb olunur';
+        if (!newQuestion.answeR_TYPE_ID || newQuestion.answeR_TYPE_ID===0) errors.answeR_TYPE_ID = '* Cavab tipi tələb olunur';
         if (!newQuestion.answeR_IMG_PERMISSION_ID) errors.answeR_IMG_PERMISSION_ID = '* Şəkil icazəsi tələb olunur';
         if (newQuestion.ratE_TYPE_ID === 1 && newQuestion.questioN_POINT === undefined) errors.questioN_POINT = '* Sual balı tələb olunur';
-    
+        if (newQuestion.ratE_TYPE_ID === 1 && newQuestion.answeR_REASON_PERMISSION_ID === 0) errors.answeR_REASON_PERMISSION_ID = '* Səbəb icazəsi tələb olunur';
+        
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -273,9 +310,13 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
         }
     };
     
+    const isDisabled = !(isCopy || !newQuestion.operatioN_STATUS);
 
     return (
         <Dialog header={header} visible={visible} style={{ width: '95vw' }} modal onHide={onHide}>
+            {loading && newQuestion.id > 0 ? (
+                <Loading />
+            ) : (
             <div className="p-fluid">
                 <div className="flex" style={{ gap: '2rem' }}>
                     <div className="p-field" style={{ width: '30%' }}>
@@ -285,7 +326,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                             value={newQuestion.code}
                             onChange={(e) => setNewQuestion({ ...newQuestion, code: e.target.value })}
                             className="p-inputtext-lg p-d-block my-2"
-                            style={{ width: '100%' }}
+                            style={{ width: '100%', backgroundColor: '#ECECEC' }}
                             required
                             disabled
                         />
@@ -299,6 +340,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                             className="p-inputtext-lg p-d-block my-2"
                             style={{ width: '100%' }}
                             required
+                            disabled={isDisabled} 
                         />
                             {validationErrors.question && <small className="p-error">{validationErrors.question}</small>}
                     </div>
@@ -317,9 +359,10 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                                 questioN_GROUP_NAME: questionGroups.find(group => group.id === e.value)?.name || ''
                             })}
                             placeholder="Sual qrupu seçin"
-                            className="p-inputtext-lg p-d-block my-2"
+                            className="p-inputtext-lg p-d-block my-2 custom-dropdown"
                             style={{ width: '100%' }}
                             required
+                            disabled={isDisabled} 
                         />
                             {validationErrors.questioN_GROUP_ID && <small className="p-error">{validationErrors.questioN_GROUP_ID}</small>}
                     </div>
@@ -334,6 +377,7 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                             className="p-inputtext-lg p-d-block my-2"
                             style={{ width: '100%' }}
                             required
+                            disabled={isDisabled} 
                         />
                             {validationErrors.desc && <small className="p-error">{validationErrors.desc}</small>}
                     </div>
@@ -345,9 +389,10 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                             options={statusOptions}
                             onChange={(e) => setNewQuestion({ ...newQuestion, status: e.value })}
                             placeholder="Status seçin"
-                            className="p-inputtext-lg p-d-block my-2"
+                            className="p-inputtext-lg p-d-block my-2 custom-dropdown"
                             style={{ width: '100%' }}
                             required
+                            disabled={isDisabled} 
                         />
                             {validationErrors.status && <small className="p-error">{validationErrors.status}</small>}
                     </div>
@@ -368,9 +413,10 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                                 ratE_TYPE: rateTypes.find(type => type.id === e.value)?.name || ''
                             })}
                             placeholder="Qiymətləndirmə tipi seçin"
-                            className="p-inputtext-lg p-d-block my-2"
+                            className="p-inputtext-lg p-d-block my-2 custom-dropdown"
                             style={{ width: '100%' }}
                             required
+                            disabled={isDisabled} 
                         />
                             {validationErrors.ratE_TYPE_ID && <small className="p-error">{validationErrors.ratE_TYPE_ID}</small>}
                     </div>
@@ -385,9 +431,10 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                             }))}
                             onChange={(e) => setNewQuestion({ ...newQuestion, answeR_TYPE_ID: e.value })}
                             placeholder="Cavab tipi seçin"
-                            className="p-inputtext-lg p-d-block my-2"
+                            className="p-inputtext-lg p-d-block my-2 custom-dropdown"
                             style={{ width: '100%' }}
                             required
+                            disabled={isDisabled} 
                         />
                             {validationErrors.answeR_TYPE_ID && <small className="p-error">{validationErrors.answeR_TYPE_ID}</small>}
                     </div>
@@ -402,9 +449,10 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                             }))}
                             onChange={(e) => setNewQuestion({ ...newQuestion, answeR_IMG_PERMISSION_ID: e.value })}
                             placeholder="Şəkil icazəsi seçin"
-                            className="p-inputtext-lg p-d-block my-2"
+                            className="p-inputtext-lg p-d-block my-2 custom-dropdown"
                             style={{ width: '100%' }}
                             required
+                            disabled={isDisabled} 
                         />
                             {validationErrors.answeR_IMG_PERMISSION_ID && <small className="p-error">{validationErrors.answeR_IMG_PERMISSION_ID}</small>}
                     </div>
@@ -414,13 +462,13 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                     {newQuestion.answeR_IMG_PERMISSION_ID !== 1 && (
                         <>
                             <label htmlFor="answeR_IMG_COUNT">Şəkil sayı</label>
-                            <InputText
-                                type='number'
+                            <InputNumber
                                 id="answeR_IMG_COUNT"
                                 value={newQuestion.answeR_IMG_COUNT}
-                                onChange={(e) => setNewQuestion({ ...newQuestion, answeR_IMG_COUNT: e.target.value })}
+                                onChange={(e) => setNewQuestion({ ...newQuestion, answeR_IMG_COUNT: e.value })}
                                 className="p-inputtext-lg p-d-block my-2"
                                 style={{ width: '100%' }}
+                                disabled={isDisabled} 
                             />
                         </>
                     )}
@@ -438,21 +486,24 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                                 }))}
                                 onChange={(e) => setNewQuestion({ ...newQuestion, answeR_REASON_PERMISSION_ID: e.value })}
                                 placeholder="Səbəb icazəsi seçin"
-                                className="p-inputtext-lg p-d-block my-2"
+                                className="p-inputtext-lg p-d-block my-2 custom-dropdown"
                                 style={{ width: '100%' }}
-                            />
+                                required
+                                disabled={isDisabled} 
+                                />
+                            {validationErrors.answeR_REASON_PERMISSION_ID && <small className="p-error">{validationErrors.answeR_REASON_PERMISSION_ID}</small>}
                         </div>
                     )}
                     {newQuestion.ratE_TYPE_ID === 1 && (
                         <div className="p-field" style={{ width: '30%' }}>
                             <label htmlFor="questioN_POINT">Sual balı</label>
-                            <InputText
-                                type='number'
+                            <InputNumber
                                 id="questioN_POINT"
-                                value={newQuestion.questioN_POINT || null}
-                                onChange={(e) => setNewQuestion({ ...newQuestion, questioN_POINT: e.target.value })}
+                                value={newQuestion.questioN_POINT}
+                                onChange={(e) => setNewQuestion({ ...newQuestion, questioN_POINT: e.value })}
                                 className="p-inputtext-lg p-d-block my-2"
                                 style={{ width: '100%' }}
+                                disabled={isDisabled} 
                             />
                         </div>
                     )}
@@ -472,8 +523,8 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                     <label htmlFor="image-upload-container">Şəkillər</label>
                     <div className="image-upload-container" style={{ marginLeft: '1%' }}>
                         {images.map((image, index) => (
-                            <div className="image-square" key={index}>
-                                <img src={image.base64 ? `data:image/png;base64,${image.base64}` : image.filepath } alt={image.filename}
+                            <div className={`image-square ${image.base64 || image.filepath ? 'image-present' : 'no-image'}`} key={index}>
+                                <img src={image.base64 ? `data:image/png;base64,${image.base64}` : image.filepath} alt={image.filename}
                                 onDoubleClick={() => handleImageDoubleClick(index)} // Handle double-click event
                                 />
                                 <BiX
@@ -482,12 +533,13 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                                 />
                             </div>
                         ))}
-                        <div className="image-square">
+                        <div className="image-square no-image">
                             <input
                                 type="file"
                                 ref={fileInputRef}
                                 accept="image/*"
                                 onChange={handleImageUpload}
+                                disabled={isDisabled} 
                             />
                             <span className="plus-icon" onClick={handlePlusClick}>
                                 <BiPlus />
@@ -507,6 +559,8 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                         answeR_TYPE_ID={newQuestion.answeR_TYPE_ID}
                         data={variant}
                         setData={setVariant}
+                        operatioN_STATUS={newQuestion.operatioN_STATUS} 
+                        isCopy = {isCopy}
                     />
                 )}
 
@@ -521,10 +575,13 @@ const AddEditDialog = ({ visible, onHide, newQuestion, setNewQuestion, onSave, h
                     )}
                 </Dialog>
                 <div className="p-dialog-footer" style={{ marginTop: '15px', padding: '0' }}>
-                    <Button label="Yadda saxla" onClick={handleSave } className="p-button-primary" />
+                    <Button label="Yadda saxla" onClick={handleSave } className="p-button-primary" 
+                    disabled={isDisabled} 
+                    />
                     <Button label="Ləğv et" onClick={onHide} className="p-button-secondary" />
                 </div>
             </div>
+                        )}
         </Dialog>
     );
 };
@@ -538,5 +595,10 @@ AddEditDialog.propTypes = {
     header: PropTypes.string.isRequired
 };
 
+const Loading = () => (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <p>Yüklənir...</p>
+    </div>
+);
 
 export default AddEditDialog;

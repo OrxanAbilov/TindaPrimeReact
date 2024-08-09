@@ -18,8 +18,8 @@ const Questions = () => {
     const [error, setError] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
     const initialData = [
-        { id: 1 ,questioN_ID: 0, variant: 'Hə', answeR_REASON_PERMISSION_ID: null, answeR_IMG_PERMISSION_ID: null, varianT_POINT: 0 },
-        { id: 2, questioN_ID: 0, variant: 'Yox', answeR_REASON_PERMISSION_ID: null, answeR_IMG_PERMISSION_ID: null, varianT_POINT: 0 }
+        { id: 1 ,questioN_ID: 0, variant: 'Hə', answeR_REASON_PERMISSION_ID: 0, answeR_IMG_PERMISSION_ID: 0, varianT_POINT: 10 },
+        { id: 2, questioN_ID: 0, variant: 'Yox', answeR_REASON_PERMISSION_ID: 0, answeR_IMG_PERMISSION_ID: 0, varianT_POINT: 10 }
     ];
     const [variant, setVariant] = useState(initialData)
     const [filters, setFilters] = useState({
@@ -49,10 +49,16 @@ const Questions = () => {
         question: '',
         desc: '',
         questioN_GROUP_NAME: '',
+        questioN_GROUP_ID: 0,
+        ratE_TYPE_ID: 0,
         ratE_TYPE: '',
         answeR_TYPE: '',
+        answeR_TYPE_ID: 0,
         status: '',
-        checkListQuestionVariantPostDtos: []
+        answeR_IMG_COUNT: 0,
+        questioN_POINT: 0,
+        checkListQuestionVariantPostDtos: [],
+        checkListQuestionImagePostDtos: []
     });
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -123,8 +129,8 @@ const Questions = () => {
         setNewQuestion(rowData);
         setIsCopy(true);
         setIsModalOpen(true);
-        };
-    
+    };
+
     const handleRemoveClick = (rowData) => {
         setItemToDelete(rowData);
         setShowDeleteModal(true);
@@ -136,7 +142,7 @@ const Questions = () => {
             setShowDeleteModal(false);
             fetchData();
         } catch (error) {
-            console.error('Error deleting question', error);
+            alert('Bilinməyən bir xəta baş verdi', error);
         }
     };
 
@@ -207,28 +213,32 @@ const Questions = () => {
                     }}
                     onKeyPress={handleKeyPress}
                 />
-                <SearchIcon onClick={handleSearchClick}><BiSearch size={16} /></SearchIcon>
+                <SearchIcon onClick={handleSearchClick}><BiSearch size={18} /></SearchIcon>
             </InputContainer>
         </div>
     );
 
     const filterNewQuestion = (question) => {
-        console.log('QUESTION:',question);
+        const isMatchingType = question.answeR_TYPE_ID === 1 ||
+                               question.answeR_TYPE_ID === 2 ||
+                               question.answeR_TYPE_ID === 3 ||
+                               question.answeR_TYPE_ID === 4;
+        
         return {
             // id: question.id || 0,
             id: isCopy ? 0 : question.id || 0,
             code: question.code,
             question: question.question,
             desc: question.desc,
-            questioN_GROUP_ID: question.questioN_GROUP_ID,
-            ratE_TYPE_ID: question.ratE_TYPE_ID,
-            answeR_TYPE_ID: question.answeR_TYPE_ID,
-            answeR_IMG_PERMISSION_ID: question.answeR_IMG_PERMISSION_ID,
-            answeR_IMG_COUNT: question.answeR_IMG_COUNT,
-            questioN_POINT: question.questioN_POINT,
-            answeR_REASON_PERMISSION_ID: question.answeR_REASON_PERMISSION_ID,
+            questioN_GROUP_ID: question.questioN_GROUP_ID || 0,
+            ratE_TYPE_ID: question.ratE_TYPE_ID || 0,
+            answeR_TYPE_ID: question.answeR_TYPE_ID || 0,
+            answeR_IMG_PERMISSION_ID: question.answeR_IMG_PERMISSION_ID || 0,
+            answeR_IMG_COUNT: question.answeR_IMG_COUNT || 0,
+            questioN_POINT: question.questioN_POINT || 0,
+            answeR_REASON_PERMISSION_ID: question.answeR_REASON_PERMISSION_ID || 0,
             status: question.status,
-            checkListQuestionVariantPostDtos: question.answeR_TYPE_ID === 1 ? [] : variant,
+            checkListQuestionVariantPostDtos: isMatchingType ? [] : variant,
             checkListQuestionImagePostDtos: images.map(image => ({
                 filename: image.filename,
                 filepath: '', 
@@ -240,19 +250,35 @@ const Questions = () => {
     const editButtonTemplate = (rowData) => (
         <ButtonContainer>
             <EditButton onClick={() => handleEditClick(rowData)}>
-                <BiPencil size={20} />
+                <BiPencil size={18} />
             </EditButton>
             <CopyButton onClick={() => handleCopyClick(rowData)}>
-                <BiCopy size={20} />
+                <BiCopy size={18} />
             </CopyButton>
             <RemoveButton onClick={() => handleRemoveClick(rowData)}>
-                <BiTrash size={20} />
+                <BiTrash size={18} />
             </RemoveButton>
         </ButtonContainer>
     );
 
     const onSave = async () => {
         const filteredQuestion = filterNewQuestion(newQuestion);
+
+        if(filteredQuestion.ratE_TYPE_ID === 2 && filteredQuestion.answeR_IMG_PERMISSION_ID !== 1){
+            const hasZeroPermissionId = filteredQuestion.checkListQuestionVariantPostDtos.some(
+                item => item.answeR_REASON_PERMISSION_ID === 0 || item.answeR_IMG_PERMISSION_ID === 0
+            );
+            
+            if (hasZeroPermissionId) {
+                console.error("Error: One or more elements id of 0");
+                return;
+            }    
+        }
+
+        for (let i = 0; i < filteredQuestion.checkListQuestionVariantPostDtos.length; i++) {
+            console.log(`Element ${i}: ${filteredQuestion.checkListQuestionVariantPostDtos[i].answeR_REASON_PERMISSION_ID}`);
+        }
+        
         if (newQuestion.id > 0 && !isCopy) {
             const updatedData = {
                 ...filteredQuestion,
@@ -262,13 +288,24 @@ const Questions = () => {
                 }))
             };
 
+            if(updatedData.ratE_TYPE_ID === 2 && updatedData.answeR_IMG_PERMISSION_ID !== 1){
+                const hasZeroPermissionId = updatedData.checkListQuestionVariantPostDtos.some(
+                    item => item.answeR_REASON_PERMISSION_ID === 0 || item.answeR_IMG_PERMISSION_ID === 0
+                );
+                
+                if (hasZeroPermissionId) {
+                    console.error("Error: One or more elements id of 0");
+                    return;
+                }    
+            }
+    
             try {
                 console.log(updatedData, 'PUTT');
                 await EDIT_QUESTION(filteredQuestion);
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question', error);
+                alert('Bilinməyən bir xəta baş verdi', error);
             }
         } else {
             try {
@@ -277,7 +314,7 @@ const Questions = () => {
                 closeModal();
                 fetchData();
             } catch (error) {
-                console.error('Error saving question', error);
+                alert('Bilinməyən bir xəta baş verdi', error);
             }
         }
     };
@@ -294,7 +331,7 @@ const Questions = () => {
                     rows={filters.pageSize}
                     totalRecords={totalRecords}
                     dataKey="id"
-                    emptyMessage="No documents found"
+                    emptyMessage="Məlumat tapılmadı"
                     className="p-datatable-sm"
                 >
                     <Column
@@ -360,6 +397,7 @@ const Questions = () => {
                 setShowVariants={setShowVariants}
                 images={images}
                 setImages={setImages}
+                isCopy={isCopy}
             />
             <DeleteConfirmationModal
                 visible={showDeleteModal}
@@ -386,7 +424,7 @@ const TopBar = styled.div`
 const DataTableContainer = styled.div`
   overflow-y: auto;
   width: 100%;
-  max-width: 1200px;
+  max-width: 82vw;
   font-size: 12px;
 `;
 

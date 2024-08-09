@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Paginator } from 'primereact/paginator';
-import { GET_ALL_CHECKLIST_RESULTS } from '../../../../features/clients/services/api';
+import { GET_ALL_CHECKLIST_RESULTS, GET_CHECKLIST_RESULT_DETAILS_BY_CHEKLIST_ID } from '../../../../features/clients/services/api';
 import Loading from '../../../../components/Loading';
 import Error from '../../../../components/Error';
 import styled from 'styled-components';
 import { BiSearch, BiPencil } from 'react-icons/bi';
 import { Calendar } from 'primereact/calendar';
+import ChecklistResultDetails from './ChecklistResultDetails';  // Corrected import statement
 
 const ChecklistResults = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [detailsLoading, setDetailsLoading] = useState(false); // Add this line
     const [error, setError] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
     const [filters, setFilters] = useState({
@@ -38,6 +40,8 @@ const ChecklistResults = () => {
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [detailedData, setDetailedData] = useState(null);
+
     const [newChecklist, setNewChecklist] = useState({
         id: 0,
         slS_CODE: '',
@@ -203,7 +207,7 @@ const ChecklistResults = () => {
                         onKeyPress={handleKeyPress}
                     />
                 )}
-                <SearchIcon onClick={handleSearchClick}><BiSearch size={16} /></SearchIcon>
+                <SearchIcon onClick={handleSearchClick}><BiSearch size={18} /></SearchIcon>
             </InputContainer>
         </div>
     );
@@ -211,11 +215,26 @@ const ChecklistResults = () => {
     const editButtonTemplate = (rowData) => (
         <ButtonContainer>
             <EditButton onClick={() => handleEditClick(rowData)}>
-                <BiPencil size={16} />
+                <BiPencil size={18} />
             </EditButton>
         </ButtonContainer>
     );
 
+    const handleRowDoubleClick = async (event) => {
+        const rowData = event.data;
+        setDetailsLoading(true); // Start loading
+        try {
+            const response = await GET_CHECKLIST_RESULT_DETAILS_BY_CHEKLIST_ID(rowData.id);
+            setDetailedData(response.data); // Assuming response.data contains the detailed data
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error fetching detailed data', error);
+        }
+        setDetailsLoading(false); // Stop loading
+    };
+    
+    
+    
     return (
         <Wrapper>
             <DataTableContainer>
@@ -228,6 +247,7 @@ const ChecklistResults = () => {
                     loading={loading}
                     onPage={onPageChange}
                     first={filters.first}
+                    onRowDoubleClick={handleRowDoubleClick}
                 >
                     <Column
                         field="code"
@@ -303,6 +323,17 @@ const ChecklistResults = () => {
                     onPageChange={onPageChange}
                 />
             </DataTableContainer>
+            {detailsLoading ? (
+                <LoadingOverlay>
+                    <Loading />
+                </LoadingOverlay>
+        ) : (
+                <ChecklistResultDetails
+                    isOpen={isModalOpen}
+                    data={detailedData}
+                    onClose={() => setIsModalOpen(false)}
+                />
+            )}
         </Wrapper>
     );
 };
@@ -322,7 +353,7 @@ const TopBar = styled.div`
 const DataTableContainer = styled.div`
   overflow-y: auto;
   width: 100%;
-  max-width: 1200px;
+  max-width: 82vw;
   font-size: 12px;
 `;
 
@@ -356,5 +387,19 @@ const EditButton = styled.button`
   border: none;
   cursor: pointer;
 `;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top of other content */
+`;
+
 
 export default ChecklistResults;
