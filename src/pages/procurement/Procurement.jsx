@@ -85,6 +85,7 @@ const navigate = useNavigate()
           dataKey="id"
           metaKeySelection={true}
           emptyMessage="Sənəd tapılmadı."
+          
         >
           <Column
             showFilterMenu
@@ -93,11 +94,15 @@ const navigate = useNavigate()
             sortable
           ></Column>
           <Column field="docDate" header="Sənəd Tarixi" body={(rowData) => new Date(rowData.docDate).toLocaleDateString()} sortable></Column>
+          <Column field="openedBy" header="Kim Açıb" sortable></Column>
+          <Column field="description" header="Açıqlama" sortable></Column>
+          <Column field="assignedWorker" header="Təhkim edilən" sortable></Column>
           <Column
             sortable
             field="status"
             header="Status"
             body={statusBodyTemplate}
+            style={{width:"150px"}}
           ></Column>
         </DataTable>
       ) : !error && isLoading ? (

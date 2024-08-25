@@ -109,7 +109,7 @@ export default function ProcurementSuggestions({ procurement }) {
     const createDynamicTabs = () => {
         return data.map((suggestion, i) => {
             const total = suggestion.total;
-            const headerData = suggestion.clientCode + "-" + suggestion.clientName + "   | Məbləğ:" + suggestion.total + " " + suggestion.curr;
+            const headerData = suggestion.clientCode + "-" + suggestion.clientName + "   | Məbləğ:" + suggestion.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + suggestion.curr;
             return (
                 <AccordionTab
                     header={
@@ -143,6 +143,11 @@ export default function ProcurementSuggestions({ procurement }) {
                                 <TitleInfo>Adı:</TitleInfo>
                                 <Desc>{suggestion.clientName}</Desc>
                             </InfoGroup>
+
+                            <InfoGroup>
+                                <TitleInfo>Rəy:</TitleInfo>
+                                <Desc>{suggestion.comment}</Desc>
+                            </InfoGroup>
                             
                             <InfoGroup>
                                 <TitleInfo>Ödəmə Şərti:</TitleInfo>
@@ -154,7 +159,7 @@ export default function ProcurementSuggestions({ procurement }) {
                             </InfoGroup>
                             <InfoGroup>
                                 <TitleInfo>Məbləğ:</TitleInfo>
-                                <Desc>{suggestion.total + " " + suggestion.curr}</Desc>
+                                <Desc>{suggestion.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + suggestion.curr}</Desc>
                             </InfoGroup>
                             <InfoGroup>
                                 <TitleInfo>Fayllar:</TitleInfo>
@@ -197,8 +202,9 @@ export default function ProcurementSuggestions({ procurement }) {
                             <Column showFilterMenu field="projectCode" header="Layihə" sortable></Column>
                             <Column showFilterMenu field="sonAlis" header="Son alış" sortable></Column>
                             <Column field="suggestedAmount" header="Tələb miqdarı" sortable></Column>
-                            <Column field="amount" header="Təklif miqdarı" sortable></Column>
-                            <Column field="price" header="Qiymət" sortable></Column>
+                            <Column field="amount" body={(rowData) => rowData.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}  header="Təklif miqdarı" sortable></Column>
+                            <Column field="itemUnit" header="Vahidi" sortable></Column>
+                            <Column field="price" body={(rowData) => rowData.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} header="Qiymət" sortable></Column>
                             <Column field="curr" header="Valyuta" sortable></Column>
                             <Column
                                 field="isIncludeVat"
@@ -206,7 +212,7 @@ export default function ProcurementSuggestions({ procurement }) {
                                 body={(rowData) => rowData.isIncludeVat ? 'Daxil' : 'Xaric'}
                                 sortable
                             ></Column>
-                            <Column field="total" header="Toplam" sortable></Column>
+                            <Column field="total" body={(rowData) => rowData.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} header="Toplam" sortable></Column>
                         </DataTable>
                     </Card>
                 </AccordionTab>

@@ -96,6 +96,10 @@ export default function OtherSuggestions({ procurementId }) {
                                 <TitleInfo>Məbləğ:</TitleInfo>
                                 <Desc>{suggestion.total + " " + suggestion.curr}</Desc>
                             </InfoGroup>
+                            <InfoGroup>
+                                <TitleInfo>Rəy:</TitleInfo>
+                                <Desc>{suggestion.comment}</Desc>
+                            </InfoGroup>
 
                             <InfoGroup>
                                 <TitleInfo>Fayllar:</TitleInfo>

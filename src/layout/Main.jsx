@@ -25,7 +25,8 @@ export default function Main() {
   return (
     <PrivateRoute>
       <Wrapper>
-        <Sidebar />
+      {/* // burani bagla */}
+        <Sidebar /> 
         {isShowMobileMenu && <MobileSidebar  setIsShowMobileMenu={setIsShowMobileMenu} /> } 
         <HeaderAndContentWrapper>
           <Header setIsShowMobileMenu={setIsShowMobileMenu} />

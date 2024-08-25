@@ -24,6 +24,8 @@ import { useToast } from '../../../context/ToastContext';
 import { setRef } from '@mui/material';
 import { InputSwitch } from 'primereact/inputswitch';
 import { Checkbox } from 'primereact/checkbox';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { FilterMatchMode } from 'primereact/api';
 
 
 export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }) {
@@ -35,6 +37,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
     const [dropdownOptionsCurr, setDropdownOptionsCurr] = useState([]);
     const [dropdownOptionsPTerm, setDropdownOptionsPTerm] = useState([]);
     const [dropdownOptionsDTerm, setDropdownOptionsDTerm] = useState([]);
+    const [commentText, setCommentText] = useState("");
     const [items, setItems] = useState([]);
     const toast = useRef(null);
     const [files, setFiles] = useState([]);
@@ -43,7 +46,21 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
     const [selectedFiles, setSelectedFiles] = useState([]);
     const { data, error, isLoading } = useSelector((state) => state.procurementDetailSlice);
     const { showToast } = useToast()
-    const [isImportedProduct, setIsImportedProduct]=useState(false);
+    const [isImportedProduct, setIsImportedProduct] = useState(false);
+    const [filters, setFilters] = useState({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        itemCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        itemName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        projectCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        cardType: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        sonAlis: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        suggestedAmount: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        itemUnit: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        amount: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        price: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        isIncludeVat: { value: null, matchMode: FilterMatchMode.EQUALS },
+        total: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+    });
     const fetchData = async () => {
         try {
             setIsLoading(true);
@@ -103,6 +120,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
             projectCode: item.projectCode,
             amount: null,
             suggestedAmount: item.amount,
+            itemUnit: item.itemUnit,
             description: item.description,
             sonAlis: item.sonAlis,
             aktivDepo: item.aktivDepo,
@@ -176,8 +194,9 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
             clientName: '',
             curr: selectedCurr,
             isImportedProduct: isImportedProduct,
-            paymentTerm: selectedPTerm.toString(),
-            deliveryTerm: selectedDTerm.toString(),
+            paymentTerm: selectedPTerm?.toString(),
+            deliveryTerm: selectedDTerm?.toString(),
+            comment: commentText,
             items: selectedItems,
             total: selectedItems.reduce((acc, item) => acc + item.total, 0),
             files: files
@@ -220,11 +239,11 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
 
         for (const item of selectedItems) {
             if (item.amount == null) {
-                showToast('error', 'Xəta', '"'+item.itemName+'"' +' Məhsul miqdarı daxil edilməyib!', 3000);
+                showToast('error', 'Xəta', '"' + item.itemName + '"' + ' Məhsul miqdarı daxil edilməyib!', 3000);
                 return;
             }
             if (item.price == null) {
-                showToast('error', 'Xəta', '"'+item.itemName+'"' +' Məhsul qiyməti daxil edilməyib!', 3000);
+                showToast('error', 'Xəta', '"' + item.itemName + '"' + ' Məhsul qiyməti daxil edilməyib!', 3000);
                 return;
             }
         }
@@ -328,27 +347,45 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
                 </InfoGroup>
 
                 <InfoGroup>
+                    <TitleInfo>Rəy:</TitleInfo>
+                    <Desc> <InputTextarea
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        rows={5}
+                        cols={30}
+
+                    /></Desc>
+                </InfoGroup>
+
+
+
+                <InfoGroup>
                     <TitleInfo>İdxal:</TitleInfo>
                     <Desc><Checkbox inputId="ingredient1" name="pizza" value="Cheese" onChange={onImportedChange} checked={isImportedProduct} />
                     </Desc>
                 </InfoGroup>
             </Information>
             <Card>
+            <div style={{ overflowX: 'auto', width: '200%' }}>
                 <DataTable
                     value={items}
                     selectionMode="checkbox"
                     selection={selectedItems}
                     onSelectionChange={(e) => setSelectedItems(e.value)}
                     dataKey="procurementLineId"
-                    tableStyle={{ minWidth: '45rem' }}
+                    tableStyle={{ minWidth: '45rem'}}
+                    filters={filters}
+                    filterDisplay="row"
+                    
                 >
                     <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
-                    <Column field="itemCode" header="Mal Kodu" />
-                    <Column field="itemName" header="Mal Adı" />
-                    <Column field="projectCode" header="Layihə" />
-                    <Column fiels='cardType' header="Tip" sortable></Column>
-                    <Column field="sonAlis" header="Son Alış" sortable></Column>
-                    <Column field="suggestedAmount" header="Tələb miqdarı" />
+                    <Column field="itemCode" header="Mal Kodu" filter filterMatchMode="contains" headerStyle={{ width: '300rem' }} />
+                    <Column field="itemName" header="Mal Adı" filter filterMatchMode="contains" headerStyle={{ width: '15rem' }}  />
+                    <Column field="projectCode" header="Layihə" filter filterMatchMode="contains" headerStyle={{ width: '15rem' }}  />
+                    <Column field="cardType" header="Tip" sortable filter filterMatchMode="contains" headerStyle={{ width: '15rem' }}  />
+                    <Column field="sonAlis" header="Son Alış" sortable filter filterMatchMode="startsWith" headerStyle={{ width: '15rem' }}  />
+                    <Column field="suggestedAmount" header="Tələb miqdarı" filter filterMatchMode="startsWith" headerStyle={{ width: '15rem' }}  />
+                    <Column field="itemUnit" header="Vahidi" filter filterMatchMode="startsWith" headerStyle={{ width: '15rem' }}  />
                     <Column
                         field="amount"
                         header="Təklif miqdarı"
@@ -367,6 +404,7 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
                         body={(rowData, options) => (
                             <InputNumber
                                 minFractionDigits={2}
+                                maxFractionDigits={5}
                                 value={rowData.price}
                                 onValueChange={(e) => handlePriceChange(e.value, options.rowIndex)}
                                 disabled={!isRowSelected(rowData)}
@@ -383,10 +421,11 @@ export default function SuggestionNewDialog({ procDetails, onClose, setRefresh }
                                 disabled={!isRowSelected(rowData)}
                             />
                         )}
+                      
                     />
-                    <Column field="total" header="Məbləğ" />
+                    <Column field="total" header="Məbləğ" filter filterMatchMode="startsWith"  headerStyle={{ width: '15rem' }} />
                 </DataTable>
-
+                        </div>
             </Card>
             <Card>
                 <FileUpload

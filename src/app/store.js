@@ -10,8 +10,22 @@ import procurementDetailSlice from '../features/procurement/procurementDetails/p
 import procurementSuggestionSlice from '../features/procurement/procurementDetails/procurementSuggestionSlice'
 import mesMerSlice from '../features/admin/esd/MesMer/mesMerSlice'
 import menuSlice from '../features/layout/menuSlice'
+import userSlice from '../features/user/userSlice';
 export default configureStore({
-  reducer: {loginSlice,incomeSlice,outGoingSlice,historySlice,documentTypeSlice,modalSlice,procurementSlice,procurementDetailSlice,procurementSuggestionSlice,mesMerSlice,menuSlice},
+  reducer: {
+    loginSlice,
+    incomeSlice,
+    outGoingSlice,
+    historySlice,
+    documentTypeSlice,
+    modalSlice,
+    procurementSlice,
+    procurementDetailSlice,
+    procurementSuggestionSlice,
+    mesMerSlice,
+    menuSlice,
+    userSlice
+  },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(
     {      serializableCheck: false,
 }

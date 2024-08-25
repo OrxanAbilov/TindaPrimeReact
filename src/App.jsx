@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import ProcurementDetail from "./pages/procurement/ProcurementDetail";
 import MesMer from "./pages/admin/esd/MesMer";
 import EditMesMer from "./pages/admin/esd/EditMesMer";
+import ChangePassword from "./pages/user/ChangePassword";
 
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
         <Route exact path="/login" element={<Login />} />
         <Route path="/" element={<Main />}>
           <Route path="*" element={"Not Found"} />
+          <Route path="/changepassword" element={<ChangePassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/esd" element={<Esd />}>
             <Route path="income" index element={<Income />} />
