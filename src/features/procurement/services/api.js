@@ -14,6 +14,14 @@ const GET_PROCUEMENT_DOCDETAIL_BY_ID = async (id) => {
 };
 
 
+const GET_PROCUREMENT_WORKERS = async () => {
+  const res = await instance.get(
+    `Workers/GetWorkersForCombo`
+  );
+  return res.data;
+};
+
+
 const GET_CARI_HESAPLAR_FOR_DROP_DOWN = async () => {
   const res = await instance.get(
     `Procurement/GetCariHesaplarForDropDown`
@@ -66,6 +74,13 @@ const SELECT_SUGGESTION = async (suggestionId,isSelected) => {
   return res.data;
 };
 
+const ASSIGN_WORKER_TO_PROCUREMENT_DOCUMENT = async (workerId,procurementId) => {
+  const res = await instance.put(
+    `Procurement/AssignWorkerToProcurementDocument?workerId=${workerId}&procurementId=${procurementId}`
+  );
+  return res.data;
+};
+
 const SEND_TO_APPROVE_PROCUREMENT = async (id) => {
   const res = await instance.get(
     `Procurement/SendToApproveProcurement?procurementId=${id}`
@@ -80,7 +95,19 @@ const GET_CURR_BY_CLIENTCODE = async (clientCode) => {
   return res.data;
 };
 
+const CANCEL_PROCUREMENT = async (id) => {
+  const res = await instance.get(
+    `Procurement/CancelProcurement?procurementId=${id}`
+  );
+  return res.data;
+};
 
+const REACTIVATE_PROCUREMENT = async (id) => {
+  const res = await instance.get(
+    `Procurement/ReactivateProcurement?procurementId=${id}`
+  );
+  return res.data;
+};
 
 
 export { 
@@ -94,5 +121,9 @@ export {
   SELECT_SUGGESTION,
   SEND_TO_APPROVE_PROCUREMENT,
   GET_CURR_BY_CLIENTCODE,
-  GET_PROCUREMENT_TERMS 
+  GET_PROCUREMENT_TERMS,
+  GET_PROCUREMENT_WORKERS,
+  ASSIGN_WORKER_TO_PROCUREMENT_DOCUMENT,
+  CANCEL_PROCUREMENT,
+  REACTIVATE_PROCUREMENT
 }

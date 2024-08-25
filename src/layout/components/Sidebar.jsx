@@ -2,8 +2,8 @@
 import { useRef } from 'react';
 import 'primeicons/primeicons.css';
 import { Ripple } from 'primereact/Ripple';
+import styled, { keyframes } from 'styled-components';
 
-import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 import Logo from '../../assets/images/Logo2.png';
 import { useSelector } from "react-redux";
@@ -74,9 +74,9 @@ export default function HeadlessDemo() {
           <div className="flex flex-column h-full">
             <div className="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
               <span className="inline-flex align-items-center gap-2">
-                <img src={Logo} alt="Logo" width={40} />
+                <img src={Logo} alt="Logo"  className='logo' />
 
-                <span className="font-bold text-3xl" style={{ color: "#339967" }}>Tinda</span>
+                <span className="font-bold text-3xl label-name" style={{ color: "#339967" }}>Tinda</span>
               </span>
 
             </div>
@@ -91,12 +91,47 @@ export default function HeadlessDemo() {
     </Wrapper>
   )
 }
+const fadeIn = keyframes`
+ 0% { opacity: 0;  }
+ 100% { opacity:1; }
 
+`
 
 const Wrapper = styled.div`
-width: 360px;
+width: 80px;
+word-break:none;
+overflow:hidden;
 height: 100%;
+transition:0.3s all ease-in-out;
+.menu-ul{
+  padding-left:1rem !important;
+}
+.label-name{
+  display:none !important;
+  animation: ${fadeIn} 1s all;
+}
+.logo{
+  width:30px;
+}
+&:hover{
+  .logo{
+    width:30px !important;
+  }
+  width:360px;
+  .label-name{
+  display:inline !important;
+  animation: ${fadeIn} 1s all;
+}
+.menu-ul{
+  padding-left:0 !important;
+}
+}
+/* &  span{
+  display:none !important;
+} */
+
 @media (max-width:992px){
   display:none;
 }
 `
+

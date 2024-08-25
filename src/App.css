@@ -7,9 +7,14 @@
 }
 
 
+*{
+  font-size: 14px;
+}
+
 body{
   margin: 0;
   padding: 0;
+
 }
 
 .active{
@@ -37,4 +42,8 @@ body{
 .p-panelmenu-header-link{
   height: 60px;
   background-color: #fff;
+}
+
+.p-datatable{
+  font-size:12px;
 }

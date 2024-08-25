@@ -149,7 +149,7 @@ export default function PreviewDoc() {
 
                 <InfoGroup>
                   <TitleInfo>Kim üçün / Kim açıb:</TitleInfo>
-                  <Desc>{data?.kimUcun} / {data?.KimAcib}</Desc>
+                  <Desc>{data?.kimUcun} / {data?.kimAcib}</Desc>
                 </InfoGroup>
 
                 <InfoGroup>

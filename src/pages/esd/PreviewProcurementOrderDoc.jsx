@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -100,6 +100,15 @@ export default function PreviewDoc() {
         );
     };
 
+    const NavigateToDemand = (demandId) => {
+        // navigate('/esd/doc/procurementdemand/'+demandId.toString())
+        const url = '/esd/doc/procurementdemand/' + demandId.toString();
+
+        // Open the URL in a new tab
+        window.open(url, '_blank');
+
+    }
+
     return (
         <Wrapper>
             <Toast ref={toast} />
@@ -119,7 +128,7 @@ export default function PreviewDoc() {
                     onClick={() => setActiveTab("second")}
                     className={activeTab === "second" ? "active" : ""}
                 />
-                
+
             </TabButtons>
             {activeTab === "first" && (
                 <Fragment>
@@ -165,60 +174,72 @@ export default function PreviewDoc() {
 
                                 <InfoGroup>
                                     <TitleInfo>Məbləğ:</TitleInfo>
-                                    <Desc>{data.suggestion.total}  {data.suggestion.curr}</Desc>
+                                    <Desc>{data.suggestion.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}  {data.suggestion.curr}</Desc>
                                 </InfoGroup>
 
                                 <InfoGroup>
-                                <TitleInfo>Fayllar:</TitleInfo>
-                                {data.suggestion.files?.length > 0 ? (
-                                    data.suggestion.files.map((file) => (
-                                        <Button
-                                            key={file.id}
-                                            label={file.fileName}
-                                            severity="secondary"
-                                            outlined
-                                            size="small"
-                                            style={{ width: '350px' }}
-                                            icon="pi pi-arrow-circle-down"
-                                            iconPos="left"
-                                            onClick={() => downloadFile(file.id, file.fileName)}
-                                        />
-                                    ))
-                                ) : (
-                                    <Desc>--</Desc>
-                                )}
-                            </InfoGroup>
-                            <InfoGroup>
-                                <TitleInfo>İdxal:</TitleInfo>
-                                <Desc>{data.suggestion.isImportedProduct? "Bəli":"Xeyr"}</Desc>
-                            </InfoGroup>
+                                    <TitleInfo>Rəy:</TitleInfo>
+                                    <Desc>{data.suggestion.comment}</Desc>
+                                </InfoGroup>
+
+                                <InfoGroup>
+                                    <TitleInfo>Fayllar:</TitleInfo>
+                                    {data.suggestion.files?.length > 0 ? (
+                                        data.suggestion.files.map((file) => (
+                                            <Button
+                                                key={file.id}
+                                                label={file.fileName}
+                                                severity="secondary"
+                                                outlined
+                                                size="small"
+                                                style={{ width: '350px' }}
+                                                icon="pi pi-arrow-circle-down"
+                                                iconPos="left"
+                                                onClick={() => downloadFile(file.id, file.fileName)}
+                                            />
+                                        ))
+                                    ) : (
+                                        <Desc>--</Desc>
+                                    )}
+                                </InfoGroup>
+                                <InfoGroup>
+                                    <TitleInfo>İdxal:</TitleInfo>
+                                    <Desc>{data.suggestion.isImportedProduct ? "Bəli" : "Xeyr"}</Desc>
+                                </InfoGroup>
+
+                                <InfoGroup>
+                                    <TitleInfo></TitleInfo>
+                                    <Desc>
+                                        <Button label="Tələbə bax" severity="info" raised onClick={() => NavigateToDemand(data.procurementDemandId)} />
+                                    </Desc>
+                                </InfoGroup>
                             </Information>
                             <br />
                             <br />
 
                             <DataTable
-                            value={data.suggestion.items}
-                            selectionMode="row"
-                            dataKey="suggestion"
-                            //metaKeySelection={true}
-                            emptyMessage="Mal sətri tapılmadı.">
-                            <Column showFilterMenu field="cardType" header="Tip" sortable></Column>
-                            <Column showFilterMenu field="itemCode" header="Mal Kodu" sortable></Column>
-                            <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
-                            {/* <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column> */}
-                            <Column showFilterMenu field="sonAlis" header="Son alış" sortable></Column>
-                            <Column field="restAmount" header="Anbar Qallığı" sortable></Column>
-                            <Column field="amount" header="Təklif miqdarı" sortable></Column>
-                            <Column field="price" header="Qiymət" sortable></Column>
-                            <Column field="curr" header="Valyuta" sortable></Column>
-                            <Column
-                                field="isIncludeVat"
-                                header="ƏDV"
-                                body={(rowData) => rowData.isIncludeVat ? 'Daxil' : 'Xaric'}
-                                sortable
-                            ></Column>
-                            <Column field="total" header="Toplam" sortable></Column>
-                        </DataTable>
+                                value={data.suggestion.items}
+                                selectionMode="row"
+                                dataKey="suggestion"
+                                //metaKeySelection={true}
+                                emptyMessage="Mal sətri tapılmadı.">
+                                <Column showFilterMenu field="cardType" header="Tip" sortable></Column>
+                                <Column showFilterMenu field="itemCode" header="Mal Kodu" sortable></Column>
+                                <Column showFilterMenu field="itemName" header="Mal Adı" sortable></Column>
+                                {/* <Column showFilterMenu field="erpId" header="Erp-Id" sortable></Column> */}
+                                <Column showFilterMenu field="sonAlis" header="Son alış" sortable></Column>
+                                <Column field="restAmount" header="Anbar Qallığı" sortable></Column>
+                                <Column field="amount" body={(rowData) => rowData.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} header="Təklif miqdarı" sortable></Column>
+                                <Column field="price" body={(rowData) => rowData.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} header="Qiymət" sortable></Column>
+                                <Column field="curr" header="Valyuta" sortable></Column>
+                                <Column
+                                    field="isIncludeVat"
+                                    header="ƏDV"
+                                    body={(rowData) => rowData.isIncludeVat ? 'Daxil' : 'Xaric'}
+                                    sortable
+                                ></Column>
+                                <Column field="total" body={(rowData) => rowData.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} header="Toplam" sortable></Column>
+                            </DataTable>
 
                             <Buttons>
                                 {data.showApproveButton && (
@@ -252,7 +273,7 @@ export default function PreviewDoc() {
             {activeTab === "second" && (
                 <OperationHistory />
             )}
-             {activeTab === "third" && (
+            {activeTab === "third" && (
                 <OtherSuggestions procurementId={data.suggestion.procurementId} />
             )}
         </Wrapper>
