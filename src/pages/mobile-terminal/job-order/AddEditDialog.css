@@ -1,0 +1,92 @@
+/* AddEditDialog.css */
+.dialog-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-section {
+    margin-bottom: 1rem;
+}
+
+.drag-drop-sections {
+    display: flex;
+    justify-content: space-between;
+}
+
+.jobs-section, .relations-section {
+    width: 45%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.jobs-section {
+    margin-right: 10px;
+}
+
+.jobs-section label, .relations-section label {
+    font-weight: bold;
+}
+
+ul.droppable-list {
+    padding: 0;
+    margin: 0;
+    margin-top:0.5rem;
+    list-style: none;
+}
+
+li.draggable-item {
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    background-color: #fff;
+    padding: 8px;
+    cursor: move;
+}
+
+.p-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.droppable-list {
+    min-height: 100px; /* Ensure the list area has a minimum height */
+    background-color: #f9f9f9; /* Light background color */
+    padding: 10px; /* Padding for spacing */
+    list-style-type: none; /* Remove default list styling */
+}
+
+.droppable-list.empty {
+    background-color: #e9ecef; /* Background color for empty state */
+    border: 1px dashed #ccc; /* Dashed border for empty state */
+}
+
+.draggable-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.relations-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.relations-section .draggable-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.relations-section .draggable-item div {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Pushes the checkbox and label to the right */
+}
+
+.relations-section .draggable-item .p-checkbox {
+    margin-right: 5px; /* Adjust spacing between checkbox and label */
+}

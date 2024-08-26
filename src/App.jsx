@@ -32,6 +32,12 @@ import SpecialSettingsOperations from "./pages/clients/special-settings/special-
 import SpecialSettings from "./pages/clients/special-settings/special-settings/SpecialSettings";
 import NotificationOperations from "./pages/notification/notification-operations/NotificationOperations";
 import NotificationHistory from "./pages/notification/notification-senders/NotificationHistory";
+import Clients from "./pages/clients/Root"
+import Notification from "./pages/notification/Root"
+import ActiveVisit from "./pages/visit/visit-active/ActiveVisit";
+import Jobs from "./pages/mobile-terminal/jobs/Jobs";
+import JobOrder from "./pages/mobile-terminal/job-order/JobOrder";
+import MobileTerminal from "./pages/mobile-terminal/Root"
 
 export default function App() {
   const { userData } = useSelector((state) => state.loginSlice);
@@ -57,20 +63,31 @@ export default function App() {
             <Route path="docs" index element={<ProcurementDocs />} />
             <Route path="docs/detail/:id" element={<ProcurementDetail />} />
           </Route>
-          <Route path="/clients" element={<Procurement />}>
+          <Route path="/clients" element={<Clients />}>
             <Route path="checklists" element={<Checklists />} />
             <Route path="checklist/question-groups" element={<QuestionGroups />} />
             <Route path="checklist/reasons" element={<Reasons />} />
             <Route path="checklist/questions" element={<Questions />} />
             <Route path="checklist/checklist-results" element={<ChecklistResults />} />
             <Route path="special-settings/special-settings-operations" element={<SpecialSettingsOperations />} />
-            <Route path="sx" element={<SpecialSettings/>} />
+            <Route path="special-settings/block" element={<SpecialSettings/>} />
           </Route>
 
-          <Route path="/notification" element={<Procurement />}>
+          <Route path="/notification" element={<Notification />}>
             <Route path="operations" element={<NotificationOperations />} />
             <Route path="history" element={<NotificationHistory />} />
+            <Route path="active-visit" element={<ActiveVisit />} />
           </Route>
+
+          <Route path="/mobile-terminal" element={<MobileTerminal />}>
+            <Route path="jobs" element={<Jobs />} />
+            <Route path="job-order" element={<JobOrder />} />
+          </Route>
+
+          {/* <Route path="/notification" element={<Notification />}>
+            <Route path="active-visit" element={<ActiveVisit />} />
+          </Route> */}
+
 
           {userType === 1 && (
             <Route path="/admin" element={<Admin />}>

@@ -24,7 +24,7 @@ const ChecklistResultDetails = ({ isOpen, data, onClose }) => {
         setFullscreenImage(image);
     };
 
-    const renderVariants = (variants, correctVariantId, answerVariants) => (
+    const renderVariants = (variants, correctVariantIds, answerVariants) => (
         variants.map(variant => {
             const answerVariant = answerVariants?.find(av => av.varianT_ID === variant.id);
             const hasImages = answerVariant?.variantImages?.length > 0;
@@ -33,7 +33,7 @@ const ChecklistResultDetails = ({ isOpen, data, onClose }) => {
             const reason = answerVariant?.reason || '';
     
             return (
-                <VariantContainer key={variant.id} isCorrect={variant.id === correctVariantId}>
+                <VariantContainer key={variant.id} isCorrect={correctVariantIds.includes(variant.id)}>
                     <VariantText>{variant.variant}</VariantText>
                     <PointsAndImage>
                         {hasImages && (
@@ -51,7 +51,7 @@ const ChecklistResultDetails = ({ isOpen, data, onClose }) => {
 
     const renderQuestions = () => (
         data.map((detail, index) => {
-            const correctVariantId = detail.answer?.variants?.[0]?.varianT_ID;
+            const correctVariantIds = detail.answer?.variants?.map(v => v.varianT_ID) || [];
             const hasVariants = detail.question.variants && detail.question.variants.length > 0;
             const hasQuestionImages = detail.question.images?.length > 0;
             const hasAnswerImages = detail.answer?.images?.length > 0;
@@ -76,7 +76,7 @@ const ChecklistResultDetails = ({ isOpen, data, onClose }) => {
                         </QuestionDetails>
                     </QuestionContainer>
                     {hasVariants ? (
-                        renderVariants(detail.question.variants, correctVariantId, answerVariants)
+                        renderVariants(detail.question.variants, correctVariantIds, answerVariants)
                     ) : (
                         <OpenEndedContainer hasAnswer={!!detail.answer?.answer}>
                             <VariantText>{detail.answer?.answer || 'Cavab yoxdur'}</VariantText>
@@ -139,14 +139,14 @@ const ChecklistResultDetails = ({ isOpen, data, onClose }) => {
 
 // Styled components
 const VariantContainer = styled.div`
-    border: ${({ isCorrect }) => (isCorrect ? '2px solid green' : '1px solid gray')};
+    background-color: ${({ isCorrect }) => (isCorrect ? '#b3ffb3' : 'white')};
+    border: 1px solid gray;
     border-radius: 8px;
     padding: 10px;
     margin: 10px 0;
     display: flex;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
 `;
 
 const PointsAndImage = styled.div`

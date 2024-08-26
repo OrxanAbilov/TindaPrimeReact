@@ -16,7 +16,7 @@ import {
     GET_QUESTIONS_BY_CHECKLIST_ID,
     GET_ALL_QUESTIONS,
     GET_SALESMEN_BY_CHECKLIST_ID,
-    GET_ALL_SALESMEN,
+    GET_ALL_SALESMEN_BY_CHECKLIST_ID,
     POST_NEW_CHECKLIST,
     EDIT_CHECKLIST
 } from '../../../../features/clients/services/api';
@@ -397,11 +397,11 @@ const AddEditDialog = ({ visible, onHide, newChecklist, setNewChecklist, onSave,
     const fetchAllSalesmen = async () => {
         setAllSalesmenLoading(true);
         try {
-            const data = await GET_ALL_SALESMEN({
+            const data = await GET_ALL_SALESMEN_BY_CHECKLIST_ID({
                 ...filters,
                 start: filters.first,
                 pageSize: filters.pageSize
-            });
+            },newChecklist.id);
             setAllSalesmen(data.data.data);
             setTotalRecords(data.data.totalRecords);
         } catch (error) {

@@ -205,16 +205,29 @@ const GET_CHECKLIST_QUESTION_IMAGE_BY_QUESTION_ID = async (id) => {
   return res.data;
 };
 
+// const REMOVE_QUESTION = async (questionId) => {
+//   try {
+//     const res = await instance.delete(`CheckListQuestion/${questionId}`);
+//     return res.data;
+//   } catch (error) {
+//     console.error('Error deleting question', error);
+//     throw new Error('Error deleting question');
+//   }
+// };
+
 const REMOVE_QUESTION = async (questionId) => {
   try {
     const res = await instance.delete(`CheckListQuestion/${questionId}`);
-    return res.data;
+    return { success: true, data: res.data }; 
   } catch (error) {
-    console.error('Error deleting question', error);
-    throw new Error('Error deleting question');
+    if (error.response) {
+      return { success: false, response: error.response }; 
+    } else {
+      console.error('Network or other error:', error);
+      throw error;
+    }
   }
 };
-
 
 const GET_ALL_CHECKLISTS = async (filters) => {
   const { start, pageSize, order, orderColumn, searchList } = filters;
@@ -268,10 +281,10 @@ const GET_SALESMEN_BY_CHECKLIST_ID = async (id, filters) => {
   return res.data;
 };
 
-const GET_ALL_SALESMEN = async (filters) => {
+const GET_ALL_SALESMEN_BY_CHECKLIST_ID = async (filters, id) => {
   const { start, pageSize, order, orderColumn, searchList } = filters;
   
-  const res = await instance.post('CheckListSalesmanRel/Salesman/GetWithPagination', {
+  const res = await instance.post(`CheckListSalesmanRel/Salesman/GetWithPaginationNotInRel/${id}`, {
     start,
     pageSize,
     draw: filters.draw || 0,
@@ -465,7 +478,7 @@ export {
    GET_CHECKLIST_CLIENT_REL_BY_CHEKLIST_ID,
    GET_QUESTIONS_BY_CHECKLIST_ID,
    GET_SALESMEN_BY_CHECKLIST_ID,
-   GET_ALL_SALESMEN,
+   GET_ALL_SALESMEN_BY_CHECKLIST_ID,
    GET_ALL_CHECKLIST_RESULTS,
    GET_CHECKLIST_RESULT_DETAILS_BY_CHEKLIST_ID,
    GET_SPECIAL_SETTINGS_OPERATIONS,

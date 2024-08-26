@@ -39,6 +39,7 @@ const Questions = () => {
         { colName: 'questioN_GROUP_NAME' },
         { colName: 'ratE_TYPE' },
         { colName: 'answeR_TYPE' },
+        { colName: 'questioN_TOTAL_POINT' },
         { colName: 'status' },
     ]);
 
@@ -66,11 +67,11 @@ const Questions = () => {
     const [showVariants, setShowVariants] = useState(false);
     const [images, setImages] = useState([]);
     const [isCopy, setIsCopy] = useState(false);
-
+    const [selectedStatus, setSelectedStatus] = useState(null);
 
     useEffect(() => {
         fetchData();
-    }, [filters]);
+    }, [filters,selectedStatus]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -105,6 +106,26 @@ const Questions = () => {
         );
     };
 
+    const handleStatusChange = (e) => {
+        const selectedValue = e.value.toString(); // Convert to string
+        setSelectedStatus(selectedValue); // Update selected status filter
+
+        if (selectedValue === 'all') {
+            setFilters(prevFilters => ({
+                ...prevFilters,
+                searchList: [] // Reset searchList
+            }));
+        } else {
+            setFilters(prevFilters => ({
+                ...prevFilters,
+                searchList: [
+                    ...prevFilters.searchList.filter(item => item.colName !== 'status'), // Remove existing status filter
+                    { colName: 'status', value: selectedValue }
+                ]
+            }));
+        }
+    };
+
     const onPageChange = (event) => {
         const { first, rows } = event;
         setFilters(prevFilters => ({
@@ -136,16 +157,34 @@ const Questions = () => {
         setShowDeleteModal(true);
     };
 
+    // const handleDeleteConfirm = async (item) => {
+    //     try {
+    //         await REMOVE_QUESTION(item.id);
+    //         setShowDeleteModal(false);
+    //         fetchData();
+    //     } catch (error) {
+    //         // console.error("errorF",error.response.data.Exception);
+    //         alert('Bilinməyən bir xəta baş verdi', error.response.data.Exception);
+    //     }
+    // };
+
     const handleDeleteConfirm = async (item) => {
-        try {
-            await REMOVE_QUESTION(item.id);
+        const result = await REMOVE_QUESTION(item.id);
+    
+        if (result.success === false && result.response) {
+            if (result.response.data && result.response.data.Exception) {
+                alert(`Xəta: ${result.response.data.Exception.join('\n')}`);
+            } else {
+                alert(`Xəta baş verdi: ${result.response.status}`);
+            }
+        } else if (result.success === true) {
             setShowDeleteModal(false);
             fetchData();
-        } catch (error) {
-            alert('Bilinməyən bir xəta baş verdi', error);
+        } else {
+            alert('Bilinməyən bir xəta baş verdi');
         }
-    };
-
+    };    
+            
     const openModal = () => {
         setNewQuestion({
             id: 0,
@@ -192,6 +231,12 @@ const Questions = () => {
             handleSearchClick();
         }
     };
+
+    const statusOptions = [
+        { label: 'Hamısı', value: 'all' },
+        { label: 'Aktiv', value: 'true' },
+        { label: 'Passiv', value: 'false' }
+    ];
 
     const renderHeader = (field, placeholder) => (
         <div>
@@ -323,6 +368,15 @@ const Questions = () => {
     return (
         <Wrapper>
             <TopBar>
+                <Dropdown
+            id="statusDropdown"
+            value={selectedStatus}
+            options={statusOptions}
+            onChange={handleStatusChange}
+            placeholder="Status"
+            className="p-d-block"
+            />
+
                 <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni sual</Button>
             </TopBar>
             <DataTableContainer>
@@ -366,9 +420,9 @@ const Questions = () => {
                         body={(rowData) => <Truncate>{rowData.answeR_TYPE}</Truncate>}
                     />
                     <Column
-                        field="status"
-                        header={renderHeader('status', 'Status')}
-                        body={(rowData) => <Truncate>{rowData.status}</Truncate>}
+                        field="questioN_TOTAL_POINT"
+                        header={renderHeader('questioN_TOTAL_POINT', 'Maksimum bal')}
+                        body={(rowData) => <Truncate>{rowData.questioN_TOTAL_POINT}</Truncate>}
                     />
                     <Column
                         header={'#'}
@@ -417,9 +471,11 @@ const Wrapper = styled.div`
 
 const TopBar = styled.div`
   display: flex;
-  justify-content: flex-end;
-  padding: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px 0 20px 0;
 `;
+
 
 const DataTableContainer = styled.div`
   overflow-y: auto;
