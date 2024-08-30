@@ -38,6 +38,7 @@ import ActiveVisit from "./pages/visit/visit-active/ActiveVisit";
 import Jobs from "./pages/mobile-terminal/jobs/Jobs";
 import JobOrder from "./pages/mobile-terminal/job-order/JobOrder";
 import MobileTerminal from "./pages/mobile-terminal/Root"
+import Visit from "./pages/visit/visit-active/Root"
 
 export default function App() {
   const { userData } = useSelector((state) => state.loginSlice);
@@ -76,12 +77,15 @@ export default function App() {
           <Route path="/notification" element={<Notification />}>
             <Route path="operations" element={<NotificationOperations />} />
             <Route path="history" element={<NotificationHistory />} />
-            <Route path="active-visit" element={<ActiveVisit />} />
           </Route>
 
           <Route path="/mobile-terminal" element={<MobileTerminal />}>
             <Route path="jobs" element={<Jobs />} />
             <Route path="job-order" element={<JobOrder />} />
+          </Route>
+
+          <Route path="/visit" element={<Visit />}>
+            <Route path="active-visit" element={<ActiveVisit />} />
           </Route>
 
           {/* <Route path="/notification" element={<Notification />}>

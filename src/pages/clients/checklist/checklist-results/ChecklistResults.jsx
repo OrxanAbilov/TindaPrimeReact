@@ -8,12 +8,12 @@ import Error from '../../../../components/Error';
 import styled from 'styled-components';
 import { BiSearch, BiPencil } from 'react-icons/bi';
 import { Calendar } from 'primereact/calendar';
-import ChecklistResultDetails from './ChecklistResultDetails';  // Corrected import statement
+import ChecklistResultDetails from './ChecklistResultDetails'; 
 
 const ChecklistResults = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [detailsLoading, setDetailsLoading] = useState(false); // Add this line
+    const [detailsLoading, setDetailsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
     const [filters, setFilters] = useState({
@@ -102,20 +102,20 @@ const ChecklistResults = () => {
         }));
     };
 
-    const handleEditClick = (rowData) => {
-        setNewChecklist({
-            id: rowData.id,
-            code: rowData.code,
-            desC_: rowData.desC_,
-            specode: rowData.specode,
-            begiN_DATE: rowData.begiN_DATE ? new Date(rowData.begiN_DATE) : null,
-            enD_DATE: rowData.enD_DATE ? new Date(rowData.enD_DATE) : null,
-            questioN_COUNT: rowData.questioN_COUNT,
-            slS_COUNT: rowData.slS_COUNT,
-            statuS_: rowData.statuS_
-        });
-        setIsModalOpen(true);
-    };
+    // const handleEditClick = (rowData) => {
+    //     setNewChecklist({
+    //         id: rowData.id,
+    //         code: rowData.code,
+    //         desC_: rowData.desC_,
+    //         specode: rowData.specode,
+    //         begiN_DATE: rowData.begiN_DATE ? new Date(rowData.begiN_DATE) : null,
+    //         enD_DATE: rowData.enD_DATE ? new Date(rowData.enD_DATE) : null,
+    //         questioN_COUNT: rowData.questioN_COUNT,
+    //         slS_COUNT: rowData.slS_COUNT,
+    //         statuS_: rowData.statuS_
+    //     });
+    //     setIsModalOpen(true);
+    // };
 
     const openModal = () => {
         setNewChecklist({
@@ -212,13 +212,13 @@ const ChecklistResults = () => {
         </div>
     );
 
-    const editButtonTemplate = (rowData) => (
-        <ButtonContainer>
-            <EditButton onClick={() => handleEditClick(rowData)}>
-                <BiPencil size={18} />
-            </EditButton>
-        </ButtonContainer>
-    );
+    // const editButtonTemplate = (rowData) => (
+    //     <ButtonContainer>
+    //         <EditButton onClick={() => handleEditClick(rowData)}>
+    //             <BiPencil size={18} />
+    //         </EditButton>
+    //     </ButtonContainer>
+    // );
 
     const handleRowDoubleClick = async (event) => {
         const rowData = event.data;
@@ -309,11 +309,11 @@ const ChecklistResults = () => {
                         header={renderHeader('checK_LIST_PERCENTAGE', 'Sorğu nəticəsi')}
                         body={(rowData) => <Truncate>{rowData.checK_LIST_PERCENTAGE} %</Truncate>}
                     />
-                    <Column
+                    {/* <Column
                         header={'#'}
                         body={editButtonTemplate}
                         style={{ textAlign: 'center', width: '5%', right: '0', position: 'sticky', background: 'white' }}
-                    />
+                    /> */}
                 </DataTable>
                 <Paginator
                     first={filters.first}
