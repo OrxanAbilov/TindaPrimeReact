@@ -317,9 +317,11 @@ const EDIT_CHECKLIST = async (postData) => {
 };
 
 const GET_ALL_CHECKLIST_RESULTS = async (filters) => {
-  const { start, pageSize, order, orderColumn, searchList } = filters;
+  const { start, pageSize, order, orderColumn, searchList, startDate, endDate } = filters;
   
-  const res = await instance.post('CheckListResult/GetWithPagination', {
+  const url = `CheckListResult/GetWithPagination/${startDate}&${endDate}`;
+
+  const res = await instance.post(url, {
     start,
     pageSize,
     draw: filters.draw || 0,
