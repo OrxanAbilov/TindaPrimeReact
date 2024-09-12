@@ -39,6 +39,8 @@ import Jobs from "./pages/mobile-terminal/jobs/Jobs";
 import JobOrder from "./pages/mobile-terminal/job-order/JobOrder";
 import MobileTerminal from "./pages/mobile-terminal/Root"
 import Visit from "./pages/visit/visit-active/Root"
+import Delivery from "./pages/delivery/Root"
+import DeliveryDocuments from "./pages/delivery/DeliveryDocuments";
 
 export default function App() {
   const { userData } = useSelector((state) => state.loginSlice);
@@ -86,6 +88,9 @@ export default function App() {
 
           <Route path="/visit" element={<Visit />}>
             <Route path="active-visit" element={<ActiveVisit />} />
+          </Route>
+          <Route path="/delivery" element={<Delivery />}>
+            <Route path="documents" element={<DeliveryDocuments />} />
           </Route>
 
           {/* <Route path="/notification" element={<Notification />}>

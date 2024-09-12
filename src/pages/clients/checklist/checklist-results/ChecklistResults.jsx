@@ -39,6 +39,10 @@ const ChecklistResults = () => {
     { colName: "code" },
     { colName: "slS_CODE" },
     { colName: "slS_NAME" },
+    { colName: "slS_CODE_RESPONSIBLE" },
+    { colName: "slS_NAME_RESPONSIBLE" },
+    { colName: "manageR_SLS_CODE" },
+    { colName: "manageR_SLS_NAME" },
     { colName: "date" },
     { colName: "clienT_CODE" },
     { colName: "clienT_NAME" },
@@ -226,7 +230,7 @@ const ChecklistResults = () => {
               onChange={(e) => handleDateChange(e, "begin")}
               showIcon
               dateFormat="dd-mm-yy"
-              placeholder="Select begin date"
+              placeholder="Başlanğıc tarixi seçin"
             />
           </DateInputWrapper>
 
@@ -239,7 +243,7 @@ const ChecklistResults = () => {
               onChange={(e) => handleDateChange(e, "end")}
               showIcon
               dateFormat="dd-mm-yy"
-              placeholder="Select end date"
+              placeholder="Son tarixi seçin"
             />
           </DateInputWrapper>
 
@@ -266,13 +270,33 @@ const ChecklistResults = () => {
           />
           <Column
             field="slS_CODE"
-            header={renderHeader("slS_CODE", "Təmsilçi kod")}
+            header={renderHeader("slS_CODE", "Təftiş kod")}
             body={(rowData) => <Truncate>{rowData.slS_CODE}</Truncate>}
           />
           <Column
             field="slS_NAME"
-            header={renderHeader("slS_NAME", "Təmsilçi ad")}
+            header={renderHeader("slS_NAME", "Təftiş ad")}
             body={(rowData) => <Truncate>{rowData.slS_NAME}</Truncate>}
+          />
+          <Column
+            field="slS_CODE_RESPONSIBLE"
+            header={renderHeader("slS_CODE_RESPONSIBLE", "Təmsilçi kod")}
+            body={(rowData) => <Truncate>{rowData.slS_CODE_RESPONSIBLE}</Truncate>}
+          />
+          <Column
+            field="slS_NAME_RESPONSIBLE"
+            header={renderHeader("slS_NAME_RESPONSIBLE	", "Təmsilçi ad")}
+            body={(rowData) => <Truncate>{rowData.slS_NAME_RESPONSIBLE}</Truncate>}
+          />
+          <Column
+            field="manageR_SLS_CODE"
+            header={renderHeader("manageR_SLS_CODE", "Menecer kod")}
+            body={(rowData) => <Truncate>{rowData.manageR_SLS_CODE}</Truncate>}
+          />
+          <Column
+            field="manageR_SLS_NAME"
+            header={renderHeader("manageR_SLS_NAME", "Menecer ad")}
+            body={(rowData) => <Truncate>{rowData.manageR_SLS_NAME}</Truncate>}
           />
           <Column
             field="date"
@@ -405,6 +429,7 @@ const LoadingOverlay = styled.div`
   align-items: center;
   z-index: 1000;
 `;
+
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
