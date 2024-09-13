@@ -4,6 +4,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
+import { BiSearch } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
 import { GET_DOCUMENT_DETAILS } from '../../features/delivery/services/api';
 
 const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate }) => {
@@ -14,30 +16,24 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
     const [rows, setRows] = useState(5);
     const [searchQuery, setSearchQuery] = useState({
         slS_CODE: '',
-        doC_NUMBER: '',
+        ficheno: '',
         loaD_CODE: '',
         iN_CLIENT: '',
         ordeR_STATUS: '',
+        clienT_CODE: '',
+        clienT_NAME: '',
         entrancE_DATE: null,
-        exiT_DATE: null
+        exiT_DATE: null,
+        waiT_MINUTE: 0
     });
-    const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
-
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedQuery(searchQuery);
-        }, 500);
-
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [searchQuery]);
+    const [filteredData, setFilteredData] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (rowData && visible) {
             fetchDocumentDetails();
         }
-    }, [rowData, visible, beginDate, endDate, debouncedQuery]);
+    }, [rowData, visible, beginDate, endDate]);
 
     const formatDateToAPI = (date) => {
         if (!date) return null;
@@ -46,7 +42,17 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
-
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${day}-${month}-${year} ${hours}:${minutes}`;
+    };
+        
     const fetchDocumentDetails = async () => {
         setLoading(true);
         try {
@@ -59,8 +65,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
 
             const response = await GET_DOCUMENT_DETAILS(requestData);
             setDocumentDetails(response.data.data);
-            setTotalRecords(response.data.totalRecords); // Assuming totalRecords is included in the response
-            setPage(0); // Reset to first page when new data is fetched
+            setTotalRecords(response.data.totalRecords);
+            setFilteredData(response.data.data); 
         } catch (error) {
             console.error('Error fetching document details', error);
         }
@@ -73,7 +79,32 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
     };
 
     const handleSearchChange = (field, value) => {
+        const newValue = field === 'waiT_MINUTE' ? Number(value) : value;
+
         setSearchQuery(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleSearch = () => {
+        setFilteredData(filterData(documentDetails));
+    };
+
+    const handleKeyDown = (e, field) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    const filterData = (data) => {
+        return data.filter(item =>
+            (!searchQuery.slS_CODE || item.slS_CODE.toLowerCase().includes(searchQuery.slS_CODE.toLowerCase())) &&
+            (!searchQuery.ficheno || item.ficheno.toLowerCase().includes(searchQuery.ficheno.toLowerCase())) &&
+            (!searchQuery.iN_CLIENT || String(item.iN_CLIENT).toLowerCase().includes(convertStatusTextToValue(searchQuery.iN_CLIENT))) &&
+            (!searchQuery.ordeR_STATUS || String(item.ordeR_STATUS).toLowerCase().includes(convertStatusTextToValue(searchQuery.ordeR_STATUS))) &&
+            (!searchQuery.clienT_CODE || item.clienT_CODE.toLowerCase().includes(searchQuery.clienT_CODE.toLowerCase())) &&
+            (!searchQuery.clienT_NAME || item.clienT_NAME.toLowerCase().includes(searchQuery.clienT_NAME.toLowerCase())) &&
+            (!searchQuery.entrancE_DATE || formatDateToAPI(new Date(item.entrancE_DATE)).includes(formatDateToAPI(searchQuery.entrancE_DATE))) &&
+            (!searchQuery.exiT_DATE || formatDateToAPI(new Date(item.exiT_DATE)).includes(formatDateToAPI(searchQuery.exiT_DATE))) 
+        );
     };
 
     const convertStatusTextToValue = (text) => {
@@ -84,23 +115,15 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
         return text;
     };
 
-    const filterData = (data) => {
-        return data.filter(item =>
-            (!debouncedQuery.slS_CODE || item.slS_CODE.toLowerCase().includes(debouncedQuery.slS_CODE.toLowerCase())) &&
-            (!debouncedQuery.doC_NUMBER || item.doC_NUMBER.toLowerCase().includes(debouncedQuery.doC_NUMBER.toLowerCase())) &&
-            (!debouncedQuery.iN_CLIENT || String(item.iN_CLIENT).toLowerCase().includes(convertStatusTextToValue(debouncedQuery.iN_CLIENT))) &&
-            (!debouncedQuery.ordeR_STATUS || String(item.ordeR_STATUS).toLowerCase().includes(convertStatusTextToValue(debouncedQuery.ordeR_STATUS))) &&
-            (!debouncedQuery.entrancE_DATE || formatDateToAPI(new Date(item.entrancE_DATE)).includes(formatDateToAPI(new Date(debouncedQuery.entrancE_DATE)))) &&
-            (!debouncedQuery.exiT_DATE || formatDateToAPI(new Date(item.exiT_DATE)).includes(formatDateToAPI(new Date(debouncedQuery.exiT_DATE))))
-        );
-    };
-
     const statusFormatter = (value) => {
         return value === 1 ? 'Hə' : 'Yox';
     };
 
-    // Compute paginated data
-    const filteredData = filterData(documentDetails);
+    const handleRowDoubleClick = (rowData) => {
+        const ficheno = rowData.ficheno;
+        window.open(`/delivery/order-items?ficheno=${ficheno}`, '_blank');
+    };
+
     const paginatedData = filteredData.slice(page * rows, (page + 1) * rows);
 
     return (
@@ -109,114 +132,209 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                 <p>Yüklənir...</p>
             ) : (
                 <div>
-                    {filteredData.length > 0 ? (
-                        <DataTable
-                            value={paginatedData}
-                            paginator
-                            rows={rows}
-                            totalRecords={filteredData.length}
-                            lazy
-                            first={page * rows}
-                            onPage={onPageChange}
-                            emptyMessage="No records found"
-                            rowsPerPageOptions={[5, 10, 20]}
-                            paginatorPosition="bottom"
-                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-                        >
-                            <Column
-                                field="slS_CODE"
-                                header={
-                                    <>
-                                        Təmsilçi kodu
+                    <DataTable
+                        value={paginatedData}
+                        paginator
+                        rows={rows}
+                        totalRecords={filteredData.length}
+                        lazy
+                        first={page * rows}
+                        onPage={onPageChange}
+                        emptyMessage="No records found"
+                        rowsPerPageOptions={[5, 10, 20]}
+                        paginatorPosition="bottom"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                        onRowDoubleClick={(e) => handleRowDoubleClick(e.data)} // Add double-click event
+                    >
+                        <Column
+                            field="slS_CODE"
+                            header={
+                                <>
+                                    Təmsilçi kodu
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <InputText
                                             value={searchQuery.slS_CODE}
                                             onChange={(e) => handleSearchChange('slS_CODE', e.target.value)}
-                                            placeholder="Təmsilçi kodu"
-                                            style={{ width: '100%', marginTop: '0.5rem' }}
+                                            onKeyDown={(e) => handleKeyDown(e, 'slS_CODE')}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
                                         />
-                                    </>
-                                }
-                            />
-                            <Column
-                                field="doC_NUMBER"
-                                header={
-                                    <>
-                                        Sənəd nömrəsi
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        />
+                        <Column
+                            field="ficheno"
+                            header={
+                                <>
+                                    Sənəd nömrəsi
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <InputText
-                                            value={searchQuery.doC_NUMBER}
-                                            onChange={(e) => handleSearchChange('doC_NUMBER', e.target.value)}
-                                            placeholder="Sənəd nömrəsi"
-                                            style={{ width: '100%', marginTop: '0.5rem' }}
+                                            value={searchQuery.ficheno}
+                                            onChange={(e) => handleSearchChange('ficheno', e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, 'ficheno')}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
                                         />
-                                    </>
-                                }
-                            />
-                            <Column
-                                field="iN_CLIENT"
-                                header={
-                                    <>
-                                        Müştəridə statusu
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        />
+                        <Column
+                            field="clienT_CODE"
+                            header={
+                                <>
+                                    Müştəri kodu
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                        <InputText
+                                            value={searchQuery.clienT_CODE}
+                                            onChange={(e) => handleSearchChange('clienT_CODE', e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, 'clienT_CODE')}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
+                                        />
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        />
+                        <Column
+                            field="clienT_NAME"
+                            header={
+                                <>
+                                    Müştəri adı
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                        <InputText
+                                            value={searchQuery.clienT_NAME}
+                                            onChange={(e) => handleSearchChange('clienT_NAME', e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, 'clienT_NAME')}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
+                                        />
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        />
+                        <Column
+                            field="iN_CLIENT"
+                            header={
+                                <>
+                                    Müştəridə statusu
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <InputText
                                             value={searchQuery.iN_CLIENT}
                                             onChange={(e) => handleSearchChange('iN_CLIENT', e.target.value)}
-                                            placeholder="Müştəridə statusu"
-                                            style={{ width: '100%', marginTop: '0.5rem' }}
+                                            onKeyDown={(e) => handleKeyDown(e, 'iN_CLIENT')}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
                                         />
-                                    </>
-                                }
-                                body={(rowData) => statusFormatter(rowData.iN_CLIENT)}
-                            />
-                            <Column
-                                field="ordeR_STATUS"
-                                header={
-                                    <>
-                                        Çatdırılma statusu
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                            body={(rowData) => statusFormatter(rowData.iN_CLIENT)}
+                        />
+                        <Column
+                            field="ordeR_STATUS"
+                            header={
+                                <>
+                                    Çatdırılma statusu
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <InputText
                                             value={searchQuery.ordeR_STATUS}
                                             onChange={(e) => handleSearchChange('ordeR_STATUS', e.target.value)}
-                                            placeholder="Çatdırılma statusu"
-                                            style={{ width: '100%', marginTop: '0.5rem' }}
+                                            onKeyDown={(e) => handleKeyDown(e, 'ordeR_STATUS')}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
                                         />
-                                    </>
-                                }
-                                body={(rowData) => statusFormatter(rowData.ordeR_STATUS)}
-                            />
-                            <Column
-                                field="entrancE_DATE"
-                                header={
-                                    <>
-                                        Giriş tarixi
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                            body={(rowData) => statusFormatter(rowData.ordeR_STATUS)}
+                        />
+                        <Column
+                            field="entrancE_DATE"
+                            header={
+                                <>
+                                    Giriş tarixi
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <Calendar
                                             value={searchQuery.entrancE_DATE}
                                             onChange={(e) => handleSearchChange('entrancE_DATE', e.value)}
                                             dateFormat="yy-mm-dd"
-                                            placeholder="Giriş tarixi"
-                                            style={{ width: '100%', marginTop: '0.5rem' }}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
                                         />
-                                    </>
-                                }
-                                body={(rowData) => formatDateToAPI(new Date(rowData.entrancE_DATE))}
-                            />
-                            <Column
-                                field="exiT_DATE"
-                                header={
-                                    <>
-                                        Çıxış tarixi
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                            body={(rowData) => formatDate(rowData.entrancE_DATE)}
+                        />
+                        <Column
+                            field="exiT_DATE"
+                            header={
+                                <>
+                                    Çıxış tarixi
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <Calendar
                                             value={searchQuery.exiT_DATE}
                                             onChange={(e) => handleSearchChange('exiT_DATE', e.value)}
                                             dateFormat="yy-mm-dd"
-                                            placeholder="Çıxış tarixi"
-                                            style={{ width: '100%', marginTop: '0.5rem' }}
+                                            placeholder="Axtar..."
+                                            style={{ width: '90%' }}
                                         />
-                                    </>
-                                }
-                                body={(rowData) => formatDateToAPI(new Date(rowData.exiT_DATE))}
-                            />
-                        </DataTable>
-                    ) : (
-                        <p>Nəticə tapılmadı.</p>
-                    )}
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                            body={(rowData) => formatDate(rowData.exiT_DATE)}
+                        />
+                        <Column
+                            field="waiT_MINUTE"
+                            header={
+                                <>
+                                    Müştəridə keçirdiyi vaxt
+                                </>
+                            }
+                        />
+                    </DataTable>
                 </div>
             )}
         </Dialog>

@@ -12,7 +12,7 @@ import DocumentDetailsDialog from './DocumentDetailsDialog';
 
 const DeliveryDocuments = () => {
     const defaultBeginDate = new Date();
-    defaultBeginDate.setMonth(defaultBeginDate.getDate() - 1);
+    defaultBeginDate.setDate(defaultBeginDate.getDate());
   
     const defaultEndDate = new Date();
   
@@ -76,6 +76,11 @@ const DeliveryDocuments = () => {
             return acc;
         }, {});
     
+        // const filters = searchCriteria.reduce((acc, curr) => {
+        //     acc[curr.colName] = curr.value !== undefined ? curr.value : "";
+        //     return acc;
+        // }, {});
+
         if (beginDate) {
             filters.beginDate = formatDateToAPI(beginDate);
         }

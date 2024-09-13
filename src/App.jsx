@@ -41,6 +41,7 @@ import MobileTerminal from "./pages/mobile-terminal/Root"
 import Visit from "./pages/visit/visit-active/Root"
 import Delivery from "./pages/delivery/Root"
 import DeliveryDocuments from "./pages/delivery/DeliveryDocuments";
+import OrderItems from "./pages/delivery/OrderItems";
 
 export default function App() {
   const { userData } = useSelector((state) => state.loginSlice);
@@ -91,12 +92,8 @@ export default function App() {
           </Route>
           <Route path="/delivery" element={<Delivery />}>
             <Route path="documents" element={<DeliveryDocuments />} />
+            <Route path="order-items" element={<OrderItems />} />
           </Route>
-
-          {/* <Route path="/notification" element={<Notification />}>
-            <Route path="active-visit" element={<ActiveVisit />} />
-          </Route> */}
-
 
           {userType === 1 && (
             <Route path="/admin" element={<Admin />}>

@@ -416,10 +416,4 @@ const CopyButton = styled.button`
   cursor: pointer;
 `;
 
-const RemoveButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-`;
-
 export default Checklists;

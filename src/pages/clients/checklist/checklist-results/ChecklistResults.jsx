@@ -276,7 +276,7 @@ const ChecklistResults = () => {
           <Column
             field="slS_NAME"
             header={renderHeader("slS_NAME", "Təftiş ad")}
-            body={(rowData) => <Truncate>{rowData.slS_NAME}</Truncate>}
+            body={(rowData) => <TruncateExt>{rowData.slS_NAME}</TruncateExt>}
           />
           <Column
             field="slS_CODE_RESPONSIBLE"
@@ -286,7 +286,7 @@ const ChecklistResults = () => {
           <Column
             field="slS_NAME_RESPONSIBLE"
             header={renderHeader("slS_NAME_RESPONSIBLE	", "Təmsilçi ad")}
-            body={(rowData) => <Truncate>{rowData.slS_NAME_RESPONSIBLE}</Truncate>}
+            body={(rowData) => <TruncateExt>{rowData.slS_NAME_RESPONSIBLE}</TruncateExt>}
           />
           <Column
             field="manageR_SLS_CODE"
@@ -296,7 +296,7 @@ const ChecklistResults = () => {
           <Column
             field="manageR_SLS_NAME"
             header={renderHeader("manageR_SLS_NAME", "Menecer ad")}
-            body={(rowData) => <Truncate>{rowData.manageR_SLS_NAME}</Truncate>}
+            body={(rowData) => <TruncateExt>{rowData.manageR_SLS_NAME}</TruncateExt>}
           />
           <Column
             field="date"
@@ -312,7 +312,7 @@ const ChecklistResults = () => {
             field="clienT_NAME"
             header={renderHeader("clienT_NAME", "Müştəri ad")}
             body={(rowData) => (
-              <TruncateExtra>{rowData.clienT_NAME}</TruncateExtra>
+              rowData.clienT_NAME
             )}
           />
           <Column
@@ -358,7 +358,7 @@ const ChecklistResults = () => {
           first={filters.first}
           rows={filters.pageSize}
           totalRecords={totalRecords}
-          rowsPerPageOptions={[5, 10, 20]}
+          rowsPerPageOptions={[5, 10, 50, 100]}
           onPageChange={onPageChange}
         />
       </DataTableContainer>
@@ -410,12 +410,6 @@ const Truncate = styled.div`
   max-width: 150px;
 `;
 
-const TruncateExtra = styled.div`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 250px;
-`;
 
 const LoadingOverlay = styled.div`
   position: fixed;
@@ -462,6 +456,13 @@ const FilterButton = styled.button`
   cursor: pointer;
   font-size: 18px;
   align-self: flex-end;
+`;
+
+const TruncateExt = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
 `;
 
 export default ChecklistResults;

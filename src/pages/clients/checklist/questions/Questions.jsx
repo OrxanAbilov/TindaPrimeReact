@@ -402,7 +402,7 @@ const Questions = () => {
                     <Column
                         field="desc"
                         header={renderHeader('desc', 'Açıqlama')}
-                        body={(rowData) => <Truncate>{rowData.desc}</Truncate>}
+                        body={(rowData) => <TruncateExt>{rowData.desc}</TruncateExt>}
                     />
                     <Column
                         field="questioN_GROUP_NAME"
@@ -525,6 +525,13 @@ const CopyButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+`;
+
+const TruncateExt = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
 `;
 
 export default Questions;

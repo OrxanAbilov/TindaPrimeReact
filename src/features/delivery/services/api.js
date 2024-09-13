@@ -26,8 +26,17 @@ const GET_ALL_DELIVERY_DOCUMENTS = async (allFilters) => {
     return res.data;
 };
     
+const GET_ORDER_ITEMS = async ({ficheno}) => {    
+  const res = await instance.post('DriverOrderItems/GetWithPagination', {
+    ficheno: ficheno
+  });
+  return res.data;
+};
+  
+
 export {
   GET_ALL_DELIVERY_DOCUMENTS,
-  GET_DOCUMENT_DETAILS
+  GET_DOCUMENT_DETAILS,
+  GET_ORDER_ITEMS
  };
  

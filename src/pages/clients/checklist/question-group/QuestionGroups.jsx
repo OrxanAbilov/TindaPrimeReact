@@ -211,12 +211,12 @@ const QuestionGroups = () => {
                     <Column
                         field="name"
                         header={renderHeader('name', 'Ad')}
-                        body={(rowData) => <Truncate>{rowData.name}</Truncate>}
+                        body={(rowData) => <TruncateExt>{rowData.name}</TruncateExt>}
                     />
                     <Column
                         field="desc"
                         header={renderHeader('desc', 'Açıqlama')}
-                        body={(rowData) => <Truncate>{rowData.desc}</Truncate>}
+                        body={(rowData) => <TruncateExt>{rowData.desc}</TruncateExt>}
                     />
                     <Column
                         header={'#'}
@@ -304,6 +304,13 @@ const RemoveButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+`;
+
+const TruncateExt = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
 `;
 
 export default QuestionGroups;
