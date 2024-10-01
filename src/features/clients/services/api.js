@@ -452,6 +452,134 @@ const UPDATE_SPEACIAL_SETTING = async (blockData) => {
   }
 };
 
+
+
+const EXPORT_CHECKLIST_RESULTS = async (filters) => {
+  const { start, pageSize, order, orderColumn, searchList, startDate, endDate } = filters;
+
+  const url = `CheckListResult/ExportWithPagination/${startDate}&${endDate}`;
+
+  try {
+    const response = await instance.post(url, {
+      start,
+      pageSize,  
+      draw: filters.draw || 0,
+      order: order || 'asc',
+      orderColumn: orderColumn || 'id',
+      searchList: searchList || []
+    }, {
+      responseType: 'blob'
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Error exporting checklist results', error);
+    throw new Error('Error exporting checklist results');
+  }
+};
+
+
+const EXPORT_CHECKLIST_RESULTS_WITH_INSIDE = async (filters) => {
+  const { start, pageSize, order, orderColumn, searchList, startDate, endDate } = filters;
+
+  const url = `CheckListResult/ExportInsideWithPagination/${startDate}&${endDate}`;
+
+  try {
+    const response = await instance.post(url, {
+      start,
+      pageSize,  
+      draw: filters.draw || 0,
+      order: order || 'asc',
+      orderColumn: orderColumn || 'id',
+      searchList: searchList || []
+    }, {
+      responseType: 'blob'
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Error exporting checklist results', error);
+    throw new Error('Error exporting checklist results');
+  }
+};
+
+const UPDATE_CHECKLIST_RESULT_STATUS = async (id) => {
+  try {
+    const res = await instance.put(`CheckListOperation/UpdateActiveOrPassive/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error('Error deleting checklist operation', error);
+    throw new Error('Error deleting checklist operation');
+  }
+};
+
+
+const GET_ALL_VISIT_DURATIONS = async (filters) => {
+  const { start, pageSize, order, orderColumn, searchList } = filters;
+  
+  const res = await instance.post('VisitDurations/GetWithPagination', {
+    start,
+    pageSize,
+    draw: filters.draw || 0,
+    order: order || 'asc',
+    orderColumn: orderColumn || 'id',
+    searchList: searchList || []
+  });
+  
+  return res.data;
+};
+
+const GET_ALL_VISIT_DURATION_BY_ID = async (id) => {
+  const res = await instance.get(
+    `VisitDurations/${id}`
+  );
+  return res.data;
+};
+
+const POST_NEW_VISIT_DURATION = async (formData) => {
+  try {
+    const res = await instance.post('VisitDurations', formData);
+    return res.data;
+  } catch (error) {
+    console.error('Error creating visit duration', error);
+    throw new Error('Error creating visit duration');
+  }
+};
+
+const EDIT_VISIT_DURATION = async (formData) => {
+  try {
+    const res = await instance.put('VisitDurations', formData);
+    return res.data;
+  } catch (error) {
+    console.error('Error editing visit duration', error);
+    throw new Error('Error editing visit duration');
+  }
+};
+
+const UPDATE_CHECKLIST_OPERATION = async (formData) => {
+  try {
+    const res = await instance.put('CheckListOperation', formData);
+    return res.data;
+  } catch (error) {
+    console.error('Error updating checklist operation', error);
+    throw new Error('Error updating checklist operation');
+  }
+};
+
+const GET_SALESMAN_FOR_COMBO = async () => {
+  const res = await instance.get(
+    `Salesman/GetSalesmanForCombo`
+  );
+  return res.data;
+};
+
+const GET_CHECKLIST_OPERATION_EDIT_HISTORY_BY_ID = async (id) => {
+  const res = await instance.get(
+    `CheckListOperationUpdates/GetByOperationId/${id}`
+  );
+  return res.data;
+};
+
 export {
    GET_ALL_DOCUMENTS_FOR_HISTORY, 
    POST_NEW_CHECKLIST, 
@@ -491,5 +619,15 @@ export {
    GET_ALL_CLIENTS,
    POST_NEW_SPEACIAL_SETTING,
    GET_SPECIAL_SETTINGS_OPERATIONS_BY_CODE,
-   UPDATE_SPEACIAL_SETTING
+   UPDATE_SPEACIAL_SETTING,
+   EXPORT_CHECKLIST_RESULTS,
+   UPDATE_CHECKLIST_RESULT_STATUS,
+   GET_ALL_VISIT_DURATIONS,
+   GET_ALL_VISIT_DURATION_BY_ID,
+   POST_NEW_VISIT_DURATION,
+   EDIT_VISIT_DURATION,
+   UPDATE_CHECKLIST_OPERATION,
+   GET_SALESMAN_FOR_COMBO,
+   GET_CHECKLIST_OPERATION_EDIT_HISTORY_BY_ID,
+   EXPORT_CHECKLIST_RESULTS_WITH_INSIDE
   };

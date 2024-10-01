@@ -132,6 +132,18 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                 <p>Yüklənir...</p>
             ) : (
                 <div>
+                    {paginatedData.length > 0 && (
+                        <div style={{
+                            textAlign: 'center',
+                            marginBottom: '1rem',
+                            padding: '1rem',
+                            borderRadius: '8px',
+                            fontSize: '1.2rem',
+                            fontWeight: 'bold'
+                        }}>
+                            {`${paginatedData[0]?.loaD_CODE} - ${paginatedData[0]?.slS_CODE} - ${paginatedData[0]?.slS_NAME}`}
+                        </div>
+                    )}
                     <DataTable
                         value={paginatedData}
                         paginator
@@ -146,28 +158,6 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
                         onRowDoubleClick={(e) => handleRowDoubleClick(e.data)} // Add double-click event
                     >
-                        <Column
-                            field="slS_CODE"
-                            header={
-                                <>
-                                    Təmsilçi kodu
-                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                                        <InputText
-                                            value={searchQuery.slS_CODE}
-                                            onChange={(e) => handleSearchChange('slS_CODE', e.target.value)}
-                                            onKeyDown={(e) => handleKeyDown(e, 'slS_CODE')}
-                                            placeholder="Axtar..."
-                                            style={{ width: '90%' }}
-                                        />
-                                        <BiSearch
-                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
-                                            onClick={handleSearch}
-                                            size={18}
-                                        />
-                                    </div>
-                                </>
-                            }
-                        />
                         <Column
                             field="ficheno"
                             header={
@@ -189,6 +179,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                     </div>
                                 </>
                             }
+                            style={{ width: '160px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                         <Column
                             field="clienT_CODE"
@@ -211,6 +203,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                     </div>
                                 </>
                             }
+                            style={{ width: '150px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                         <Column
                             field="clienT_NAME"
@@ -233,6 +227,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                     </div>
                                 </>
                             }
+                            style={{ width: '280px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                         <Column
                             field="iN_CLIENT"
@@ -256,6 +252,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                 </>
                             }
                             body={(rowData) => statusFormatter(rowData.iN_CLIENT)}
+                            style={{ width: '180px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                         <Column
                             field="ordeR_STATUS"
@@ -279,6 +277,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                 </>
                             }
                             body={(rowData) => statusFormatter(rowData.ordeR_STATUS)}
+                            style={{ width: '180px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                         <Column
                             field="entrancE_DATE"
@@ -289,7 +289,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                         <Calendar
                                             value={searchQuery.entrancE_DATE}
                                             onChange={(e) => handleSearchChange('entrancE_DATE', e.value)}
-                                            dateFormat="yy-mm-dd"
+                                            onKeyDown={(e) => handleKeyDown(e, 'entrancE_DATE')}
+                                            dateFormat="dd-mm-yy"
                                             placeholder="Axtar..."
                                             style={{ width: '90%' }}
                                         />
@@ -302,6 +303,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                 </>
                             }
                             body={(rowData) => formatDate(rowData.entrancE_DATE)}
+                            style={{ width: '200px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                         <Column
                             field="exiT_DATE"
@@ -312,7 +315,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                         <Calendar
                                             value={searchQuery.exiT_DATE}
                                             onChange={(e) => handleSearchChange('exiT_DATE', e.value)}
-                                            dateFormat="yy-mm-dd"
+                                            onKeyDown={(e) => handleKeyDown(e, 'exiT_DATE')}
+                                            dateFormat="dd-mm-yy"
                                             placeholder="Axtar..."
                                             style={{ width: '90%' }}
                                         />
@@ -325,6 +329,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                 </>
                             }
                             body={(rowData) => formatDate(rowData.exiT_DATE)}
+                            style={{ width: '200px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                         <Column
                             field="waiT_MINUTE"
@@ -333,6 +339,8 @@ const DocumentDetailsDialog = ({ visible, onHide, rowData, beginDate, endDate })
                                     Müştəridə keçirdiyi vaxt
                                 </>
                             }
+                            style={{ width: '150px' }}
+                            bodyStyle={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                         />
                     </DataTable>
                 </div>

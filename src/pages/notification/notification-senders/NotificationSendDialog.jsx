@@ -127,7 +127,7 @@ const NotificationSendDialog = ({ visible, onHide, header, onSave }) => {
         const errors = {};
         if (!title.trim()) errors.title = 'Başlıq boş ola bilməz';
         if (!body.trim()) errors.body = 'Mesaj boş ola bilməz';
-        if (!image.trim()) errors.image = 'Şəkil boş ola bilməz';
+        // if (!image.trim()) errors.image = 'Şəkil boş ola bilməz';
         if (!selectedOperation) errors.operation = 'Əməliyyat seçilməlidir';
         if (selectedSalesmen.length === 0) errors.salesman = 'Ən azı bir satışçı seçilməlidir';
 
@@ -209,7 +209,7 @@ const NotificationSendDialog = ({ visible, onHide, header, onSave }) => {
                         <label htmlFor="image">Şəkil</label>
                         <InputText
                             id="image"
-                            value={image}
+                            value="."
                             onChange={(e) => setImage(e.target.value)}
                             placeholder="Image"
                             style={{ width: '100%', marginBottom: '10px' }}
@@ -268,7 +268,7 @@ const NotificationSendDialog = ({ visible, onHide, header, onSave }) => {
                                     first={filters.first}
                                     rows={filters.pageSize}
                                     totalRecords={totalRecords}
-                                    rowsPerPageOptions={[5, 10, 20]}
+                                    rowsPerPageOptions={[5, 10, 20, 100, 1000]}
                                     onPageChange={onPageChange}
                                 />
                             </DataTableContainer>

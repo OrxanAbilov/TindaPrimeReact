@@ -139,11 +139,15 @@ const NotificationHistory = () => {
         </div>
     );
     const handleSave = async (payload) => {
+        setLoading(true);
+        setError(null);
+
         console.log(payload);
         try {
             await POST_NEW_NOTIFICATION(payload);
             closeModal();
             fetchData();
+            setLoading(false);
         } catch (error) {
             console.error('Error saving notification', error);
         }

@@ -42,8 +42,14 @@ import Visit from "./pages/visit/visit-active/Root"
 import Delivery from "./pages/delivery/Root"
 import DeliveryDocuments from "./pages/delivery/DeliveryDocuments";
 import OrderItems from "./pages/delivery/OrderItems";
+import useInactivityTimer from "./useInactivityTimer";
+import VisitDurations from "./pages/clients/visit-duration/VisitDurations";
+import VisitDurationEdit from "./pages/clients/visit-duration/VisitDurationEdit";
+import ChecklistResultEdit from "./pages/clients/checklist/checklist-results/CheckListResultEdit";
 
 export default function App() {
+  useInactivityTimer();
+
   const { userData } = useSelector((state) => state.loginSlice);
   const userType = userData ? userData.userType : null;
   return (
@@ -75,6 +81,10 @@ export default function App() {
             <Route path="checklist/checklist-results" element={<ChecklistResults />} />
             <Route path="special-settings/special-settings-operations" element={<SpecialSettingsOperations />} />
             <Route path="special-settings/block" element={<SpecialSettings/>} />
+            <Route path="visit-durations" element={<VisitDurations/>} />
+            <Route path="visit-duration-edit" element={<VisitDurationEdit/>} />
+            <Route path="visit-duration-edit/:id" element={<VisitDurationEdit />} />
+            <Route path="checklist/checklist-result-edit/:id" element={<ChecklistResultEdit />} />
           </Route>
 
           <Route path="/notification" element={<Notification />}>

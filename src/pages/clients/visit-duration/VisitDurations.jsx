@@ -2,62 +2,66 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Paginator } from 'primereact/paginator';
-import { GET_ALL_JOB_HEADERS, POST_NEW_JOB_HEADER, EDIT_JOB_HEADER, REMOVE_JOB } from '../../../features/mobile-terminal/services/api';
+import { GET_ALL_VISIT_DURATIONS } from '../../../features/clients/services/api';
 import Loading from '../../../components/Loading';
 import Error from '../../../components/Error';
 import styled from 'styled-components';
-import { BiSearch, BiPencil, BiTrash, BiPlus } from 'react-icons/bi';
-import AddEditDialog from './AddEditDialog';
-import DeleteConfirmationModal from '../../../components/DeleteConfirmationModal';
 import { Button } from 'primereact/button';
+import { useNavigate } from 'react-router-dom';
+import { BiSearch, BiPencil, BiTrash, BiPlus, BiCopy } from 'react-icons/bi';
 import { Dropdown } from 'primereact/dropdown';
 
-const JobOrder = () => {
+const VisitDurations = () => {
+    const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
+    const [selectedStatus, setSelectedStatus] = useState("true");
     const [filters, setFilters] = useState({
         pageSize: 10,
         first: 0,
         draw: 0,
         order: 'asc',
         orderColumn: 'id',
-        searchList: []
+        searchList: [{ colName: 'status', value: selectedStatus }]
     });
 
     const [searchCriteria, setSearchCriteria] = useState([
-        { colName: 'code' },
         { colName: 'desc' },
-        { colName: 'joB_COUNT' },
-        { colName: 'desc' },
+        { colName: 'miN_WAIT_MINUTE' },
+        { colName: 'maX_WAIT_MINUTE' },
+        { colName: 'clienT_CODE' },
+        { colName: 'clspecode' },
+        { colName: 'clspecodE2' },
+        { colName: 'clspecodE3' },
+        { colName: 'clspecodE4' },
+        { colName: 'clspecodE5' },
+        { colName: 'cltype' },
+        { colName: 'clgroup' },
+        { colName: 'status' }
     ]);
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newJobOrder, setNewJobOrder] = useState({
-        code: '',
-        desc: '',
-        deL_STATUS: 0,
-        joB_COUNT: 0
-    });
-
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState(null);
-    const [selectedStatus, setSelectedStatus] = useState(null);
 
     useEffect(() => {
         fetchData();
-    }, [filters, selectedStatus]);
+    }, [filters]);
 
     const fetchData = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await GET_ALL_JOB_HEADERS({
+            const searchList = [
+                { colName: "status", value: selectedStatus },
+                ...searchCriteria.filter(criteria => criteria.value !== '' && criteria.value !== null && criteria.value !== undefined)
+            ];
+            
+            const response = await GET_ALL_VISIT_DURATIONS({
                 ...filters,
                 start: filters.first,
-                pageSize: filters.pageSize
+                pageSize: filters.pageSize,
+                searchList: searchList
             });
+            console.log("filters", filters);
             setData(response.data.data);
             setTotalRecords(response.data.totalRecords);
         } catch (error) {
@@ -81,7 +85,21 @@ const JobOrder = () => {
             )
         );
     };
-
+    
+    const handleStatusChange = (value) => {
+        setSelectedStatus(value);
+        setFilters(prevFilters => {
+            const updatedSearchList = prevFilters.searchList.filter(criteria => criteria.colName !== "status");
+            
+            updatedSearchList.push({ colName: "status", value });
+    
+            return {
+                ...prevFilters,
+                searchList: updatedSearchList
+            };
+        });
+    };
+    
     const onPageChange = (event) => {
         const { first, rows } = event;
         setFilters(prevFilters => ({
@@ -91,56 +109,16 @@ const JobOrder = () => {
         }));
     };
 
-    const handleStatusChange = (e) => {
-        const selectedValue = e.value.toString(); 
-        setSelectedStatus(selectedValue);
-
-        if (selectedValue === 'all') {
-            setFilters(prevFilters => ({
-                ...prevFilters,
-                searchList: []
-            }));
-        } else {
-            setFilters(prevFilters => ({
-                ...prevFilters,
-                searchList: [
-                    ...prevFilters.searchList.filter(item => item.colName !== 'deL_STATUS'),
-                    { colName: 'deL_STATUS', value: selectedValue }
-                ]
-            }));
-        }
-    };
-
     const handleEditClick = (rowData) => {
-        setNewJobOrder({ id: rowData.id, code: rowData.code, desc: rowData.desc });
-        setIsModalOpen(true);
+        navigate(`/clients/visit-duration-edit/${rowData.id}`);
     };
 
-    const handleRemoveClick = (rowData) => {
-        setItemToDelete(rowData);
-        setShowDeleteModal(true);
+    const handleCopyClick = (rowData) => {
+        navigate(`/clients/visit-duration-edit/${rowData.id}`, {
+            state: { isCopy: true } // Passing the copy flag
+        });
     };
-
-    const handleDeleteConfirm = async (item) => {
-        // try {
-        //     await REMOVE_JOB(item.id);
-        //     setShowDeleteModal(false);
-        //     fetchData();
-        // } catch (error) {
-        //     alert('Əməliyyatl silərkən xəta baş verdi', error);
-        // }
-    };
-
-    const openModal = () => {
-        setNewJobOrder({ id: 0, code: '', desc: '', deL_STATUS: false, joB_COUNT: 0, status: true });
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setNewJobOrder({ id: 0, code: '', desc: '', deL_STATUS: false, joB_COUNT: 0, status: true });
-    };
-
+        
     if (loading) {
         return <Loading />;
     }
@@ -156,7 +134,6 @@ const JobOrder = () => {
     };
 
     const statusOptions = [
-        { label: 'Hamısı', value: 'all' },
         { label: 'Aktiv', value: 'true' },
         { label: 'Passiv', value: 'false' }
     ];
@@ -191,62 +168,27 @@ const JobOrder = () => {
             <EditButton onClick={() => handleEditClick(rowData)}>
                 <BiPencil size={18} />
             </EditButton>
-            <RemoveButton onClick={() => handleRemoveClick(rowData)}>
-                <BiTrash size={18} />
-            </RemoveButton>
+            <CopyButton onClick={() => handleCopyClick(rowData)}>
+                <BiCopy size={18} />
+            </CopyButton>
         </ButtonContainer>
     );
-
-    const transformJobOrder = (jobOrder) => {
-        return {
-            id: jobOrder.id,
-            code: jobOrder.code,
-            desc: jobOrder.desc,
-            deL_STATUS: jobOrder.deL_STATUS,
-            jobs: jobOrder.relations.map(relation => ({
-                joB_ID: relation.job.id,
-                joB_ROW_NUMBER: relation.roW_NUMBER,
-                joB_COMPULSORY_STATUS: relation.compulsorY_STATUS
-            }))
-        };
-    };
+    const handlePlusClick = () => {
+        console.log("CLICKED");
+        navigate('/clients/visit-duration-edit');
+      };
     
-    const onSave = async () => {
-        const transformedJobOrder = transformJobOrder(newJobOrder);
-
-        if (newJobOrder?.id > 0) {
-            console.log(transformedJobOrder);
-            try {
-                await EDIT_JOB_HEADER(transformedJobOrder);
-                closeModal();
-                fetchData();
-            } catch (error) {
-                console.error('Error saving job', error);
-            }
-        } else {
-            console.log(transformedJobOrder);
-            try {
-                await POST_NEW_JOB_HEADER(transformedJobOrder);
-                closeModal();
-                fetchData();
-            } catch (error) {
-                console.error('Error saving job', error);
-            }
-        }
-    };
-
     return (
         <Wrapper>
             <TopBar>
-            <Dropdown
-                id="statusDropdown"
-                value={selectedStatus}
-                options={statusOptions}
-                onChange={handleStatusChange}
-                placeholder="Status"
-                className="p-d-block"
+                <Dropdown
+                    value={selectedStatus}
+                    options={statusOptions}
+                    onChange={(e) => handleStatusChange(e.value)}
+                    placeholder="Status"
+                    style={{ marginRight: 'auto' }}
                 />
-                <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni əməliyyat</Button>
+                <Button onClick={handlePlusClick} severity="secondary"><BiPlus size={18} />Yeni limit</Button>
             </TopBar>
             <DataTableContainer>
                 <DataTable
@@ -258,27 +200,81 @@ const JobOrder = () => {
                     className="p-datatable-sm"
                 >
                     <Column
-                        field="code"
-                        header={renderHeader('code', 'Kod')}
-                        body={(rowData) => <Truncate>{rowData.code}</Truncate>}
-                        frozen
-                    />
-                    <Column
                         field="desc"
                         header={renderHeader('desc', 'Açıqlama')}
                         body={(rowData) => <Truncate>{rowData.desc}</Truncate>}
                     />
                     <Column
-                        field="joB_COUNT"
-                        header={renderHeader('joB_COUNT', 'Əməliyyat sayı')}
-                        body={(rowData) => <Truncate>{rowData.joB_COUNT}</Truncate>}
+                        field="miN_WAIT_MINUTE"
+                        header={renderHeader('miN_WAIT_MINUTE', 'Minimum müddət')}
+                        body={(rowData) => <Truncate>{rowData.miN_WAIT_MINUTE}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="maX_WAIT_MINUTE"
+                        header={renderHeader('maX_WAIT_MINUTE', 'Maksimum müddət')}
+                        body={(rowData) => <Truncate>{rowData.maX_WAIT_MINUTE}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="slS_CODE"
+                        header={renderHeader('slS_CODE', 'Təmsilçi kodu')}
+                        body={(rowData) => <Truncate>{rowData.slS_CODE}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="clienT_CODE"
+                        header={renderHeader('clienT_CODE', 'Müştəri kodu')}
+                        body={(rowData) => <Truncate>{rowData.clienT_CODE}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="clspecode"
+                        header={renderHeader('clspecode', 'Özəl kod')}
+                        body={(rowData) => <Truncate>{rowData.clspecode}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="clspecodE2"
+                        header={renderHeader('clspecodE2', 'Özəl kod2')}
+                        body={(rowData) => <Truncate>{rowData.clspecodE2}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="clspecodE3"
+                        header={renderHeader('clspecodE3', 'Özəl kod3')}
+                        body={(rowData) => <Truncate>{rowData.clspecodE3}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="clspecodE4"
+                        header={renderHeader('clspecodE4', 'Özəl kod4')}
+                        body={(rowData) => <Truncate>{rowData.clspecodE4}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="clspecodE5"
+                        header={renderHeader('clspecodE5', 'Özəl kod5')}
+                        body={(rowData) => <Truncate>{rowData.clspecodE5}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="cltype"
+                        header={renderHeader('cltype', 'Müştəri tipi')}
+                        body={(rowData) => <Truncate>{rowData.cltype}</Truncate>}
+                        frozen
+                    />
+                    <Column
+                        field="clgroup"
+                        header={renderHeader('clgroup', 'Müştəri qrupu')}
+                        body={(rowData) => <Truncate>{rowData.clgroup}</Truncate>}
+                        frozen
                     />
                     <Column
                         header={'#'}
                         body={editButtonTemplate}
                         style={{ textAlign: 'center', width: '5%', right: '0', position: 'sticky', background: 'white' }}
                     />
-
                 </DataTable>
                 <Paginator
                     first={filters.first}
@@ -288,20 +284,6 @@ const JobOrder = () => {
                     onPageChange={onPageChange}
                 />
             </DataTableContainer>
-            <AddEditDialog
-                visible={isModalOpen}
-                onHide={closeModal}
-                onSave={onSave}
-                newJobOrder={newJobOrder}
-                setNewJobOrder={setNewJobOrder}
-                header={newJobOrder?.id > 0 ? 'Dəyişdir' : 'Əlavə et'}
-            />
-            <DeleteConfirmationModal
-                visible={showDeleteModal}
-                onHide={() => setShowDeleteModal(false)}
-                onConfirm={handleDeleteConfirm}
-                itemToDelete={itemToDelete}
-            />
         </Wrapper>
     );
 };
@@ -314,9 +296,8 @@ const Wrapper = styled.div`
 
 const TopBar = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 20px 0 20px 0;
+  justify-content: flex-end;
+  padding: 10px;
 `;
 
 const DataTableContainer = styled.div`
@@ -357,10 +338,9 @@ const EditButton = styled.button`
   cursor: pointer;
 `;
 
-const RemoveButton = styled.button`
+const CopyButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
 `;
-
-export default JobOrder;
+export default VisitDurations;

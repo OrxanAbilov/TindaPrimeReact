@@ -8,7 +8,7 @@ import Error from '../../../components/Error';
 import styled from 'styled-components';
 import { BiSearch, BiPencil, BiTrash, BiPlus } from 'react-icons/bi';
 import AddEditDialog from './AddEditDialog';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
+import DeleteConfirmationModal from '../../../components/DeleteConfirmationModal';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 

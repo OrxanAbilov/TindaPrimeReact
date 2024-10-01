@@ -1,101 +1,228 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { InputText } from 'primereact/inputtext';
+import { BiSearch } from 'react-icons/bi';
 import { GET_ORDER_ITEMS } from '../../features/delivery/services/api';
-import { Card } from 'primereact/card';
-import './OrderItems.css';
+import { useSearchParams } from 'react-router-dom';
+import styled from 'styled-components';
 
 const OrderItems = () => {
+    const [documentDetails, setDocumentDetails] = useState([]);
     const [searchParams] = useSearchParams();
-    const [orderItems, setOrderItems] = useState([]);
-    const [filteredItems, setFilteredItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(0);
+    const [rows, setRows] = useState(5);
+    const [searchQuery, setSearchQuery] = useState({
+        slS_CODE: '',
+        ficheno: '',
+        loaD_CODE: '',
+        iteM_CODE: '',
+        iteM_NAME: '',
+        amount: 0,
+        unit: 0,
+        price: 0,
+        discount: 0,
+        discper: 0,
+        grosstotal: 0,
+        nettotal: 0,
+        tax: 0,
+    });
+    const [filteredData, setFilteredData] = useState([]);
 
     const ficheno = searchParams.get('ficheno');
 
     useEffect(() => {
         if (ficheno) {
-            fetchOrderItems(ficheno);
+            fetchDocumentDetails(ficheno);
         }
     }, [ficheno]);
 
-    useEffect(() => {
-        filterOrderItems(searchTerm);
-    }, [searchTerm, orderItems]);
 
-    const fetchOrderItems = async (ficheno) => {
+    const fetchDocumentDetails = async (ficheno) => {
         setLoading(true);
         try {
             const response = await GET_ORDER_ITEMS({ ficheno });
-            setOrderItems(response.data.data);
-            setFilteredItems(response.data.data); // Set filteredItems initially
+            setDocumentDetails(response.data.data); 
+            setFilteredData(response.data.data);
+            console.log(response.data.data);
         } catch (error) {
             console.error('Error fetching order items:', error);
         }
         setLoading(false);
     };
+        
+    const onPageChange = (event) => {
+        setPage(event.page);
+        setRows(event.rows);
+    };
 
-    const filterOrderItems = (term) => {
-        if (!term) {
-            setFilteredItems(orderItems);
-        } else {
-            const lowerCaseTerm = term.toLowerCase();
-            const filtered = orderItems.filter((item) =>
-                (item.iteM_NAME && item.iteM_NAME.toLowerCase().includes(lowerCaseTerm)) ||
-                (item.iteM_CODE && item.iteM_CODE.toLowerCase().includes(lowerCaseTerm))
-            );
-            setFilteredItems(filtered);
+    const handleSearchChange = (field, value) => {
+        setSearchQuery(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleSearch = () => {
+        setFilteredData(filterData(documentDetails));
+    };
+
+    const handleKeyDown = (e, field) => {
+        if (e.key === 'Enter') {
+            handleSearch();
         }
     };
 
-    const handleSearch = (e) => {
-        setSearchTerm(e.target.value);
+    const filterData = (data) => {
+        return data.filter(item =>
+            (!searchQuery.iteM_CODE || item.iteM_CODE.toLowerCase().includes(searchQuery.iteM_CODE.toLowerCase())) &&
+            (!searchQuery.iteM_NAME || item.iteM_NAME.toLowerCase().includes(searchQuery.iteM_NAME.toLowerCase())) 
+        );
     };
 
-    return (
-        <div style={{width: '100%' }}>
-            <div className="search-container" style={{ marginBottom: '20px', textAlign: 'center'}}>
-                <input
-                    type="text"
-                    placeholder="Mal adı və ya kodu ilə axtarış..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    className="search-input"
-                    style={{ padding: '10px', width: '300px', fontSize: '16px' }}
-                />
-            </div>
+    const paginatedData = filteredData.slice(page * rows, (page + 1) * rows);
 
-            <div className="card-grid">
-                {loading ? (
-                    <p>Yüklənir...</p>
-                ) : (
-                    filteredItems.map((item, index) => (
-                        <Card 
-                            key={index}
-                            title={`Mal kodu: ${item.iteM_CODE || 'Bilinmir'}`}
-                            subTitle={`Mal adı: ${item.iteM_NAME || 'Bilinmir'}`}
-                            className="order-item-card"
-                            style={{textAlign: 'center'}}
-                        >
-                            <div className="card-content">
-                            <div className="card-row">
-                                <p>Say: <strong>{item.amount.toFixed(2)}  {item.uniT_CODE}</strong></p>
-                            </div>
-                            <div className="card-row">
-                                <p>Qiymət: <span style={{color: '#339967'}}><strong>{item.price.toFixed(2)} ₼</strong></span></p>
-                                <p>Endirim: <span style={{color: '#c4ad00'}}><strong>{item.discount.toFixed(2)} ₼</strong></span></p>
-                            </div>
-                            <div className="card-row">
-                                <p>Net: <strong>{item.nettotal.toFixed(2)} ₼</strong></p>
-                                <p>Gross: <strong>{item.grosstotal.toFixed(2)} ₼</strong></p>
-                            </div>
-                            </div>
-                        </Card>
-                    ))
-                )}
-            </div>
-        </div>
+    return (
+        <Wrapper>
+            <DataTableContainer>
+            {loading ? (
+                <p>Yüklənir...</p>
+            ) : (
+                <div>
+                    {paginatedData.length > 0 && (
+                        <div style={{
+                            textAlign: 'center',
+                            marginBottom: '1rem',
+                            padding: '1rem',
+                            borderRadius: '8px',
+                            fontSize: '1.2rem',
+                            fontWeight: 'bold'
+                        }}>
+                            {`${paginatedData[0]?.ficheno} - ${paginatedData[0]?.slS_CODE} - ${paginatedData[0]?.slS_NAME}`}
+                        </div>
+                    )}
+
+                    <DataTable
+                        value={paginatedData}
+                        paginator
+                        rows={rows}
+                        totalRecords={filteredData.length}
+                        lazy
+                        first={page * rows}
+                        onPage={onPageChange}
+                        emptyMessage="Nəticə tapılmadı"
+                        rowsPerPageOptions={[5, 10, 20]}
+                        paginatorPosition="bottom"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                    >
+                        <Column
+                            field="iteM_CODE"
+                            header={
+                                <>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                        <InputText
+                                            value={searchQuery.iteM_CODE}
+                                            onChange={(e) => handleSearchChange('iteM_CODE', e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, 'iteM_CODE')}
+                                            placeholder="Mal kodu..."
+                                            style={{ width: '90%' }}
+                                        />
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        />
+                        <Column
+                            field="iteM_NAME"
+                            header={
+                                <>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                        <InputText
+                                            value={searchQuery.iteM_NAME}
+                                            onChange={(e) => handleSearchChange('iteM_NAME', e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, 'iteM_NAME')}
+                                            placeholder="Mal adı..."
+                                            style={{ width: '90%' }}
+                                        />
+                                        <BiSearch
+                                            style={{ cursor: 'pointer', marginLeft: '0.5rem' }}
+                                            onClick={handleSearch}
+                                            size={18}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        />
+                        <Column
+                            header="Miqdar"
+                            body={(rowData) => (
+                                <>
+                                    {rowData.amount} {rowData.uniT_CODE}
+                                </>
+                            )}
+                        />
+                        <Column
+                            header="Qiymət"
+                            body={(rowData) => (
+                                <>
+                                    {rowData.price} ₼
+                                </>
+                            )}
+                        />
+                        <Column
+                            header="Endirim"
+                            body={(rowData) => (
+                                <>
+                                    {rowData.discount} ₼
+                                </>
+                            )}
+                        />
+                        <Column
+                            header="Gross Total"
+                            body={(rowData) => (
+                                <>
+                                    {rowData.grosstotal} ₼
+                                </>
+                            )}
+                        />
+                        <Column
+                            header="Net Total"
+                            body={(rowData) => (
+                                <>
+                                    {rowData.nettotal} ₼
+                                </>
+                            )}
+                        />
+                        <Column
+                            header="Vergi"
+                            body={(rowData) => (
+                                <>
+                                    {rowData.tax} ₼
+                                </>
+                            )}
+                        />
+                    </DataTable>
+                </div>
+            )}
+            </DataTableContainer>
+        </Wrapper>
     );
 };
+
+const Wrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const DataTableContainer = styled.div`
+  overflow-y: auto;
+  width: 100%;
+  max-width: 82vw;
+  font-size: 12px;
+`;
+
 
 export default OrderItems;

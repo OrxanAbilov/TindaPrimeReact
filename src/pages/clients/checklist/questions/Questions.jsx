@@ -8,7 +8,7 @@ import Error from '../../../../components/Error';
 import styled from 'styled-components';
 import { BiSearch, BiPencil, BiTrash, BiPlus, BiCopy } from 'react-icons/bi';
 import AddEditDialog from './AddEditDialog';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
+import DeleteConfirmationModal from '../../../../components/DeleteConfirmationModal';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 
@@ -70,12 +70,23 @@ const Questions = () => {
     const [selectedStatus, setSelectedStatus] = useState(null);
 
     useEffect(() => {
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            searchList: [
+                ...prevFilters.searchList.filter(item => item.colName !== 'status'),
+                { colName: 'status', value: "true" }
+            ]
+        }));
+    }, []); 
+    
+    useEffect(() => {
         fetchData();
-    }, [filters,selectedStatus]);
-
+    }, [filters, selectedStatus]);
+    
     const fetchData = async () => {
         setLoading(true);
         setError(null);
+    
         try {
             const response = await GET_ALL_QUESTIONS({
                 ...filters,
@@ -88,8 +99,10 @@ const Questions = () => {
             console.error('Error fetching data', error);
             setError('Error fetching data');
         }
+    
         setLoading(false);
     };
+    
 
     const handleSearchClick = () => {
         setFilters({
@@ -107,19 +120,19 @@ const Questions = () => {
     };
 
     const handleStatusChange = (e) => {
-        const selectedValue = e.value.toString(); // Convert to string
-        setSelectedStatus(selectedValue); // Update selected status filter
+        const selectedValue = e.value.toString();
+        setSelectedStatus(selectedValue); 
 
         if (selectedValue === 'all') {
             setFilters(prevFilters => ({
                 ...prevFilters,
-                searchList: [] // Reset searchList
+                searchList: [] 
             }));
         } else {
             setFilters(prevFilters => ({
                 ...prevFilters,
                 searchList: [
-                    ...prevFilters.searchList.filter(item => item.colName !== 'status'), // Remove existing status filter
+                    ...prevFilters.searchList.filter(item => item.colName !== 'status'),
                     { colName: 'status', value: selectedValue }
                 ]
             }));
@@ -156,17 +169,6 @@ const Questions = () => {
         setItemToDelete(rowData);
         setShowDeleteModal(true);
     };
-
-    // const handleDeleteConfirm = async (item) => {
-    //     try {
-    //         await REMOVE_QUESTION(item.id);
-    //         setShowDeleteModal(false);
-    //         fetchData();
-    //     } catch (error) {
-    //         // console.error("errorF",error.response.data.Exception);
-    //         alert('Bilinməyən bir xəta baş verdi', error.response.data.Exception);
-    //     }
-    // };
 
     const handleDeleteConfirm = async (item) => {
         const result = await REMOVE_QUESTION(item.id);
@@ -309,6 +311,16 @@ const Questions = () => {
     const onSave = async () => {
         const filteredQuestion = filterNewQuestion(newQuestion);
 
+        if (filteredQuestion.ratE_TYPE_ID === 1) {
+            // Set varianT_POINT, answeR_REASON_PERMISSION_ID, and answeR_IMG_PERMISSION_ID to 0
+            filteredQuestion.checkListQuestionVariantPostDtos.forEach(item => {
+                item.varianT_POINT = 0;
+                item.answeR_REASON_PERMISSION_ID = 0;
+                item.answeR_IMG_PERMISSION_ID = 0;
+            });
+        }
+    
+    
         if(filteredQuestion.ratE_TYPE_ID === 2 && filteredQuestion.answeR_IMG_PERMISSION_ID !== 1){
             const hasZeroPermissionId = filteredQuestion.checkListQuestionVariantPostDtos.some(
                 item => item.answeR_REASON_PERMISSION_ID === 0 || item.answeR_IMG_PERMISSION_ID === 0
@@ -369,13 +381,14 @@ const Questions = () => {
         <Wrapper>
             <TopBar>
                 <Dropdown
-            id="statusDropdown"
-            value={selectedStatus}
-            options={statusOptions}
-            onChange={handleStatusChange}
-            placeholder="Status"
-            className="p-d-block"
-            />
+                id="statusDropdown"
+                // value={selectedStatus}
+                value={selectedStatus || "true"} // default value is "Aktiv" if status is undefined or null
+                options={statusOptions}
+                onChange={handleStatusChange}
+                placeholder="Status"
+                className="p-d-block"
+                />
 
                 <Button onClick={openModal} severity="secondary"><BiPlus size={18} />Yeni sual</Button>
             </TopBar>
