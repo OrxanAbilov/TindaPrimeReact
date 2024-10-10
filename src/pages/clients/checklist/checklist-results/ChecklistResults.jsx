@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Paginator } from "primereact/paginator";
+import { BiExport } from "react-icons/bi";
 import {
   GET_ALL_CHECKLIST_RESULTS,
   GET_CHECKLIST_RESULT_DETAILS_BY_CHEKLIST_ID,
@@ -13,7 +14,7 @@ import {
 import Loading from "../../../../components/Loading";
 import Error from "../../../../components/Error";
 import styled from "styled-components";
-import { BiSearch, BiPencil, BiTrash, BiHistory } from 'react-icons/bi';
+import { BiSearch, BiPencil, BiTrash, BiHistory, BiFile } from 'react-icons/bi';
 import { Calendar } from "primereact/calendar";
 import { TbTrashOff } from "react-icons/tb";
 import ChecklistResultDetails from "./ChecklistResultDetails";
@@ -23,6 +24,8 @@ import { Button } from "primereact/button";
 import { useNavigate } from 'react-router-dom';
 import DeleteConfirmationModal from './DeleteConfirmationModal'
 import HistoryDialog from "./CheclistResultEditHistory";
+import ExportListDialog from "./CheclistResultExportList";
+import useUserPermissions from "../../../../helper/useUserPermissions";
 
 const ChecklistResults = () => {
   const defaultStartDate = new Date();
@@ -48,12 +51,12 @@ const ChecklistResults = () => {
   });
   const [exportDialogVisible, setExportDialogVisible] = useState(false);
   const [exportVariant, setExportVariant] = useState("");
-  const [exportLoading, setExportLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [historyDialogVisible, setHistoryDialogVisible] = useState(false);
   const [historyData, setHistoryData] = useState(null);
-  
+  const [exportListDialogVisible, setExportListDialogVisible] = useState(false);
+
   const [searchCriteria, setSearchCriteria] = useState([
     { colName: "code" },
     { colName: "slS_CODE" },
@@ -76,6 +79,12 @@ const ChecklistResults = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [detailedData, setDetailedData] = useState(null);
+  const permissionsToCheck = useMemo(() => [
+    "CHECK_LIST_RESULT_EDIT",
+    "CHECK_LIST_RESULT_DELETE",
+    "CHECK_LIST_RESULT_EDIT_HISTORY"
+  ], []);
+  const { permissionsStatus, loading: permissionsLoading, error: permissionsError } = useUserPermissions(permissionsToCheck);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -98,15 +107,14 @@ const ChecklistResults = () => {
   };
 
   const handleExport = async () => {
-    setExportLoading(true);
     try {
       const adjustedPageSize =
-        (exportVariant === "variant1" || exportVariant === "variant3") 
-          ? totalRecords 
+        (exportVariant === "variant1" || exportVariant === "variant3")
+          ? totalRecords
           : filters.pageSize;
-
+  
       let exportResponse;
-
+  
       const searchList = [
         { colName: "status", value: selectedStatus },
         ...searchCriteria.filter(
@@ -116,7 +124,7 @@ const ChecklistResults = () => {
             criteria.value !== undefined
         ),
       ];
-
+  
       if (exportVariant === "variant3" || exportVariant === "variant4") {
         exportResponse = await EXPORT_CHECKLIST_RESULTS_WITH_INSIDE({
           ...filters,
@@ -136,23 +144,13 @@ const ChecklistResults = () => {
           searchList: searchList,
         });
       }
-
-      const blob = new Blob([exportResponse.data], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = "CheckListNeticeleri.xlsx";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  
+      console.log("response", exportResponse);
     } catch (error) {
       console.error("Error exporting data", error);
-    } finally {
-      setExportLoading(false);
     }
   };
+  
   
   useEffect(() => {
     fetchData();
@@ -328,6 +326,14 @@ const handleHistoryClick = async (rowData) => {
   }
 };
 
+const handleExportListDialogOpen = () => {
+  setExportListDialogVisible(true);
+};
+
+const handleExportListDialogClose = () => {
+  setExportListDialogVisible(false);
+};
+
 
   const handleRemoveClick = (rowData) => {
     setItemToDelete(rowData);
@@ -346,21 +352,27 @@ const handleHistoryClick = async (rowData) => {
   };
   const editButtonTemplate = (rowData) => (
     <ButtonContainer>
-      <ColumnButton onClick={() => handleEditClick(rowData)}>
-        <BiPencil size={24} />
-      </ColumnButton>
-      <ColumnButton onClick={() => handleHistoryClick(rowData)}>
-        <BiHistory size={24} />
-      </ColumnButton>
-      <ColumnButton onClick={() => handleRemoveClick(rowData)}>
-        {selectedStatus == "true" ? (
-          <BiTrash size={24} />
-        ) : (
-          <TbTrashOff size={24} />
+        {permissionsStatus["CHECK_LIST_RESULT_EDIT"] && (
+            <ColumnButton onClick={() => handleEditClick(rowData)}>
+                <BiPencil size={24} />
+            </ColumnButton>
         )}
-      </ColumnButton>
+        {permissionsStatus["CHECK_LIST_RESULT_DELETE"] && (
+            <ColumnButton onClick={() => handleRemoveClick(rowData)}>
+                {rowData.selectedStatus === "true" ? (
+                    <BiTrash size={24} />
+                ) : (
+                    <TbTrashOff size={24} />
+                )}
+            </ColumnButton>
+        )}
+      {permissionsStatus["CHECK_LIST_RESULT_EDIT_HISTORY"] && (
+        <ColumnButton onClick={() => handleHistoryClick(rowData)}>
+            <BiHistory size={24} />
+        </ColumnButton>
+      )}
     </ButtonContainer>
-  );
+);
 
   return (
     <Wrapper>
@@ -403,16 +415,14 @@ const handleHistoryClick = async (rowData) => {
 
           <FilterButton onClick={handleSearchClick}>Filter</FilterButton>
         </DateInputContainer>
-        {/* <ExportButton onClick={() => setExportDialogVisible(true)} loading={exportLoading} disabled={exportLoading}>
-        {exportLoading ? (
-          <>
-            <LoadingSpinner />
-            <span style={{ marginLeft: '0.5em' }}>Yüklənir...</span>
-          </>
-        ) : (
-          "Export to Excel"
-        )}
-      </ExportButton> */}
+        <ExportButton style={{ marginLeft: 'auto'}} onClick={handleExportListDialogOpen}>
+          <BiFile size={20} style={{ marginRight: "8px", color: '#339967' }} />
+          <span>Excel Faylları</span>
+        </ExportButton>
+        <ExportButton onClick={() => setExportDialogVisible(true)}>
+          <BiExport size={20}/>
+          <span>Export</span>
+        </ExportButton>
       </Container>
 
       <DataTableContainer>
@@ -448,6 +458,13 @@ const handleHistoryClick = async (rowData) => {
             field="clienT_NAME"
             header={renderHeader("clienT_NAME", "Müştəri ad")}
             body={(rowData) => rowData.clienT_NAME}
+          />
+          <Column
+            field="checK_LIST_PERCENTAGE"
+            header={renderHeader("checK_LIST_PERCENTAGE", "Sorğu nəticəsi")}
+            body={(rowData) => (
+              <Truncate>{rowData.checK_LIST_PERCENTAGE} %</Truncate>
+            )}
           />
           <Column
             field="manageR_SLS_NAME"
@@ -517,13 +534,6 @@ const handleHistoryClick = async (rowData) => {
             )}
           />
           <Column
-            field="checK_LIST_PERCENTAGE"
-            header={renderHeader("checK_LIST_PERCENTAGE", "Sorğu nəticəsi")}
-            body={(rowData) => (
-              <Truncate>{rowData.checK_LIST_PERCENTAGE} %</Truncate>
-            )}
-          />
-          <Column
             header={"#"}
             body={editButtonTemplate}
             style={{
@@ -571,6 +581,7 @@ const handleHistoryClick = async (rowData) => {
         onHide={() => setHistoryDialogVisible(false)}
         historyData={historyData}
       />
+      <ExportListDialog visible={exportListDialogVisible} onClose={() => setExportListDialogVisible(false)} />
     </Wrapper>
   );
 };
@@ -623,7 +634,7 @@ const LoadingOverlay = styled.div`
 const Container = styled.div`
   display: flex;
   // justify-content: space-between;
-  gap: 50px;
+  gap: 20px;
   align-items: center;
   margin-bottom: 20px;
 `;
@@ -677,53 +688,28 @@ const ColumnButton = styled.button`
   cursor: pointer;
 `;
 
-// const ExportButton = styled.button`
-//   padding: 8px 16px;
-//   background-color: #007ad9;
-//   color: white;
-//   border: none;
-//   border-radius: 4px;
-//   cursor: pointer;
-//   font-size: 18px;
-//   margin-left: auto;
-// `;
-
 const ExportButton = styled.button`
-  background-color: ${props => (props.loading ? '#28a745' : '#007bff')};
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: ${props => (props.loading ? 'not-allowed' : 'pointer')};
   display: flex;
-  align-items: center; 
+  align-items: center;
   justify-content: center;
+  padding: 8px 16px;
+  border: 2px solid #b3e2c7;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 18px;
-  margin-left: auto;
-  transition: background-color 0.3s;
-  min-width: 150px; 
+  color: #339967;
+  background: white;
+  transition: background 0.3s, box-shadow 0.3s;
 
-  &:disabled {
-    opacity: 0.6; 
+  &:hover {
+    background: #b3e2c7;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);/
   }
-`;
 
-const LoadingSpinner = styled.div`
-  border: 2px solid white;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  margin-right: 0.5em; // Add margin to separate spinner from text
-  animation: spin 0.6s linear infinite;
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  span {
+    margin-left: 4px;
   }
-`;
 
-
+  `;
 
 export default ChecklistResults;

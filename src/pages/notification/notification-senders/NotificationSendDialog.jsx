@@ -209,7 +209,7 @@ const NotificationSendDialog = ({ visible, onHide, header, onSave }) => {
                         <label htmlFor="image">Şəkil</label>
                         <InputText
                             id="image"
-                            value="."
+                            value= {image}
                             onChange={(e) => setImage(e.target.value)}
                             placeholder="Image"
                             style={{ width: '100%', marginBottom: '10px' }}

@@ -13,7 +13,7 @@ const throttle = (func, delay) => {
   };
 };
 
-const useInactivityTimer = (timeout = 900000) => { //900000
+const useInactivityTimer = (timeout = 1200000) => { //1200000
   const navigate = useNavigate();
   const timerRef = useRef(null);
 

@@ -1,0 +1,48 @@
+.images-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.image-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 50rem;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+
+.image-thumbnail {
+    width: auto; 
+    height: 100%; 
+    max-width: 100%; 
+    object-fit: cover; 
+    transition: transform 0.3s ease;
+}
+
+.image-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.image-title {
+    margin-top: 0.5rem;
+    font-weight: bold;
+}
+
+
+
+.p-tabview-nav {
+    display: flex;
+    justify-content: center;
+}
+
+.p-tabview-nav .p-tabview-nav-link {
+    padding: 1.5rem 3rem; 
+    margin-right: 3.5rem; 
+    font-size: 1.2rem;
+}

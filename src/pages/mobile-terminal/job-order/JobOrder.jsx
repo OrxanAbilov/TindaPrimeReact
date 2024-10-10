@@ -260,18 +260,18 @@ const JobOrder = () => {
                     <Column
                         field="code"
                         header={renderHeader('code', 'Kod')}
-                        body={(rowData) => <Truncate>{rowData.code}</Truncate>}
+                        body={(rowData) => rowData.code}
                         frozen
                     />
                     <Column
                         field="desc"
                         header={renderHeader('desc', 'Açıqlama')}
-                        body={(rowData) => <Truncate>{rowData.desc}</Truncate>}
+                        body={(rowData) => rowData.desc}
                     />
                     <Column
                         field="joB_COUNT"
                         header={renderHeader('joB_COUNT', 'Əməliyyat sayı')}
-                        body={(rowData) => <Truncate>{rowData.joB_COUNT}</Truncate>}
+                        body={(rowData) => rowData.joB_COUNT}
                     />
                     <Column
                         header={'#'}
@@ -337,13 +337,6 @@ const SearchIcon = styled.button`
   border: none;
   cursor: pointer;
   padding: 3px;
-`;
-
-const Truncate = styled.div`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px;
 `;
 
 const ButtonContainer = styled.div`

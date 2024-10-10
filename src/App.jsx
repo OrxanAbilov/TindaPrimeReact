@@ -46,6 +46,8 @@ import useInactivityTimer from "./useInactivityTimer";
 import VisitDurations from "./pages/clients/visit-duration/VisitDurations";
 import VisitDurationEdit from "./pages/clients/visit-duration/VisitDurationEdit";
 import ChecklistResultEdit from "./pages/clients/checklist/checklist-results/CheckListResultEdit";
+import ImageGallery from "./pages/image-gallery/ImageGallery";
+import Image from "./pages/image-gallery/Root"
 
 export default function App() {
   useInactivityTimer();
@@ -104,6 +106,11 @@ export default function App() {
             <Route path="documents" element={<DeliveryDocuments />} />
             <Route path="order-items" element={<OrderItems />} />
           </Route>
+
+          <Route path="/image-gallery" element={<Image />}>
+            <Route path="index" element={<ImageGallery />} />
+          </Route>
+
 
           {userType === 1 && (
             <Route path="/admin" element={<Admin />}>

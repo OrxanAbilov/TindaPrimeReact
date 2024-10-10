@@ -580,6 +580,35 @@ const GET_CHECKLIST_OPERATION_EDIT_HISTORY_BY_ID = async (id) => {
   return res.data;
 };
 
+
+const GET_CHECKLIST_RESULT_EXCEL_FILES = async (filters) => {
+  const { start, pageSize, order, orderColumn, searchList, begiN_DATE, enD_DATE } = filters;
+  
+  const res = await instance.post('ExcelExportFiles/GetWithPagination', {
+    start,
+    pageSize,
+    draw: filters.draw || 0,
+    order: order || 'asc',
+    orderColumn: orderColumn || 'id',
+    searchList: searchList || [],
+    begiN_DATE,
+    enD_DATE
+  });
+  
+  return res.data;
+};
+
+const UPDATE_CHECKLIST_RESULT_DOWNLOAD_STATUS = async (id) => {
+  try {
+    const res = await instance.put(`ExcelExportFiles/UpdateDownloadStatus/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error('Error editing checklist operation excel', error);
+    throw new Error('Error editing checklist operation excel');
+  }
+};
+
+
 export {
    GET_ALL_DOCUMENTS_FOR_HISTORY, 
    POST_NEW_CHECKLIST, 
@@ -629,5 +658,7 @@ export {
    UPDATE_CHECKLIST_OPERATION,
    GET_SALESMAN_FOR_COMBO,
    GET_CHECKLIST_OPERATION_EDIT_HISTORY_BY_ID,
-   EXPORT_CHECKLIST_RESULTS_WITH_INSIDE
+   EXPORT_CHECKLIST_RESULTS_WITH_INSIDE,
+   GET_CHECKLIST_RESULT_EXCEL_FILES,
+   UPDATE_CHECKLIST_RESULT_DOWNLOAD_STATUS
   };

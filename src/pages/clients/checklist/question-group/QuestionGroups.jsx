@@ -172,16 +172,20 @@ const QuestionGroups = () => {
         if (newGroup?.id > 0) {
             try {
                 await EDIT_QUESTION_GROUP(newGroup);
+                setData(prevData => prevData.map(row => (row.id === newGroup.id ? newGroup : row)));
+
                 closeModal();
-                fetchData();
+                // fetchData();
             } catch (error) {
                 console.error('Error saving question group', error);
             }
         } else {
             try {
                 await POST_NEW_QUESTION_GROUP(newGroup);
+                setData(prevData => [...prevData, response.data]);
+
                 closeModal();
-                fetchData();
+                // fetchData();
             } catch (error) {
                 console.error('Error saving question group', error);
             }
