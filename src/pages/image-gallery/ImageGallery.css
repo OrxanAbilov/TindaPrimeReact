@@ -1,6 +1,10 @@
+.image-gallery{
+    width: 78vw;
+}
+
 .images-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
     gap: 1rem;
 }
 
@@ -9,20 +13,28 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    height: 50rem;
-    cursor: pointer;
+    height: 34rem; 
     text-align: center;
     margin-bottom: 1rem;
     border: 1px solid #ddd;
     padding: 5px;
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    overflow: hidden;
+}
+
+.image-item:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+    transform: translateY(-5px); 
 }
 
 .image-thumbnail {
-    width: auto; 
-    height: 100%; 
-    max-width: 100%; 
-    object-fit: cover; 
+    width: 100%;
+    height: 24rem; 
+    object-fit: cover;
     transition: transform 0.3s ease;
+    border-radius: 10px; 
 }
 
 .image-thumbnail:hover {
@@ -34,15 +46,90 @@
     font-weight: bold;
 }
 
-
-
-.p-tabview-nav {
-    display: flex;
-    justify-content: center;
+.image-info {
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 14px;
 }
 
-.p-tabview-nav .p-tabview-nav-link {
-    padding: 1.5rem 3rem; 
-    margin-right: 3.5rem; 
-    font-size: 1.2rem;
+.image-info .dates {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.image-info .dates div {
+    width: 48%;
+}
+
+.image-info .other-info {
+    margin-bottom: 0.3rem;
+}
+
+.search-fields-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; 
+}
+
+.search-input {
+    width: 170px;
+}
+
+.search-button {
+    margin-left: 2rem;
+    width: 50px;
+    align-self: center;
+}
+
+@media (max-width: 1024px) {
+    .images-container {
+        grid-template-columns: repeat(3, 1fr); 
+    }
+
+    .image-item {
+        height: 30rem; 
+    }
+}
+
+@media (max-width: 768px) {
+    .images-container {
+        grid-template-columns: repeat(2, 1fr); 
+    }
+
+    .image-item {
+        height: 25rem; 
+    }
+
+    .search-fields-container {
+        flex-direction: column; 
+    }
+
+    .search-input {
+        width: 100%; 
+    }
+}
+
+@media (max-width: 480px) {
+    .images-container {
+        grid-template-columns: 1fr;
+    }
+
+    .image-item {
+        height: 20rem;
+    }
+
+    .image-thumbnail {
+        height: 15rem; 
+    }
+
+    .image-title {
+        font-size: 1rem; 
+    }
+
+    .search-button {
+        width: 20%; 
+    }
 }

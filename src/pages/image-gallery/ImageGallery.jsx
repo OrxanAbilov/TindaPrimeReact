@@ -1,122 +1,361 @@
-import React, { useState } from 'react';
-import { TabView, TabPanel } from 'primereact/tabview';
-import { Paginator } from 'primereact/paginator';
-import { Dialog } from 'primereact/dialog';
-import './ImageGallery.css'; // Ensure you have this CSS file
+import React, { useState, useEffect } from "react";
+import { Paginator } from "primereact/paginator";
+import { Dialog } from "primereact/dialog";
+import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import "./ImageGallery.css";
+import {
+  GET_ALL_GALLERY_PHOTOS,
+  GET_PHOTO_DETAIL,
+} from "../../features/photo-gallery/services/api";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
+import { Carousel } from "primereact/carousel";
 
 const ImageGallery = () => {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [firstVisit, setFirstVisit] = useState(0);
-    const [firstChecklist, setFirstChecklist] = useState(0);
-    const [firstDebtCheck, setFirstDebtCheck] = useState(0);
-    const rows = 3;
+  const defaultBeginDate = new Date();
+  defaultBeginDate.setDate(defaultBeginDate.getDate() - 100);
+  const defaultEndDate = new Date();
+  const [firstImage, setFirstImage] = useState(0);
+  const [draw, setDraw] = useState(0);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [carouselImages, setCarouselImages] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [beginDate, setBeginDate] = useState(defaultBeginDate);
+  const [endDate, setEndDate] = useState(defaultEndDate);
+  const [allFilters, setallFilters] = useState({
+    pageSize: 4,
+    first: 0,
+    draw: 0,
+    filters: {
+      slS_CODE: "",
+      slS_NAME: "",
+      clienT_CODE: "",
+      clienT_NAME: "",
+      doC_TYPE: "",
+      beginDate: "",
+      endDate: "",
+    },
+  });
 
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [visible, setVisible] = useState(false);
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
 
-    const visitImages = [
-        { id: 1, src: 'http://91.135.242.233:1816/VisitImages/eef3b4e9-d5ab-4e53-8a03-c74443817bba.jpg', alt: 'Visit 1', title: 'Visit Image 1' },
-        { id: 2, src: 'http://91.135.242.233:1816/VisitImages/a7bc30b8-eef8-46ed-aadf-6ec5b7e3e03c.jpg', alt: 'Visit 2', title: 'Visit Image 2' },
-        { id: 7, src: 'http://91.135.242.233:1816/VisitImages/23eaad99-2f02-4ca4-8c48-d9b608f02d7f.jpg', alt: 'Visit 1', title: 'Visit Image 1' },
-        { id: 8, src: 'https://images.pexels.com/photos/210647/pexels-photo-210647.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'Visit 2', title: 'Visit Image 2' },
-        { id: 9, src: 'https://images.pexels.com/photos/3184404/pexels-photo-3184404.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'Visit 1', title: 'Visit Image 1' },
-        { id: 10, src: 'https://images.pexels.com/photos/210647/pexels-photo-210647.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'Visit 2', title: 'Visit Image 2' },
-        { id: 11, src: 'https://images.pexels.com/photos/3184404/pexels-photo-3184404.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'Visit 1', title: 'Visit Image 1' },
-        { id: 12, src: 'https://images.pexels.com/photos/210647/pexels-photo-210647.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'Visit 2', title: 'Visit Image 2' },
-    ];
-
-    const checklistImages = [
-        { id: 3, src: 'https://images.pexels.com/photos/210158/pexels-photo-210158.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'Checklist 1', title: 'Checklist Image 1' },
-        { id: 4, src: 'https://images.pexels.com/photos/2333745/pexels-photo-2333745.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'Checklist 2', title: 'Checklist Image 2' },
-    ];
-
-    const debtCheckImages = [
-        { id: 5, src: 'https://images.pexels.com/photos/3746273/pexels-photo-3746273.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'DebtCheck 1', title: 'DebtCheck Image 1' },
-        { id: 6, src: 'https://images.pexels.com/photos/4386336/pexels-photo-4386336.jpeg?auto=compress&cs=tinysrgb&w=600', alt: 'DebtCheck 2', title: 'DebtCheck Image 2' },
-    ];
-
-    const handlePageChange = (category, event) => {
-        switch (category) {
-            case 'visit':
-                setFirstVisit(event.first);
-                break;
-            case 'checklist':
-                setFirstChecklist(event.first);
-                break;
-            case 'debtCheck':
-                setFirstDebtCheck(event.first);
-                break;
-            default:
-                break;
-        }
+    const filters = {
+      ...allFilters.filters,
+      beginDate: formatDateToAPI(beginDate),
+      endDate: formatDateToAPI(endDate),
     };
 
-    const showImageDialog = (image) => {
-        setSelectedImage(image);
-        setVisible(true);
-    };
+    try {
+      const response = await GET_ALL_GALLERY_PHOTOS({
+        ...allFilters,
+        filters: filters,
+        start: allFilters.first,
+        pageSize: allFilters.pageSize,
+      });
+      setImages(response.data.data);
+      setTotalRecords(response.data.totalRecords);
+    } catch (error) {
+      console.error("Error fetching data", error);
+      setError("Error fetching data");
+    }
+    setLoading(false);
+  };
 
-    const hideImageDialog = () => {
-        setVisible(false);
-    };
+  const fetchPhotoDetail = async (image) => {
+    try {
+      const response = await GET_PHOTO_DETAIL(image.doC_TYPE, image.id);
+      setCarouselImages(response.data.data);
+      setVisible(true);
+    } catch (error) {
+      console.error("Error fetching photo details", error);
+    }
+  };
 
-    const renderImages = (images, first) => {
-        return images.slice(first, first + rows).map((image) => (
-            <div key={image.id} className="image-item" onClick={() => showImageDialog(image)}>
-                <img src={image.src} alt={image.alt} className="image-thumbnail" />
-                <div className="image-title">{image.title}</div>
-            </div>
-        ));
-    };
+  const formatDateToAPI = (date) => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+  };
 
-    return (
-        <div className="image-gallery">
-            <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
-                <TabPanel header="Visit Images">
-                    <div className="images-container">
-                        {renderImages(visitImages, firstVisit)}
-                    </div>
-                    <Paginator
-                        first={firstVisit}
-                        rows={rows}
-                        totalRecords={visitImages.length}
-                        onPageChange={(e) => handlePageChange('visit', e)}
-                        template="PrevPageLink PageLinks NextPageLink"
-                    />
-                </TabPanel>
-                <TabPanel header="Checklist Images">
-                    <div className="images-container">
-                        {renderImages(checklistImages, firstChecklist)}
-                    </div>
-                    <Paginator
-                        first={firstChecklist}
-                        rows={rows}
-                        totalRecords={checklistImages.length}
-                        onPageChange={(e) => handlePageChange('checklist', e)}
-                        template="PrevPageLink PageLinks NextPageLink"
-                    />
-                </TabPanel>
-                <TabPanel header="DebtCheck Images">
-                    <div className="images-container">
-                        {renderImages(debtCheckImages, firstDebtCheck)}
-                    </div>
-                    <Paginator
-                        first={firstDebtCheck}
-                        rows={rows}
-                        totalRecords={debtCheckImages.length}
-                        onPageChange={(e) => handlePageChange('debtCheck', e)}
-                        template="PrevPageLink PageLinks NextPageLink"
-                    />
-                </TabPanel>
-            </TabView>
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
+  };
 
-            {selectedImage && (
-                <Dialog header={selectedImage.title} visible={visible} style={{ width: '50vw' }} onHide={hideImageDialog}>
-                    <img src={selectedImage.src} alt={selectedImage.alt} style={{ width: '100%' }} />
-                </Dialog>
-            )}
+  useEffect(() => {
+    fetchData();
+  }, [draw]);
+
+  const onPageChange = (event) => {
+    const { first, rows } = event;
+    setallFilters((prevFilters) => ({
+      ...prevFilters,
+      first: first,
+      pageSize: rows,
+    }));
+    setDraw((prevDraw) => prevDraw + 1);
+  };
+
+  const showImageDialog = (image) => {
+    setSelectedImage(image);
+    fetchPhotoDetail(image);
+  };
+
+  const hideImageDialog = () => {
+    setVisible(false);
+  };
+
+  const handleButtonClick = () => {
+    console.log("Button clicked!");
+    hideImageDialog();
+  };
+
+  const handleDateChange = (e, type) => {
+    const date = e.value;
+    if (type === "begin") {
+      setBeginDate(date);
+    } else if (type === "end") {
+      setEndDate(date);
+    }
+  };
+
+  const handleSearch = () => {
+    setDraw((prevDraw) => prevDraw + 1);
+    setallFilters((prevFilters) => ({
+      ...prevFilters,
+      first: 0,
+    }));
+  };
+
+  const handleInputChange = (e, field) => {
+    const value = e.target.value;
+    setallFilters((prevFilters) => ({
+      ...prevFilters,
+      filters: {
+        ...prevFilters.filters,
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const renderImages = (images, first) => {
+    return images.slice(first, first + allFilters.pageSize).map((image,index) => (
+      <div className="image-item" key={index}>
+        <h4 style={{ margin: "0.3rem" }}>{image.doC_TYPE}</h4>
+        <img
+          src={image.filepath}
+          className="image-thumbnail"
+          onClick={() => showImageDialog(image)}
+        />
+        <div className="image-title">{image.title}</div>
+        <div className="image-info">
+          <div className="dates">
+            <div>{formatDate(image.date)}</div>
+          </div>
+          <div className="other-info">
+            <strong>
+            {image.clienT_CODE} - {image.clienT_NAME}
+            </strong>
+          </div>
+          <div className="other-info">
+            <strong>{image.slS_CODE} - {image.slS_NAME}</strong>
+          </div>
         </div>
+      </div>
+    ));
+  };
+
+  const renderCarouselImage = (image, index) => {
+    return (
+      <div key={index}>
+        <img
+          src={image.filepath}
+          alt={image.filename}
+          style={{
+            height: "100%",
+            width: "auto",
+            maxWidth: "100%",
+            objectFit: "contain",
+          }}
+        />
+      </div>
     );
+  };
+
+  const carouselResponsiveOptions = [
+    {
+      breakpoint: "1024px",
+      numVisible: 3,
+      numScroll: 3,
+    },
+    {
+      breakpoint: "768px",
+      numVisible: 2,
+      numScroll: 2,
+    },
+    {
+      breakpoint: "560px",
+      numVisible: 1,
+      numScroll: 1,
+    },
+  ];
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <Error />;
+  }
+
+  const renderSearchFields = () => (
+    <div className="search-fields-container">
+      <InputText
+        value={allFilters.filters.clienT_CODE}
+        onChange={(e) => handleInputChange(e, "clienT_CODE")}
+        placeholder="Müştəri kodu"
+        className="search-input"
+        onKeyDown={handleKeyDown}
+        style={{ width: "170px" }}
+      />
+      <InputText
+        value={allFilters.filters.clienT_NAME}
+        onChange={(e) => handleInputChange(e, "clienT_NAME")}
+        placeholder="Müştəri adı"
+        className="search-input"
+        onKeyDown={handleKeyDown}
+        style={{ width: "170px" }}
+      />
+      <InputText
+        value={allFilters.filters.slS_CODE}
+        onChange={(e) => handleInputChange(e, "slS_CODE")}
+        placeholder="Təmsilçi kodu"
+        className="search-input"
+        onKeyDown={handleKeyDown}
+        style={{ width: "170px" }}
+      />
+      <InputText
+        value={allFilters.filters.slS_NAME}
+        onChange={(e) => handleInputChange(e, "slS_NAME")}
+        placeholder="Təmsilçi adı"
+        className="search-input"
+        onKeyDown={handleKeyDown}
+        style={{ width: "160px" }}
+      />
+      <Calendar
+        value={beginDate}
+        onChange={(e) => handleDateChange(e, "begin")}
+        placeholder="Start Date"
+        className="search-input"
+        dateFormat="yy-mm-dd"
+        showIcon
+        style={{ width: "170px" }}
+      />
+      <Calendar
+        value={endDate}
+        onChange={(e) => handleDateChange(e, "end")}
+        placeholder="End Date"
+        className="search-input"
+        dateFormat="yy-mm-dd"
+        showIcon
+        style={{ width: "170px" }}
+      />
+      <Button
+        icon="pi pi-search"
+        onClick={handleSearch}
+        className="search-button"
+      />
+    </div>
+  );
+
+  return (
+    <div className="image-gallery">
+      {renderSearchFields()}
+
+      <div className="images-container">{renderImages(images, firstImage)}</div>
+      <Paginator
+        first={allFilters.first}
+        rows={allFilters.pageSize}
+        totalRecords={totalRecords}
+        rowsPerPageOptions={[4, 8, 16]}
+        onPageChange={onPageChange}
+      />
+
+      {selectedImage && (
+        <Dialog
+          header="Tapşırıq vermə"
+          visible={visible}
+          style={{ width: "40vw", height: "auto" }}
+          onHide={hideImageDialog}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100vh",
+            }}
+          >
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+              }}
+            >
+              <Carousel
+                value={carouselImages}
+                numVisible={1}
+                numScroll={1}
+                responsiveOptions={carouselResponsiveOptions}
+                itemTemplate={renderCarouselImage}
+                circular
+                autoplayInterval={300000}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                margin: "20px 0",
+              }}
+            >
+              <div>
+                {selectedImage.slS_NAME}:{" "}
+                <strong>{selectedImage.clienT_CODE}</strong>
+              </div>
+              <Button label="Tapşırıq ver" onClick={handleButtonClick} />
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </div>
+  );
 };
 
 export default ImageGallery;

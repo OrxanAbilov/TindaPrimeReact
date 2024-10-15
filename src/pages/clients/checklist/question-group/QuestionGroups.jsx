@@ -182,10 +182,10 @@ const QuestionGroups = () => {
         } else {
             try {
                 await POST_NEW_QUESTION_GROUP(newGroup);
-                setData(prevData => [...prevData, response.data]);
+                // setData(prevData => [...prevData, response.data]);
 
                 closeModal();
-                // fetchData();
+                fetchData();
             } catch (error) {
                 console.error('Error saving question group', error);
             }
