@@ -12,8 +12,10 @@ import {
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
 import { Carousel } from "primereact/carousel";
+import { useNavigate } from "react-router-dom";
 
 const ImageGallery = () => {
+  const navigate = useNavigate();
   const defaultBeginDate = new Date();
   defaultBeginDate.setDate(defaultBeginDate.getDate() - 100);
   const defaultEndDate = new Date();
@@ -28,6 +30,8 @@ const ImageGallery = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [beginDate, setBeginDate] = useState(defaultBeginDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
+  const [fullImageVisible, setFullImageVisible] = useState(false);
+  const [fullImageSrc, setFullImageSrc] = useState("");
   const [allFilters, setallFilters] = useState({
     pageSize: 4,
     first: 0,
@@ -124,6 +128,7 @@ const ImageGallery = () => {
 
   const handleButtonClick = () => {
     console.log("Button clicked!");
+    navigate('/image-gallery/image-task', { state: { selectedImage } });
     hideImageDialog();
   };
 
@@ -162,40 +167,57 @@ const ImageGallery = () => {
   };
 
   const renderImages = (images, first) => {
-    return images.slice(first, first + allFilters.pageSize).map((image,index) => (
-      <div className="image-item" key={index}>
-        <h4 style={{ margin: "0.3rem" }}>{image.doC_TYPE}</h4>
-        <img
-          src={image.filepath}
-          className="image-thumbnail"
-          onClick={() => showImageDialog(image)}
-        />
-        <div className="image-title">{image.title}</div>
-        <div className="image-info">
-          <div className="dates">
-            <div>{formatDate(image.date)}</div>
-          </div>
-          <div className="other-info">
-            <strong>
-            {image.clienT_CODE} - {image.clienT_NAME}
-            </strong>
-          </div>
-          <div className="other-info">
-            <strong>{image.slS_CODE} - {image.slS_NAME}</strong>
+    return images
+      .slice(first, first + allFilters.pageSize)
+      .map((image, index) => (
+        <div className="image-item" key={index}>
+          <h4 style={{ margin: "0.3rem" }}>{image.doC_TYPE}</h4>
+          <img
+            src={image.filepath}
+            className="image-thumbnail"
+            onClick={() => showImageDialog(image)}
+          />
+          <div className="image-title">{image.title}</div>
+          <div className="image-info">
+            <div className="dates">
+              <div>{formatDate(image.date)}</div>
+            </div>
+            <div className="other-info">
+              <strong>
+                {image.clienT_CODE} - {image.clienT_NAME}
+              </strong>
+            </div>
+            <div className="other-info">
+              <strong>
+                {image.slS_CODE} - {image.slS_NAME}
+              </strong>
+            </div>
           </div>
         </div>
-      </div>
-    ));
+      ));
   };
 
   const renderCarouselImage = (image, index) => {
+    const handleDoubleClick = () => {
+      setFullImageSrc(image.filepath);
+      setFullImageVisible(true);
+    };
     return (
-      <div key={index}>
+      <div
+        key={index}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+        onDoubleClick={handleDoubleClick} // Attach double-click event
+      >
         <img
           src={image.filepath}
           alt={image.filename}
           style={{
-            height: "100%",
+            maxHeight: "500px",
             width: "auto",
             maxWidth: "100%",
             objectFit: "contain",
@@ -308,52 +330,79 @@ const ImageGallery = () => {
         <Dialog
           header="Tapşırıq vermə"
           visible={visible}
-          style={{ width: "40vw", height: "auto" }}
+          style={{
+            width: "auto",
+            maxWidth: "40vw",
+            height: "auto",
+            maxHeight: "96vh",
+            overflow: "hidden",
+          }}
           onHide={hideImageDialog}
         >
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              height: "100vh",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
             }}
           >
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              <Carousel
-                value={carouselImages}
-                numVisible={1}
-                numScroll={1}
-                responsiveOptions={carouselResponsiveOptions}
-                itemTemplate={renderCarouselImage}
-                circular
-                autoplayInterval={300000}
-              />
+            <Carousel
+              value={carouselImages}
+              numVisible={1}
+              numScroll={1}
+              responsiveOptions={carouselResponsiveOptions}
+              itemTemplate={renderCarouselImage}
+              circular
+              autoplayInterval={300000}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              margin: "10px 0",
+            }}
+          >
+            <div>
+              {selectedImage.slS_NAME}:{" "}
+              <strong>{selectedImage.clienT_CODE}</strong>
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                margin: "20px 0",
-              }}
-            >
-              <div>
-                {selectedImage.slS_NAME}:{" "}
-                <strong>{selectedImage.clienT_CODE}</strong>
-              </div>
-              <Button label="Tapşırıq ver" onClick={handleButtonClick} />
-            </div>
+            <Button label="Tapşırıq ver" onClick={handleButtonClick} />
           </div>
         </Dialog>
       )}
+      <Dialog
+        header="Tam ölçü"
+        visible={fullImageVisible}
+        style={{
+          width: "auto",
+          maxWidth: "90vw",
+          height: "auto",
+          maxHeight: "90vh",
+        }}
+        onHide={() => setFullImageVisible(false)}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={fullImageSrc}
+            alt="Full size"
+            style={{
+              width: "100%",
+              height: "auto",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      </Dialog>
     </div>
   );
 };

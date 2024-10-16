@@ -48,6 +48,7 @@ import VisitDurationEdit from "./pages/clients/visit-duration/VisitDurationEdit"
 import ChecklistResultEdit from "./pages/clients/checklist/checklist-results/CheckListResultEdit";
 import ImageGallery from "./pages/image-gallery/ImageGallery";
 import Image from "./pages/image-gallery/Root"
+import ImageTask from "./pages/image-gallery/ImageTask";
 
 export default function App() {
   useInactivityTimer();
@@ -109,6 +110,7 @@ export default function App() {
 
           <Route path="/image-gallery" element={<Image />}>
             <Route path="index" element={<ImageGallery />} />
+            <Route path="image-task" element={<ImageTask />} />
           </Route>
 
 

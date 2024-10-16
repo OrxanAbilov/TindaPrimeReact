@@ -22,8 +22,18 @@ const GET_PHOTO_DETAIL = async (docType, id) => {
   return res.data;
 };
 
+const POST_NEW_TASK_BY_IMAGE = async (postData) => {
+  try {
+    const res = await instance.post('Tasks', postData);
+    return res.data;
+  } catch (error) {
+    console.error('Error creating Task', error);
+    throw new Error('Error creating Task');
+  }
+};
 
 export {
   GET_ALL_GALLERY_PHOTOS,
-  GET_PHOTO_DETAIL
+  GET_PHOTO_DETAIL,
+  POST_NEW_TASK_BY_IMAGE
   };
