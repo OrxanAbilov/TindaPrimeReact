@@ -5,7 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import { ToastProvider } from "./context/ToastContext";
 import Modal from "./components/modal/Modal";
 import Income from "./pages/esd/Income";
-import ProcurementDocs from "./pages/procurement/Procurement"
+import ProcurementDocs from "./pages/procurement/Procurement";
 import OutGoing from "./pages/esd/OutGoing";
 import History from "./pages/esd/History";
 import DocumentType from "./pages/admin/esd/DocumentType";
@@ -17,7 +17,7 @@ import NewDoc from "./pages/esd/NewDoc";
 import AdminEsd from "./pages/admin/esd/Root";
 import Admin from "./pages/admin/Root";
 import Esd from "./pages/esd/Root";
-import Procurement from "./pages/procurement/Root"
+import Procurement from "./pages/procurement/Root";
 import Dashboard from "./pages/dashboard/Dashboard";
 import { useSelector } from "react-redux";
 import ProcurementDetail from "./pages/procurement/ProcurementDetail";
@@ -32,14 +32,14 @@ import SpecialSettingsOperations from "./pages/clients/special-settings/special-
 import SpecialSettings from "./pages/clients/special-settings/special-settings/SpecialSettings";
 import NotificationOperations from "./pages/notification/notification-operations/NotificationOperations";
 import NotificationHistory from "./pages/notification/notification-senders/NotificationHistory";
-import Clients from "./pages/clients/Root"
-import Notification from "./pages/notification/Root"
+import Clients from "./pages/clients/Root";
+import Notification from "./pages/notification/Root";
 import ActiveVisit from "./pages/visit/visit-active/ActiveVisit";
 import Jobs from "./pages/mobile-terminal/jobs/Jobs";
 import JobOrder from "./pages/mobile-terminal/job-order/JobOrder";
-import MobileTerminal from "./pages/mobile-terminal/Root"
-import Visit from "./pages/visit/visit-active/Root"
-import Delivery from "./pages/delivery/Root"
+import MobileTerminal from "./pages/mobile-terminal/Root";
+import Visit from "./pages/visit/visit-active/Root";
+import Delivery from "./pages/delivery/Root";
 import DeliveryDocuments from "./pages/delivery/DeliveryDocuments";
 import OrderItems from "./pages/delivery/OrderItems";
 import useInactivityTimer from "./useInactivityTimer";
@@ -47,8 +47,8 @@ import VisitDurations from "./pages/clients/visit-duration/VisitDurations";
 import VisitDurationEdit from "./pages/clients/visit-duration/VisitDurationEdit";
 import ChecklistResultEdit from "./pages/clients/checklist/checklist-results/CheckListResultEdit";
 import ImageGallery from "./pages/image-gallery/ImageGallery";
-import Image from "./pages/image-gallery/Root"
-import ImageTask from "./pages/image-gallery/ImageTask";
+import Image from "./pages/image-gallery/Root";
+import TaskEdit from "./pages/task/TaskEdit";
 
 export default function App() {
   useInactivityTimer();
@@ -68,8 +68,14 @@ export default function App() {
             <Route path="outgoing" element={<OutGoing />} />
             <Route path="history" element={<History />} />
             <Route path="doc/cashorder/:id" element={<PreviewDoc />} />
-            <Route path="doc/procurementdemand/:id" element={<PreviewWareHouseDoc />} />
-            <Route path="doc/procurementorder/:id" element={<PreviewProcurementOrderDoc />} />
+            <Route
+              path="doc/procurementdemand/:id"
+              element={<PreviewWareHouseDoc />}
+            />
+            <Route
+              path="doc/procurementorder/:id"
+              element={<PreviewProcurementOrderDoc />}
+            />
             <Route path="doc/new" element={<NewDoc />} />
           </Route>
           <Route path="/procurement" element={<Procurement />}>
@@ -78,16 +84,34 @@ export default function App() {
           </Route>
           <Route path="/clients" element={<Clients />}>
             <Route path="checklists" element={<Checklists />} />
-            <Route path="checklist/question-groups" element={<QuestionGroups />} />
+            <Route
+              path="checklist/question-groups"
+              element={<QuestionGroups />}
+            />
             <Route path="checklist/reasons" element={<Reasons />} />
             <Route path="checklist/questions" element={<Questions />} />
-            <Route path="checklist/checklist-results" element={<ChecklistResults />} />
-            <Route path="special-settings/special-settings-operations" element={<SpecialSettingsOperations />} />
-            <Route path="special-settings/block" element={<SpecialSettings/>} />
-            <Route path="visit-durations" element={<VisitDurations/>} />
-            <Route path="visit-duration-edit" element={<VisitDurationEdit/>} />
-            <Route path="visit-duration-edit/:id" element={<VisitDurationEdit />} />
-            <Route path="checklist/checklist-result-edit/:id" element={<ChecklistResultEdit />} />
+            <Route
+              path="checklist/checklist-results"
+              element={<ChecklistResults />}
+            />
+            <Route
+              path="special-settings/special-settings-operations"
+              element={<SpecialSettingsOperations />}
+            />
+            <Route
+              path="special-settings/block"
+              element={<SpecialSettings />}
+            />
+            <Route path="visit-durations" element={<VisitDurations />} />
+            <Route path="visit-duration-edit" element={<VisitDurationEdit />} />
+            <Route
+              path="visit-duration-edit/:id"
+              element={<VisitDurationEdit />}
+            />
+            <Route
+              path="checklist/checklist-result-edit/:id"
+              element={<ChecklistResultEdit />}
+            />
           </Route>
 
           <Route path="/notification" element={<Notification />}>
@@ -110,9 +134,11 @@ export default function App() {
 
           <Route path="/image-gallery" element={<Image />}>
             <Route path="index" element={<ImageGallery />} />
-            <Route path="image-task" element={<ImageTask />} />
           </Route>
 
+          <Route path="/task" element={<Image />}>
+            <Route path="task-edit" element={<TaskEdit />} />
+          </Route>
 
           {userType === 1 && (
             <Route path="/admin" element={<Admin />}>

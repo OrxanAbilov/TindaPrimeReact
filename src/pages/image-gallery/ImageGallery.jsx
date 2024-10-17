@@ -32,6 +32,7 @@ const ImageGallery = () => {
   const [endDate, setEndDate] = useState(defaultEndDate);
   const [fullImageVisible, setFullImageVisible] = useState(false);
   const [fullImageSrc, setFullImageSrc] = useState("");
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
   const [allFilters, setallFilters] = useState({
     pageSize: 4,
     first: 0,
@@ -127,10 +128,17 @@ const ImageGallery = () => {
   };
 
   const handleButtonClick = () => {
-    console.log("Button clicked!");
-    navigate('/image-gallery/image-task', { state: { selectedImage } });
+    const currentImage = carouselImages[currentCarouselIndex];
+  
+    const selectedImage = new URLSearchParams({
+      title: currentImage.title,
+      filepath: currentImage.filepath,
+    }).toString();
+    window.open(`/task/task-edit?${selectedImage}`, "_blank");
+  
     hideImageDialog();
   };
+  
 
   const handleDateChange = (e, type) => {
     const date = e.value;
@@ -164,6 +172,10 @@ const ImageGallery = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  const onCarouselPageChange = (event) => {
+    setCurrentCarouselIndex(event.page);
   };
 
   const renderImages = (images, first) => {
@@ -211,7 +223,7 @@ const ImageGallery = () => {
           alignItems: "center",
           height: "100%",
         }}
-        onDoubleClick={handleDoubleClick} // Attach double-click event
+        onDoubleClick={handleDoubleClick}
       >
         <img
           src={image.filepath}
@@ -354,8 +366,8 @@ const ImageGallery = () => {
               numScroll={1}
               responsiveOptions={carouselResponsiveOptions}
               itemTemplate={renderCarouselImage}
-              circular
-              autoplayInterval={300000}
+              onPageChange={onCarouselPageChange}
+              page={currentCarouselIndex}
             />
           </div>
           <div
