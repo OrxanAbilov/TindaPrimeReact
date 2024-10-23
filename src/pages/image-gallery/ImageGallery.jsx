@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Paginator } from "primereact/paginator";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
-import { InputText } from "primereact/inputtext";
+import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
 import "./ImageGallery.css";
 import {
   GET_ALL_GALLERY_PHOTOS,
   GET_PHOTO_DETAIL,
+  GET_CLIENTS_AUTO_COMPLETE,
 } from "../../features/photo-gallery/services/api";
+import { GET_SALESMAN_FOR_COMBO } from "../../features/clients/services/api";
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
 import { Carousel } from "primereact/carousel";
@@ -17,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 const ImageGallery = () => {
   const navigate = useNavigate();
   const defaultBeginDate = new Date();
+  // defaultBeginDate.setDate(defaultBeginDate.getDate() - 100);
   defaultBeginDate.setDate(defaultBeginDate.getDate() - 100);
   const defaultEndDate = new Date();
   const [firstImage, setFirstImage] = useState(0);
@@ -33,6 +37,9 @@ const ImageGallery = () => {
   const [fullImageVisible, setFullImageVisible] = useState(false);
   const [fullImageSrc, setFullImageSrc] = useState("");
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+  const [salesmen, setSalesmen] = useState([]);
+  const [clientSuggestions, setClientSuggestions] = useState([]);
+  const [selectedClient, setSelectedClient] = useState(null);
   const [allFilters, setallFilters] = useState({
     pageSize: 4,
     first: 0,
@@ -47,6 +54,26 @@ const ImageGallery = () => {
       endDate: "",
     },
   });
+
+  useEffect(() => {
+    const fetchSalesmen = async () => {
+      try {
+        const response = await GET_SALESMAN_FOR_COMBO();
+
+        if (response && response.data) {
+          const formattedSalesmen = response.data.map((salesman) => ({
+            label: `${salesman.slS_CODE} - ${salesman.fullName}`,
+            value: salesman.slS_CODE,
+          }));
+          setSalesmen(formattedSalesmen);
+        }
+      } catch (error) {
+        console.error("Error fetching salesmen:", error);
+      }
+    };
+
+    fetchSalesmen();
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -77,7 +104,19 @@ const ImageGallery = () => {
   const fetchPhotoDetail = async (image) => {
     try {
       const response = await GET_PHOTO_DETAIL(image.doC_TYPE, image.id);
-      setCarouselImages(response.data.data);
+
+      console.log("response:", response);
+      const updatedImages = response.data.data.map((img) => ({
+        ...img,
+        deP_ID: image.deP_ID,
+        userS_ID: image.userS_ID,
+        positioN_ID: image.positioN_ID,
+        brancH_ID: image.brancH_ID,
+        clienT_CODE: image.clienT_CODE,
+        fullname: image.fullname,
+      }));
+
+      setCarouselImages(updatedImages);
       setVisible(true);
     } catch (error) {
       console.error("Error fetching photo details", error);
@@ -120,7 +159,14 @@ const ImageGallery = () => {
 
   const showImageDialog = (image) => {
     setSelectedImage(image);
-    fetchPhotoDetail(image);
+    fetchPhotoDetail(image, {
+      deP_ID: image.deP_ID,
+      userS_ID: image.userS_ID,
+      positioN_ID: image.positioN_ID,
+      brancH_ID: image.brancH_ID,
+      clienT_CODE: image.clienT_CODE,
+      fullname: image.fullname,
+    });
   };
 
   const hideImageDialog = () => {
@@ -129,16 +175,20 @@ const ImageGallery = () => {
 
   const handleButtonClick = () => {
     const currentImage = carouselImages[currentCarouselIndex];
-  
+
     const selectedImage = new URLSearchParams({
-      title: currentImage.title,
+      depId: currentImage.deP_ID,
+      userId: currentImage.userS_ID,
+      positionId: currentImage.positioN_ID,
+      branchId: currentImage.brancH_ID,
+      clientCodes: currentImage.clienT_CODE,
+      fullName: currentImage.fullname,
       filepath: currentImage.filepath,
     }).toString();
     window.open(`/task/task-edit?${selectedImage}`, "_blank");
-  
+
     hideImageDialog();
   };
-  
 
   const handleDateChange = (e, type) => {
     const date = e.value;
@@ -158,12 +208,33 @@ const ImageGallery = () => {
   };
 
   const handleInputChange = (e, field) => {
-    const value = e.target.value;
+    const value = e.target.value || "";
     setallFilters((prevFilters) => ({
       ...prevFilters,
       filters: {
         ...prevFilters.filters,
         [field]: value,
+      },
+    }));
+  };
+
+  const searchClients = async (event) => {
+    const query = event.query;
+    const suggestions = await GET_CLIENTS_AUTO_COMPLETE(query);
+    setClientSuggestions(suggestions);
+  };
+
+  const handleClientSelect = (e) => {
+    const selectedClient = e.value;
+    setSelectedClient(selectedClient);
+
+    console.log("SELECTED CLIENT:", selectedClient);
+
+    setallFilters((prevFilters) => ({
+      ...prevFilters,
+      filters: {
+        ...prevFilters.filters,
+        clienT_CODE: selectedClient?.code || "",
       },
     }));
   };
@@ -178,12 +249,27 @@ const ImageGallery = () => {
     setCurrentCarouselIndex(event.page);
   };
 
+  const getDocTypeLabel = (docType) => {
+    switch (docType) {
+      case "CHECK_LIST":
+        return "Sorğu";
+      case "DEBT_CHECK":
+        return "Borc yoxlanışı";
+      case "VISIT":
+        return "Ziyarət";
+      default:
+        return docType;
+    }
+  };
+
   const renderImages = (images, first) => {
     return images
       .slice(first, first + allFilters.pageSize)
       .map((image, index) => (
         <div className="image-item" key={index}>
-          <h4 style={{ margin: "0.3rem" }}>{image.doC_TYPE}</h4>
+          <h4 style={{ margin: "0.3rem" }}>
+            {getDocTypeLabel(image.doC_TYPE)}
+          </h4>
           <img
             src={image.filepath}
             className="image-thumbnail"
@@ -265,39 +351,42 @@ const ImageGallery = () => {
     return <Error />;
   }
 
+  const docTypeOptions = [
+    { label: "Sorğu", value: "CHECK_LIST" },
+    { label: "Borc yoxlanışı", value: "DEBT_CHECK" },
+    { label: "Ziyarət", value: "VISIT" },
+  ];
+
   const renderSearchFields = () => (
     <div className="search-fields-container">
-      <InputText
-        value={allFilters.filters.clienT_CODE}
-        onChange={(e) => handleInputChange(e, "clienT_CODE")}
-        placeholder="Müştəri kodu"
-        className="search-input"
+      <AutoComplete
+        value={selectedClient}
+        suggestions={clientSuggestions}
+        completeMethod={searchClients}
+        field="name"
+        onChange={handleClientSelect}
         onKeyDown={handleKeyDown}
-        style={{ width: "170px" }}
-      />
-      <InputText
-        value={allFilters.filters.clienT_NAME}
-        onChange={(e) => handleInputChange(e, "clienT_NAME")}
-        placeholder="Müştəri adı"
+        placeholder="Müştəri"
         className="search-input"
-        onKeyDown={handleKeyDown}
-        style={{ width: "170px" }}
+        style={{ width: "200px" }}
       />
-      <InputText
+      <Dropdown
         value={allFilters.filters.slS_CODE}
+        options={salesmen}
         onChange={(e) => handleInputChange(e, "slS_CODE")}
-        placeholder="Təmsilçi kodu"
-        className="search-input"
-        onKeyDown={handleKeyDown}
-        style={{ width: "170px" }}
+        filter
+        placeholder="Təmsilçi"
+        showClear
+        style={{ width: "200px" }}
       />
-      <InputText
-        value={allFilters.filters.slS_NAME}
-        onChange={(e) => handleInputChange(e, "slS_NAME")}
-        placeholder="Təmsilçi adı"
-        className="search-input"
-        onKeyDown={handleKeyDown}
-        style={{ width: "160px" }}
+      <Dropdown
+        value={allFilters.filters.doC_TYPE}
+        options={docTypeOptions}
+        onChange={(e) => handleInputChange(e, "doC_TYPE")}
+        filter
+        placeholder="Sənəd tipi"
+        showClear
+        style={{ width: "200px" }}
       />
       <Calendar
         value={beginDate}
@@ -306,7 +395,7 @@ const ImageGallery = () => {
         className="search-input"
         dateFormat="yy-mm-dd"
         showIcon
-        style={{ width: "170px" }}
+        style={{ width: "200px" }}
       />
       <Calendar
         value={endDate}
@@ -315,7 +404,7 @@ const ImageGallery = () => {
         className="search-input"
         dateFormat="yy-mm-dd"
         showIcon
-        style={{ width: "170px" }}
+        style={{ width: "200px" }}
       />
       <Button
         icon="pi pi-search"

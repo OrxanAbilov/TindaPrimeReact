@@ -49,6 +49,7 @@ import ChecklistResultEdit from "./pages/clients/checklist/checklist-results/Che
 import ImageGallery from "./pages/image-gallery/ImageGallery";
 import Image from "./pages/image-gallery/Root";
 import TaskEdit from "./pages/task/TaskEdit";
+import WorkOffices from "./pages/mobile-terminal/work-offices/WorkOffices";
 
 export default function App() {
   useInactivityTimer();
@@ -122,6 +123,7 @@ export default function App() {
           <Route path="/mobile-terminal" element={<MobileTerminal />}>
             <Route path="jobs" element={<Jobs />} />
             <Route path="job-order" element={<JobOrder />} />
+            <Route path="work-offices" element={ <WorkOffices/>} />
           </Route>
 
           <Route path="/visit" element={<Visit />}>

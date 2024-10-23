@@ -32,8 +32,14 @@ const POST_NEW_TASK_BY_IMAGE = async (postData) => {
   }
 };
 
+const GET_CLIENTS_AUTO_COMPLETE = async (searchWord) => {
+  const res = await instance.get(`Visit/GetComboByType?type=${1}&searchWord=${searchWord}`);
+  return res.data.data;
+};
+
 export {
   GET_ALL_GALLERY_PHOTOS,
   GET_PHOTO_DETAIL,
-  POST_NEW_TASK_BY_IMAGE
+  POST_NEW_TASK_BY_IMAGE,
+  GET_CLIENTS_AUTO_COMPLETE
   };

@@ -15,6 +15,8 @@ import {
   GET_ALL_BRANCHES,
   GET_ALL_IMPORTANCES,
   GET_USERS_FOR_COMBO_AUTOCOMPLETE,
+  GET_USERS_OF_TASK,
+  POST_NEW_TASK
 } from "../../features/task/services/api";
 import { BiTrash } from "react-icons/bi";
 import ClientCodeDialog from "./ClientCodeDialog";
@@ -26,29 +28,75 @@ const TaskEdit = () => {
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
   const [branches, setBranches] = useState([]);
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState(queryParams.get("fullName") || "");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [importances, setImportances] = useState([]);
   const [additionalUserInput, setAdditionalUserInput] = useState("");
   const [additionalUsers, setAdditionalUsers] = useState([]);
   const [clientCodes, setClientCodes] = useState([]);
   const [clientsDialogVisible, setClientsDialogVisible] = useState(false);
+  const [finalDataURL, setFinalDataURL] = useState(null);
 
   const selectedImage = {
-    title: queryParams.get("title"),
     filepath: queryParams.get("filepath"),
   };
+  const depId = parseInt(queryParams.get("depId"), 10) || 0;
+  const userId = parseInt(queryParams.get("userId"), 10) || 0;
+  const positionId = parseInt(queryParams.get("positionId"), 10) || 0;
+  const branchId = parseInt(queryParams.get("branchId"), 10) || 0;
+  const fullName = queryParams.get("fullName") || "";
+  const clientCodesFromURL = queryParams.get("clientCodes")
+    ? queryParams.get("clientCodes").split(",")
+    : [];
 
+
+    const getBase64FromImagePath = async (imagePath) => {
+      try {
+        const response = await fetch(imagePath);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+    
+        const blob = await response.blob();
+        const reader = new FileReader();
+        
+        return new Promise((resolve, reject) => {
+          reader.onloadend = () => {
+            const base64String = reader.result;
+            const pureBase64 = base64String.split(',')[1];
+            resolve(pureBase64);
+          };
+          reader.onerror = (error) => {
+            reject(error);
+          };
+          reader.readAsDataURL(blob);
+        });
+      } catch (error) {
+        console.error('Error fetching the image:', error);
+      }
+    };
+    
+    if (selectedImage.filepath) {
+      getBase64FromImagePath(selectedImage.filepath)
+        .then((pureBase64) => {
+          formData.files[0].base64 = pureBase64; 
+        })
+        .catch((error) => {
+          console.error('Error converting to Base64:', error);
+        });
+    }
+    
+  
   const [formData, setFormData] = useState({
     name: "",
     descr: "",
     beginDate: null,
     expireDate: null,
     impId: 0,
-    depId: 0,
-    positionId: 0,
-    branchId: 0,
-    userId: 0,
+    depId: depId || 0,
+    positionId: positionId || 0,
+    branchId: branchId || 0,
+    userId: userId || 0,
     userIds: [],
     files: [
       {
@@ -56,6 +104,7 @@ const TaskEdit = () => {
         base64: "",
       },
     ],
+    clientCodes: clientCodesFromURL || [],
   });
 
   useEffect(() => {
@@ -102,11 +151,37 @@ const TaskEdit = () => {
     setFormData((prevData) => ({
       ...prevData,
       depId: selectedDepId,
+      positionId: null,
     }));
 
     const positionsRes = await GET_POSITIONS_BY_DEPARTMENT(selectedDepId);
     setPositions(positionsRes);
+
+    if (positionsRes.length > 0) {
+      setFormData((prevData) => ({
+        ...prevData,
+        positionId: positionsRes[0].id,
+      }));
+    }
   };
+
+  useEffect(() => {
+    if (formData.depId) {
+      const fetchPositions = async () => {
+        const positionsRes = await GET_POSITIONS_BY_DEPARTMENT(formData.depId);
+        setPositions(positionsRes);
+
+        if (positionsRes.length > 0 && !formData.positionId) {
+          setFormData((prevData) => ({
+            ...prevData,
+            positionId: positionsRes[0].id,
+          }));
+        }
+      };
+
+      fetchPositions();
+    }
+  }, [formData.depId]);
 
   const handleBranchChange = (e) => {
     setFormData((prevData) => ({
@@ -153,13 +228,15 @@ const TaskEdit = () => {
     }));
   };
 
-  const handleChange = ({ target: { name, value } }) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  const handleChange = ({ target: { name: fieldName, value } }) => {
 
+    setFormData((prevData) => {
+      const newData = { ...prevData, [fieldName]: value };
+
+      return newData;
+    });
+  };
+  
   const handleDateChange = (name, value) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -172,32 +249,37 @@ const TaskEdit = () => {
       ...prevState,
       files: [
         {
-          fileName: selectedImage.fileName || "image.png",
+          fileName: selectedImage.fileName || "imageEdited.png",
           base64: base64Image,
         },
       ],
     }));
+    setFinalDataURL(base64Image);
+  };
+
+  const handleRemoveFinalDataURL = () => {
+    setFinalDataURL(null);
   };
 
   const handleAddCodes = (codes) => {
     setClientCodes((prevCodes) => {
-      const newCodes = codes.filter(code => !prevCodes.includes(code));
-  
+      const newCodes = codes.filter((code) => !prevCodes.includes(code));
+
       if (newCodes.length === 0) {
         return prevCodes;
       }
-  
+
       const updatedCodes = [...prevCodes, ...newCodes];
-  
+
       setFormData((prevData) => ({
         ...prevData,
         clientCodes: updatedCodes,
       }));
-  
+
       return updatedCodes;
     });
   };
-  
+
   const handleRemoveCode = (code) => {
     setClientCodes((prevCodes) => {
       const updatedCodes = prevCodes.filter((c) => c !== code);
@@ -210,12 +292,70 @@ const TaskEdit = () => {
       return updatedCodes;
     });
   };
+  
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
+  const handleFetchUsers = async (type, id) => {
+    try {
+      const users = await GET_USERS_OF_TASK(id, type);
+
+      
+      if (users.length > 0) {
+        const firstUser = users[0];
+        setUserInput(firstUser.fullName);
+        setFormData((prevData) => ({
+          ...prevData,
+          userId: firstUser.id,
+          userIds: users.slice(1).map((user) => user.id), 
+        }));
+  
+        setAdditionalUsers(
+          users.slice(1).map((user) => ({ id: user.id, fullName: user.fullName }))
+        );
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          userId: null,
+          userIds: [],
+        }));
+        setUserInput('');
+        setAdditionalUsers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
+  
+  
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    console.log("formData before update", formData);
+  
+    if (formData.files) {
+      formData.files = formData.files.map(file => {
+        if (finalDataURL) { 
+          return {
+            ...file,
+            base64: finalDataURL.split(',')[1]
+          };
+        }
+        return file;
+      });
+    }
+  
+    console.log("formData after update", formData);
+  
+    // Uncomment the code below to submit the form data
+    // try {
+    //   const response = await POST_NEW_TASK(formData); 
+    //   console.log("Task successfully created:", response);
+    // } catch (error) {
+    //   console.error("Failed to create task:", error);
+    // }
+  };
+  
+    
   const handleCloseDialog = () => {
     setDialogVisible(false);
   };
@@ -226,85 +366,110 @@ const TaskEdit = () => {
         <FormGroup>
           <div>
             <Label>Başlıq:</Label>
-            <StyledInput
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+              <StyledInput
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
           </div>
           <div>
             <Label>Başlama vaxtı:</Label>
-            <StyledCalendar
-              name="beginDate"
-              value={formData.beginDate}
-              onChange={(e) => handleDateChange("beginDate", e.value)}
-              showIcon
-              required
-              dateFormat="dd-mm-yy"
-            />
+            <InputWrapper>
+              <StyledCalendar
+                name="beginDate"
+                value={formData.beginDate}
+                onChange={(e) => handleDateChange("beginDate", e.value)}
+                showIcon
+                required
+                dateFormat="dd-mm-yy"
+              />
+            </InputWrapper>
           </div>
           <div>
             <Label>Bitmə vaxtı:</Label>
-            <StyledCalendar
-              name="expireDate"
-              value={formData.expireDate}
-              onChange={(e) => handleDateChange("expireDate", e.value)}
-              showIcon
-              required
-              dateFormat="dd-mm-yy"
-            />
+            <InputWrapper>
+              <StyledCalendar
+                name="expireDate"
+                value={formData.expireDate}
+                onChange={(e) => handleDateChange("expireDate", e.value)}
+                showIcon
+                required
+                dateFormat="dd-mm-yy"
+              />
+            </InputWrapper>
           </div>
         </FormGroup>
 
         <FormGroup>
           <div>
             <Label>Şöbə:</Label>
-            <StyledDropdown
-              value={formData.depId}
-              options={departments}
-              onChange={handleDepartmentChange}
-              optionLabel="name"
-              optionValue="id"
-              placeholder="Şöbə seçin"
-              showClear
-              filter
-              filterBy="name"
-              required
-            />
+            <InputWrapper>
+              <StyledDropdown
+                value={formData.depId}
+                options={departments}
+                onChange={handleDepartmentChange}
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Şöbə seçin"
+                showClear
+                filter
+                filterBy="name"
+                required
+              />
+              <Button
+                type="button"
+                icon="pi pi-plus"
+                onClick={() => handleFetchUsers(1, formData.depId)} // Trigger fetch for Şöbə
+              />
+            </InputWrapper>
           </div>
           <div>
             <Label>Vəzifə:</Label>
-            <StyledDropdown
-              value={formData.positionId}
-              options={positions}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  positionId: e.value,
-                }))
-              }
-              optionLabel="positionName"
-              optionValue="id"
-              placeholder="Vəzifə seçin"
-              showClear
-              filter
-              filterBy="positionName"
-            />
+            <InputWrapper>
+              <StyledDropdown
+                value={formData.positionId}
+                options={positions}
+                onChange={(e) =>
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    positionId: e.value,
+                  }))
+                }
+                optionLabel="positionName"
+                optionValue="id"
+                placeholder="Vəzifə seçin"
+                showClear
+                filter
+                filterBy="positionName"
+              />
+              <Button
+                type="button"
+                icon="pi pi-plus"
+                onClick={() => handleFetchUsers(2, formData.positionId)} // Trigger fetch for Vəzifə
+              />
+            </InputWrapper>
           </div>
           <div>
             <Label>İş yeri:</Label>
-            <StyledDropdown
-              value={formData.branchId}
-              options={branches}
-              onChange={handleBranchChange}
-              optionLabel="name"
-              optionValue="id"
-              placeholder="İş yeri seçin"
-              showClear
-              filter
-              filterBy="name"
-            />
+            <InputWrapper>
+              <StyledDropdown
+                value={formData.branchId}
+                options={branches}
+                onChange={handleBranchChange}
+                optionLabel="name"
+                optionValue="id"
+                placeholder="İş yeri seçin"
+                showClear
+                filter
+                filterBy="name"
+              />
+              <Button
+                type="button"
+                icon="pi pi-plus"
+                onClick={() => handleFetchUsers(3, formData.branchId)} // Trigger fetch for İş yeri
+              />
+            </InputWrapper>
           </div>
           <div>
             <Label>Dərəcə:</Label>
@@ -340,7 +505,7 @@ const TaskEdit = () => {
               type="button"
               onClick={() => setDialogVisible(true)}
             >
-              Edit Image
+              Şəkili düzənlə
             </ShowImageButton>
           </div>
         </FormGroup>
@@ -422,14 +587,12 @@ const TaskEdit = () => {
             }}
           >
             <Label>Müştərilər:</Label>
-            <Button
-              type="button"
-              icon="pi pi-plus"
-              onClick={() => setClientsDialogVisible(true)}
-            />
+            <Button type="button" onClick={() => setClientsDialogVisible(true)}>
+              Əlavə et
+            </Button>
             <div style={{ marginTop: "10px" }}>
               <ul style={{ listStyleType: "none", padding: "0" }}>
-                {clientCodes.map((code) => (
+                {formData.clientCodes.map((code) => (
                   <li
                     key={code}
                     style={{
@@ -477,6 +640,8 @@ const TaskEdit = () => {
           selectedImage={selectedImage}
           onCloseDialog={handleCloseDialog}
           onSave={handleSaveImage}
+          finalDataURL={finalDataURL}
+          onRemoveFinalDataURL={handleRemoveFinalDataURL} // Pass the remove function
         />
       </Dialog>
     </Container>
@@ -535,6 +700,10 @@ const ButtonContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 export default TaskEdit;

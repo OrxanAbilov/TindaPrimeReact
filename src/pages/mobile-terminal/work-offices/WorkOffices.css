@@ -1,0 +1,52 @@
+.info-window {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  font-size: 14px;
+  min-width: 200px; /* Set a minimum width */
+}
+
+.info-title {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.info-content p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.info-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.info-button:hover {
+  background-color: #0056b3;
+}
+
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.search-input {
+  width: 20%;
+  padding: 8px;
+}
+
+.add-office-button {
+  width: 15%;
+}
+

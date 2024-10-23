@@ -95,7 +95,35 @@ const POST_NEW_JOB = async (newJobData) => {
       }
     };
   
+ 
+    const GET_WORK_OFFICE_LOCATIONS = async () => {
+      const res = await instance.get(
+          `WorkOfficeLocations`
+        );
+        return res.data;
+    };
+       
+    const POST_NEW_WORK_OFFICE = async (newOfficeData) => {
+      try {
+        const res = await instance.post('WorkOfficeLocations', newOfficeData);
+        return res.data;
+      } catch (error) {
+        console.error('Error creating WorkOfficeLocation', error);
+        throw new Error('Error creating WorkOfficeLocation');
+      }
+    };
     
+    const EDIT_WORK_OFFICE = async (newOfficeData) => {
+      try {
+        const res = await instance.put('WorkOfficeLocations', newOfficeData);
+        return res.data;
+      } catch (error) {
+        console.error('Error editing WorkOfficeLocation', error);
+        throw new Error('Error editing WorkOfficeLocation');
+      }
+    };
+  
+
 export {
     GET_ALL_JOBS,
     POST_NEW_JOB,
@@ -105,6 +133,9 @@ export {
     GET_JOB_HEADER_DETAILS,
     GET_JOBS,
     POST_NEW_JOB_HEADER,
-    EDIT_JOB_HEADER
+    EDIT_JOB_HEADER,
+    GET_WORK_OFFICE_LOCATIONS,
+    POST_NEW_WORK_OFFICE,
+    EDIT_WORK_OFFICE
  };
  

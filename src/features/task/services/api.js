@@ -42,6 +42,21 @@ const GET_ALL_CLIENTS = async (filters) => {
   return res.data;
 };
 
+const GET_USERS_OF_TASK = async (Id, type) => {
+  const res = await instance.get(`Users/GetUsersOfTask?Id=${Id}&type=${type}`);
+  return res.data.data;
+};
+
+const POST_NEW_TASK = async (formData) => {
+  try {
+    const res = await instance.post('Tasks', formData);
+    return res.data;
+  } catch (error) {
+    console.error('Error creating task', error);
+    throw new Error('Error creating task');
+  }
+};
+
 
 export {
   GET_ALL_DEPARTMENTS,
@@ -49,5 +64,7 @@ export {
   GET_ALL_BRANCHES,
   GET_ALL_IMPORTANCES,
   GET_USERS_FOR_COMBO_AUTOCOMPLETE,
-  GET_ALL_CLIENTS
+  GET_ALL_CLIENTS,
+  GET_USERS_OF_TASK,
+  POST_NEW_TASK
  };
